@@ -12,13 +12,16 @@ import {useFrame} from "@react-three/fiber";
 
 export function Model(props: any) {
     const group = useRef()
-    const {nodes, materials, animations} = useGLTF('/src/assets/robot/kuma_heavy_robot_r-9000s.glb')
+    const {nodes, materials, animations} = useGLTF('/robot/kuma_heavy_robot_r-9000s.glb')
+    // noinspection JSUnusedLocalSymbols
+    // @ts-ignore
     const {actions} = useAnimations(animations, group)
 
     const meshRef = useRef();
 
     useFrame(() => {
         if (meshRef.current) {
+            // @ts-ignore
             const skeleton = meshRef.current.skeleton;
 
             // Example: Rotate the third bone in y direction
@@ -43,16 +46,29 @@ export function Model(props: any) {
                                         <primitive object={nodes._rootJoint}/>
                                         <skinnedMesh
                                             name="Object_19"
-                                            geometry={nodes.Object_19.geometry}
+                                            geometry={
+                                                // @ts-ignore
+                                                nodes.Object_19.geometry
+                                            }
                                             material={materials['Material.002']}
-                                            skeleton={nodes.Object_19.skeleton}
+                                            skeleton={
+                                                // @ts-ignore
+                                                nodes.Object_19.skeleton
+                                            }
+                                            // @ts-ignore
                                             ref={meshRef}
                                         />
                                         <skinnedMesh
                                             name="Object_21"
-                                            geometry={nodes.Object_21.geometry}
+                                            geometry={
+                                                // @ts-ignore
+                                                nodes.Object_21.geometry
+                                            }
                                             material={materials['Material.001']}
-                                            skeleton={nodes.Object_21.skeleton}
+                                            skeleton={
+                                                // @ts-ignore
+                                                nodes.Object_21.skeleton
+                                            }
                                         />
                                         <group
                                             name="Object_18"

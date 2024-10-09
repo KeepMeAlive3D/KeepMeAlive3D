@@ -33,9 +33,9 @@ fun Application.configureRouting() {
     }
     install(Resources)
     routing {
-        //get("/") {
-        //    call.respondText("Hello World!")
-        //}
+        get("/hello") {
+            call.respondText("Hello World!")
+        }
         get("/webjars") {
             call.respondText("<script src='/webjars/jquery/jquery.js'></script>", ContentType.Text.Html)
         }
@@ -43,8 +43,7 @@ fun Application.configureRouting() {
             // Get all articles ...
             call.respond("List of articles sorted starting from ${article.sort}")
         }
-        // Static plugin. Try to access `/static/index.html`
-        staticResources("/static", "static")
+        staticResources("/", "static")
     }
 }
 
