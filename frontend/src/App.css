@@ -1,42 +1,48 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.main-body {
+  display: flex;
+  flex-direction: column;
+  place-items: stretch;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.top-app-bar {
+  border: red solid 1px;
+  margin: 2px 0 2px 0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  place-items: stretch;
+  margin: 2px 0 2px 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.bottom-app-bar {
+  border: green solid 1px;
+  margin: 2px 0 2px 0;
 }
 
-.card {
-  padding: 2em;
+.main-content > nav {
+  border: hotpink solid 1px;
+  width: 250px;
+  margin: 0 2px 0 0;
 }
 
-.read-the-docs {
-  color: #888;
+.main-content > div {
+  border: purple solid 1px;
+  flex: 1;
+  margin: 0 0 0 2px;
+  box-sizing: border-box;
+}
+
+canvas {
+  background: rgb(34, 193, 195);
+  background: linear-gradient(
+          0deg,
+          rgb(8, 163, 166) 0%,
+          rgba(79, 166, 167, 0.849) 8%,
+          rgba(61, 79, 94, 0.885) 40%,
+          rgb(17, 19, 23)
+  );
 }
