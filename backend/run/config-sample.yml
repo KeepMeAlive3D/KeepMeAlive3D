@@ -1,0 +1,13 @@
+passphrase: 'xxx'
+databases:
+  sql:
+    host: 'xxx'
+    port: 3306
+    schema: 'xxx'
+    user: 'xxx'
+    password: 'xxx'
+  kafka:
+    host: 'xxx'
+    port: 8083
+    password: 'xxx'
+pluginDirs: ["plugins"]
