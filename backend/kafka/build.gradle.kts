@@ -16,6 +16,14 @@ repositories {
 dependencies {
     compileOnly("io.ktor:ktor-server-core-jvm")
     compileOnly(project(":api"))
+
+    // https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer
+    implementation("io.confluent:kafka-avro-serializer:5.3.0")
+
+    // https://mvnrepository.com/artifact/io.confluent/kafka-schema-registry-client
+    implementation("io.confluent:kafka-schema-registry-client:5.3.0")
+
+
     implementation("io.github.flaxoos:ktor-server-kafka-jvm:$flaxoos_extra_plugins_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
