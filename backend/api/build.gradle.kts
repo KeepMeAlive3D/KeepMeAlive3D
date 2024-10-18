@@ -21,6 +21,7 @@ application {
 repositories {
     mavenCentral()
     maven { url = uri("https://packages.confluent.io/maven/") }
+    maven { url = uri("https://repo.eclipse.org/content/repositories/paho-releases/") }
 }
 
 dependencies {
@@ -44,4 +45,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    implementation("com.charleskorn.kaml:kaml:0.61.0")
+    implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 }

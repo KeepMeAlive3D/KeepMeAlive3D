@@ -2,6 +2,7 @@
   <configuration default="false" name="ApplicationKt" type="KtorApplicationConfigurationType" factoryName="Ktor" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="de.keepmealive3d.ApplicationKt" />
     <module name="backend.api.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend/run" />
     <option name="alternativeJrePath" />
     <option name="alternativeJrePathEnabled" value="false" />
     <option name="includeProvidedScope" value="false" />
@@ -10,7 +11,7 @@
     <option name="programParameters" value="" />
     <option name="shortenCommandLine" />
     <option name="vmParameters" />
-    <option name="workingDirectory" value="D:\Documents\uni\KeepMeAlive3D" />
+    <option name="workingDirectory" value="$PROJECT_DIR$/backend/run" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

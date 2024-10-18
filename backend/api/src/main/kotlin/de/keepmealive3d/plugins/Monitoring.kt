@@ -21,6 +21,6 @@ fun Application.configureMonitoring() {
             .convertRatesTo(TimeUnit.SECONDS)
             .convertDurationsTo(TimeUnit.MILLISECONDS)
             .build()
-            .start(10, TimeUnit.SECONDS)
+            .start(120, TimeUnit.SECONDS)
     }
 }
