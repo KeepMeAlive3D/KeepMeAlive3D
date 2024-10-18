@@ -26,8 +26,8 @@ class MqttPlugin : Plugin() {
         )
         topic = config.databases.mqtt.topic
 
-        //connectionOptions.userName = config.databases.mqtt.clientId
-        //connectionOptions.password = config.databases.mqtt.password.toCharArray()
+        connectionOptions.userName = config.databases.mqtt.clientId
+        connectionOptions.password = config.databases.mqtt.password.toCharArray()
         connectionOptions.isCleanSession = true
 
     }
