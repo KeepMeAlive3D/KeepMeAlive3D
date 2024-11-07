@@ -46,6 +46,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
-    implementation("com.charleskorn.kaml:kaml:0.61.0")
+    implementation("com.charleskorn.kaml:kaml:0.62.2")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 }
