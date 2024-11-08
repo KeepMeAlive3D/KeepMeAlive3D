@@ -47,4 +47,7 @@ dependencies {
 
     implementation("com.charleskorn.kaml:kaml:0.62.2")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
+
+    //db
+    implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
 }
