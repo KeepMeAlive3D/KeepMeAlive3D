@@ -7,8 +7,13 @@ import de.keepmealive3d.config.Config
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 
-class LiveDataEventHandler(conf: Config): EventHandler {
-    private val client = InfluxDBClientKotlinFactory.create("http://${conf.databases.influx.host}:${conf.databases.influx.port}", conf.databases.influx.token.toCharArray(), conf.databases.influx.org, conf.databases.influx.bucket)
+class LiveDataEventHandler(conf: Config) : EventHandler {
+    private val client = InfluxDBClientKotlinFactory.create(
+        "http://${conf.databases.influx.host}:${conf.databases.influx.port}",
+        conf.databases.influx.token.toCharArray(),
+        conf.databases.influx.org,
+        conf.databases.influx.bucket
+    )
 
 
     fun receive(topic: String, payload: String) {
