@@ -34,6 +34,7 @@ data class Databases(
     val sql: SqlDatabase,
     val kafka: KafkaDatabase,
     val mqtt: MqttDatabase,
+    val influx: InfluxDatabase
 )
 
 @Serializable
@@ -59,4 +60,13 @@ data class MqttDatabase(
     val clientId: String,
     val password: String,
     val topic: String,
+)
+
+@Serializable
+data class InfluxDatabase(
+    val host: String,
+    val port: Int,
+    val org: String,
+    val bucket: String,
+    val token: String,
 )

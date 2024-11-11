@@ -15,4 +15,10 @@ databases:
     port: 1883
     clientId: 'xxx'
     topic: 'xxx'
+  influx:
+    host: 'xxx'
+    port: 8086
+    org: 'xxx'
+    bucket: 'xxx'
+    token: 'xxx'
 pluginDirs: ["plugins"]
