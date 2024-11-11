@@ -42,6 +42,8 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor:ktor-client-core-jvm:3.0.1")
+    implementation("io.ktor:ktor-client-apache-jvm:3.0.1")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
@@ -58,4 +60,6 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:4.0.0")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
     implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
+
+    implementation("at.favre.lib:bcrypt:0.10.2")
 }
