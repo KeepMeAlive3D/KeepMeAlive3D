@@ -50,4 +50,12 @@ dependencies {
 
     //db
     implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
+    implementation("com.mysql:mysql-connector-j:9.1.0")
+
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-core
+    runtimeOnly("io.insert-koin:koin-core:4.0.0")
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
+    implementation("io.insert-koin:koin-ktor:4.0.0")
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
 }
