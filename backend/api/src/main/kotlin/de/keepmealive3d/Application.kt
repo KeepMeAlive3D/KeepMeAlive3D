@@ -1,6 +1,7 @@
 package de.keepmealive3d
 
 import de.keepmealive3d.config.Config
+import de.keepmealive3d.core.TestUser
 import de.keepmealive3d.plugins.*
 import de.keepmealive3d.scriptingapi.Loader
 import de.keepmealive3d.scriptingapi.PluginConfig
@@ -20,6 +21,7 @@ fun Application.module() {
         log.error("couldn't load config.yml")
         return
     }
+    configureDependencyInjection(conf)
 
     val loader = Loader(conf.pluginDirs.map { File(it) })
     //current workaround: MqttPlugin stays in the :api module for better debugging experience
@@ -32,4 +34,6 @@ fun Application.module() {
     configureSerialization()
     configureSockets()
     configureRouting()
+
+    TestUser(this)
 }
