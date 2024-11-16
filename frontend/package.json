@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^9.115.0",
     "@react-three/fiber": "^8.17.10",
-    "@types/three": "^0.169.0",
+    "@types/three": "^0.170.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
@@ -20,7 +20,7 @@
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.169.0"
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
