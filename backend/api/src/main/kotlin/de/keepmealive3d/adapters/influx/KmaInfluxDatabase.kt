@@ -1,10 +1,13 @@
 package de.keepmealive3d.adapters.influx
 
+import com.influxdb.client.domain.Query
 import com.influxdb.client.domain.WritePrecision
 import com.influxdb.client.kotlin.InfluxDBClientKotlin
 import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
 import com.influxdb.client.write.Point
+import com.influxdb.query.FluxRecord
 import de.keepmealive3d.config.Config
+import kotlinx.coroutines.channels.Channel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.Instant
@@ -29,9 +32,14 @@ class KmaInfluxDatabase : KoinComponent {
     }
 
     suspend fun write(point: Point) {
-        client.use {
-            val writeApi = client.getWriteKotlinApi()
-            writeApi.writePoint(point)
-        }
+        val writeApi = client.getWriteKotlinApi()
+        writeApi.writePoint(point)
+    }
+
+    fun read(measurementName: String): Channel<FluxRecord> {
+        val queryApi = client.getQueryKotlinApi()
+        val fluxQuery =
+            "from(bucket: \"${config.databases.influx.bucket}\") |> range(start: -1d) |> filter(fn: (r) => r._measurement == \"$measurementName\")"
+        return queryApi.query(fluxQuery)
     }
 }
