@@ -5,14 +5,18 @@ import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
 import com.influxdb.client.write.Point
 import de.keepmealive3d.config.Config
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.time.Instant
 
-class LiveDataEventHandler(conf: Config) : EventHandler {
+class LiveDataEventHandler() : EventHandler, KoinComponent {
+    private val config: Config by inject()
+
     private val client = InfluxDBClientKotlinFactory.create(
-        "http://${conf.databases.influx.host}:${conf.databases.influx.port}",
-        conf.databases.influx.token.toCharArray(),
-        conf.databases.influx.org,
-        conf.databases.influx.bucket
+        "http://${config.databases.influx.host}:${config.databases.influx.port}",
+        config.databases.influx.token.toCharArray(),
+        config.databases.influx.org,
+        config.databases.influx.bucket
     )
 
 

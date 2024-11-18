@@ -37,7 +37,7 @@ class Loader(private val pluginDirectories: List<File>) {
     }
 
     fun loadPlugins(application: Application, conf: Config) = with(application) {
-        val liveDataEventHandler = LiveDataEventHandler(conf)
+        val liveDataEventHandler = LiveDataEventHandler()
         runBlocking {   //we want to wait until all plugins are loaded
             plugins.forEach { p ->
                 try {
