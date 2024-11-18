@@ -36,7 +36,7 @@ class KmaInfluxDatabase : KoinComponent {
         writeApi.writePoint(point)
     }
 
-    fun read(measurementName: String): Channel<FluxRecord> {
+    fun readAllMeasurements(measurementName: String): Channel<FluxRecord> {
         val queryApi = client.getQueryKotlinApi()
         val fluxQuery =
             "from(bucket: \"${config.databases.influx.bucket}\") |> range(start: -1d) |> filter(fn: (r) => r._measurement == \"$measurementName\")"

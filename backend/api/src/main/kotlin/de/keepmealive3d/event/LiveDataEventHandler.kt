@@ -19,7 +19,7 @@ class LiveDataEventHandler : EventHandler, KoinComponent {
                     // TODO: write actual data
                     database.write("mem", "test", 42.0)
 
-                    database.read("mem").consumeAsFlow().collect { println("${it.value}") }
+                    database.readAllMeasurements("mem").consumeAsFlow().collect { println("${it.value}") }
 
                 } catch (exception: Exception) {
                     println(exception)
