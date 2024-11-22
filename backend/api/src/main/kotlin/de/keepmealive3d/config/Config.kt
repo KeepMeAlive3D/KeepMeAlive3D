@@ -22,7 +22,7 @@ data class Config(
             val parser = Yaml(Yaml.default.serializersModule, yamlConfig)
             return try {
                 Result.success(parser.decodeFromString<Config>(file.readText()))
-            } catch (exception: SerializationException) {
+            } catch (exception: IllegalArgumentException) {
                 Result.failure(exception)
             }
         }
