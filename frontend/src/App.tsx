@@ -1,17 +1,17 @@
 //import {useState} from 'react'
 import './App.css'
-import AppCanvas from "./scene/Scene.tsx";
+import Edit from "@/scene/Edit.tsx";
 
 function App() {
     //const [count, setCount] = useState(0)
     return (
-        <div className={"main-body"}>
+        <div className={"main-body"} style={{display: "flex", flexDirection: "column", maxHeight: "100vh"}}>
             <header className={"top-app-bar"}>
                 <h3>KeepMeAlive3D</h3>
             </header>
             <main className={"main-content"}>
                 <nav>Nav</nav>
-                <AppCanvas></AppCanvas>
+                <Edit></Edit>
             </main>
             <footer className={"bottom-app-bar"}>Footer</footer>
         </div>

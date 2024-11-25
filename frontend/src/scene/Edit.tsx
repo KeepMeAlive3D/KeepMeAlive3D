@@ -10,6 +10,7 @@ import {
     MenubarMenu,
     MenubarTrigger,
 } from "@/components/ui/menubar"
+import {Button} from "@/components/ui/button.tsx";
 
 
 function Edit() {
@@ -32,7 +33,7 @@ function Edit() {
 
     const gltf = gltfUrl ? useGLTF(gltfUrl) : null;
 
-    return <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+    return <div style={{display: 'flex', flexDirection: 'column'}}>
         <div>
             <Input ref={fileInputRef} type="file" onChange={handleFileUpload} style={{display: "none"}}/>
         </div>
@@ -63,6 +64,10 @@ function Edit() {
                 </Canvas>
             </div>
         }
+        <div style={{marginLeft: "auto", padding: "10px"}}>
+            <Button style={{width: '100px'}}>Save</Button>
+        </div>
+
     </div>
 }
 
