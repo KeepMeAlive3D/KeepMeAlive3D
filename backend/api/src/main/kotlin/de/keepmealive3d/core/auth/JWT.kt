@@ -44,31 +44,6 @@ class JWT(val config: Config) {
         .withExpiresAt(Instant.now().plusSeconds(EXPIRY + 60 * 60 * 24 * 10L))
         .sign(jwtAlgorithm)
 
-    fun getTokenInfo(token: String): TokenInfo? {
-        try {
-            val decoded = JWT.decode(token)
-            return TokenInfo(
-                userId = decoded.getClaim(CLAIM_USERID).asInt(),
-                name = decoded.getClaim(CLAIM_USERNAME).asString(),
-                type = decoded.subject
-            )
-        } catch (e: JWTDecodeException) {
-            return null
-        }
-    }
-
-    fun isValid(token: String): Boolean {
-        val decoded = try {
-            JWT.decode(token)
-        } catch (e: JWTDecodeException) {
-            return false
-        }
-        if (decoded.expiresAtAsInstant.isBefore(Instant.now())) {
-            return false
-        }
-        return true
-    }
-
     fun expireDate(token: String): Result<Instant> {
         val decoded = try {
             JWT.decode(token)
@@ -107,10 +82,4 @@ class JWT(val config: Config) {
             }
         }
     }
-
-    inner class TokenInfo(
-        val userId: Int,
-        val name: String,
-        val type: String
-    )
 }
