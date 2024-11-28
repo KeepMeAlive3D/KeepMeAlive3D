@@ -1,6 +1,5 @@
 package de.keepmealive3d.adapters.influx
 
-import com.influxdb.client.domain.Query
 import com.influxdb.client.domain.WritePrecision
 import com.influxdb.client.kotlin.InfluxDBClientKotlin
 import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory

@@ -7,4 +7,18 @@ const service = axios.create({
     timeout: 5000,
 })
 
+service.interceptors.response.use((response) => response, (error) => {
+    if(error.response.status === 401) {
+        localStorage.removeItem("token")
+        localStorage.removeItem("refresh")
+        localStorage.removeItem("token_expire")
+
+        window.location.href = window.location.origin   //refresh window
+    }
+})
+
+export function setDefaultRequestToken(token: string) {
+    axios.defaults.headers.common = {'Authorization': `bearer ${token}`}
+}
+
 export default service

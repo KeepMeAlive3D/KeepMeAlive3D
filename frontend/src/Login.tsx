@@ -2,6 +2,7 @@ import {useState} from 'react'
 import App from "@/App.tsx";
 import {LoginForm} from "@/components/login-form.tsx";
 import {refreshToken} from "@/service/login.ts";
+import {setDefaultRequestToken} from "@/service/service.ts";
 
 function Login() {
     const [authenticated, login] = useState(false)
@@ -16,9 +17,11 @@ function Login() {
             localStorage.setItem("refresh", response.data.refreshToken)
             localStorage.setItem("token_expire", response.data.expiresIn.toString())
 
+            setDefaultRequestToken(response.data.token)
             login(true)
         })
     } else if(token !== null) {
+        setDefaultRequestToken(token)
         login(true)
     }
 

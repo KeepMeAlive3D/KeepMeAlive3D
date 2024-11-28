@@ -4,10 +4,10 @@ import de.keepmealive3d.adapters.influx.KmaInfluxDatabase
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class LiveDataEventHandler : EventHandler, KoinComponent {
-    private val database = KmaInfluxDatabase()
-
+    private val database: KmaInfluxDatabase by inject()
 
     suspend fun receive(topic: String, payload: String) = withContext(Dispatchers.IO) {
         try {

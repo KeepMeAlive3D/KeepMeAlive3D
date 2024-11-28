@@ -15,6 +15,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {useToast} from "@/hooks/use-toast.ts";
+import {setDefaultRequestToken} from "@/service/service.ts";
 
 export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [username, setUsername] = useState("")
@@ -27,6 +28,7 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
             localStorage.setItem("token", response.data.token)
             localStorage.setItem("refresh", response.data.refreshToken)
             localStorage.setItem("token_expire", response.data.expiresIn.toString())
+            setDefaultRequestToken(response.data.token)
             setAuth(true)
         }, err => {
             toast({
