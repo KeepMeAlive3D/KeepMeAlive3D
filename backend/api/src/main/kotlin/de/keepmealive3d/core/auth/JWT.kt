@@ -36,7 +36,7 @@ class JWT(val config: Config) {
         .withExpiresAt(Instant.now().plusSeconds(EXPIRY))
         .sign(jwtAlgorithm)
 
-    fun generateRefreshToken(userId: Int, userName: String) = JWT.create()
+    fun generateRefreshToken(userId: Int, userName: String): String = JWT.create()
         .withSubject("Refresh")
         .withIssuer(jwtIssuer)
         .withClaim(CLAIM_USERID, userId)
