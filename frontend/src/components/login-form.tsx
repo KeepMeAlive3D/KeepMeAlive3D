@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import {loginBasic} from "@/service/login.ts";
 import {Form} from "@/components/ui/form.tsx";
 import {zodResolver} from "@hookform/resolvers/zod"
@@ -21,9 +21,12 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
     const [password, setPassword] = useState("")
     const { toast } = useToast()
 
-    function handleBasicLogin() {
-        console.debug("hello1")
-        loginBasic(username, password).then(() => {
+    function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+        loginBasic(username, password).then((response) => {
+            localStorage.setItem("token", response.data.token)
+            localStorage.setItem("refresh", response.data.refreshToken)
+            localStorage.setItem("token_expire", response.data.expiresIn.toString())
             setAuth(true)
         }, err => {
             toast({
@@ -31,6 +34,7 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request."
             })
+            console.debug(err)
             console.error(err)
         })
     }
@@ -57,7 +61,7 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
             <CardContent>
                 <Form {...form}>
 
-                    <form onSubmit={() => handleBasicLogin()}>
+                    <form onSubmit={(event) => handleBasicLogin(event)}>
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="username">Username</Label>
@@ -73,9 +77,6 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    <button href="#" className="ml-auto inline-block text-sm underline">
-                                        Forgot your password?
-                                    </button>
                                 </div>
                                 <Input
                                     id="password"
@@ -86,7 +87,7 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full" onSubmit={() => handleBasicLogin()}>
+                            <Button type="submit" className="w-full">
                                 Login
                             </Button>
                             <Button variant="outline" className="w-full">
@@ -96,9 +97,6 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                     </form>
                     <div className="mt-4 text-center text-sm">
                         Don&apos;t have an account?{" "}
-                        <button href="#" className="underline">
-                            Sign up
-                        </button>
                     </div>
                 </Form>
             </CardContent>

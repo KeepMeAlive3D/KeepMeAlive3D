@@ -4,8 +4,6 @@ import de.keepmealive3d.adapters.auth.AuthController
 import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.auth.UserController
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.TestUser
-import de.keepmealive3d.core.auth.Basic
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
 import de.keepmealive3d.plugins.*
@@ -18,6 +16,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.dsl.module
 import java.io.File
+import kotlin.system.exitProcess
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::appModule)
@@ -50,11 +49,9 @@ fun Application.appModule() {
 
     install(Authentication) {
         OAuth(this)
-        Basic(this)
         jwt.configureJwt(this)
     }
 
-    TestUser(this)
     RegisterController(this)
     AuthController(this)
     UserController(this)

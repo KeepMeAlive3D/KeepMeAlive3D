@@ -1,11 +1,13 @@
 package de.keepmealive3d.adapters.auth
 
 import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
+import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.KmaUserPrincipal
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
@@ -23,6 +25,7 @@ class AuthController(application: Application) : KoinComponent {
     )
 
     val jwt: JWT by inject()
+    val database: KmaSqlDatabase by inject()
 
     init {
         application.routing {
@@ -40,19 +43,17 @@ class AuthController(application: Application) : KoinComponent {
                     call.respond(HttpStatusCode.OK, AuthResponse(token, refresh, tokenExpire.getOrNull()))
                 }
             }
-            authenticate("basic") {
-                post("/api/login/basic") {
-                    //automatic check by Basic Auth Plugin
-                    val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Could not Authenticate!")
-                        return@post
-                    }
-                    val token = jwt.generateToken(user.userId, user.userName)
-                    val tokenExpire = jwt.expireDate(token)
-                    val refresh = jwt.generateRefreshToken(user.userId, user.userName)
-                    call.respond(HttpStatusCode.OK, AuthResponse(token, refresh, tokenExpire.getOrNull()))
+            post("/api/login/basic") {
+                val body = call.receive<BasicAuthRequest>()
+                val dbUser = database.getUser(body.username)
+                if(dbUser == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Could not Authenticate!")
+                    return@post
                 }
+                val token = jwt.generateToken(dbUser.userid, dbUser.name)
+                val tokenExpire = jwt.expireDate(token)
+                val refresh = jwt.generateRefreshToken(dbUser.userid, dbUser.name)
+                call.respond(HttpStatusCode.OK, AuthResponse(token, refresh, tokenExpire.getOrNull()))
             }
             authenticate("jwt") {
                 post("/api/login/refresh") {
@@ -70,3 +71,9 @@ class AuthController(application: Application) : KoinComponent {
         }
     }
 }
+
+@Serializable
+data class BasicAuthRequest(
+    val username: String,
+    val password: String
+)
