@@ -3,7 +3,7 @@ package de.keepmealive3d.scriptingapi
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.event.LiveDataEventHandler
+import de.keepmealive3d.core.event.LiveDataEventHandler
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers

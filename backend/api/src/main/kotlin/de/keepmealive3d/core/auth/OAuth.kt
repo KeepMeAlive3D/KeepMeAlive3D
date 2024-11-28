@@ -6,17 +6,18 @@ import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.OAuthServerSettings
 import io.ktor.server.auth.oauth
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class OAuth(application: Application): KoinComponent {
+class OAuth(authConf: AuthenticationConfig): KoinComponent {
     val config: Config by inject()
-
+    //not used!
     init {
         val redirects = mutableMapOf<String, String>()
-        application.install(Authentication) {
+        authConf.apply {
             oauth("oauth") {
                 // Configure oauth authentication
                 urlProvider = { "http://localhost:8080/callback" }
