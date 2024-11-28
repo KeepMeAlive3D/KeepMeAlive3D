@@ -32,7 +32,17 @@ function Edit() {
         }
     };
 
+
     const gltf = gltfUrl ? useGLTF(gltfUrl) : null;
+
+    if (gltf) {
+        gltf.scene.traverse((node) => {
+            if (node.isLight) {
+                node.intensity *= 0.25; // Scale down light intensity
+            }
+        });
+
+    }
 
     return <div className="edit-content flex flex-col h-screen">
         <div>
@@ -54,9 +64,7 @@ function Edit() {
             <div className="canvas-content flex-grow">
                 <Canvas>
                     <Suspense fallback={null}>
-                        <ambientLight color={"white"} intensity={1}></ambientLight>
-                        <primitive scale={[0.01, 0.01, 0.01]} object={gltf.scene}/>
-                        ;
+                        <primitive scale={[1, 1, 1]} object={gltf.scene}/>
                         <OrbitControls/>
 
                         <Grid cellSize={2} cellColor={"teal"} sectionColor={"darkgray"} sectionSize={2}
