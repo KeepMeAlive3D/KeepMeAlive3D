@@ -63,4 +63,6 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
 
     implementation("at.favre.lib:bcrypt:0.10.2")
+
+    implementation("com.influxdb:influxdb-client-kotlin:6.6.0")
 }
