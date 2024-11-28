@@ -43,7 +43,3 @@ fun Application.configureRouting() {
         }
     }
 }
-
-@Serializable
-@Resource("/articles")
-class Articles(val sort: String? = "new")

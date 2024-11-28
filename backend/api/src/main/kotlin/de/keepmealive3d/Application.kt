@@ -26,6 +26,7 @@ fun main() {
 fun Application.appModule() {
     val conf = Config.load(File("config.yml")).getOrElse {
         log.error("couldn't load config.yml")
+        log.error(it.message)
         return
     }
     val jwt = JWT(conf)

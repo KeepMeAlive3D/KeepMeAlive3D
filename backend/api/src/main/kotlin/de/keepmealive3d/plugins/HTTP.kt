@@ -15,8 +15,8 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Post)
+        allowHeader("content-type")
         allowHeader("MyCustomHeader")
-        //allowHeader("Access-Control-Allow-Origin")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 }

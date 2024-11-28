@@ -24,6 +24,12 @@ class AuthController(application: Application) : KoinComponent {
         val expiresIn: Instant? = null,
     )
 
+    @Serializable
+    data class BasicAuthRequest(
+        val username: String,
+        val password: String
+    )
+
     val jwt: JWT by inject()
     val database: KmaSqlDatabase by inject()
 
@@ -46,7 +52,7 @@ class AuthController(application: Application) : KoinComponent {
             post("/api/login/basic") {
                 val body = call.receive<BasicAuthRequest>()
                 val dbUser = database.getUser(body.username)
-                if(dbUser == null) {
+                if (dbUser == null) {
                     call.respond(HttpStatusCode.BadRequest, "Could not Authenticate!")
                     return@post
                 }
@@ -72,8 +78,3 @@ class AuthController(application: Application) : KoinComponent {
     }
 }
 
-@Serializable
-data class BasicAuthRequest(
-    val username: String,
-    val password: String
-)
