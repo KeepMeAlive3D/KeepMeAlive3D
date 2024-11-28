@@ -19,7 +19,7 @@ class JWT(val config: Config) {
     }
 
     private val jwtAlgorithm = Algorithm.HMAC512(config.passphrase)
-    private val jwtVerifier: JWTVerifier = com.auth0.jwt.JWT
+    private val jwtVerifier: JWTVerifier = JWT
         .require(jwtAlgorithm)
         .withIssuer(jwtIssuer)
         .build()
@@ -60,18 +60,14 @@ class JWT(val config: Config) {
                 verifier(jwtVerifier)
                 realm = jwtRealm
                 validate {
-                    println("Jwt auth called!")
                     val userId = it.payload.getClaim(CLAIM_USERID).asInt()
                     val userName = it.payload.getClaim(CLAIM_USERNAME).asString()
                     if (!it.payload.expiresAtAsInstant.isAfter(Instant.now()))
                         return@validate null
-                    println("pass 1")
                     if (userName == null)
                         return@validate null
-                    println("pass 2")
                     if (userId == null)
                         return@validate null
-                    println("pass 3")
 
                     val type =
                         if (it.payload.subject == "Authentication") KmaUserPrincipalType.JWT_TOKEN
