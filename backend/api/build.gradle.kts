@@ -58,4 +58,6 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:4.0.0")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
     implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
+
+    implementation("com.influxdb:influxdb-client-kotlin:6.6.0")
 }
