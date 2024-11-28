@@ -33,7 +33,7 @@ function Edit() {
 
     const gltf = gltfUrl ? useGLTF(gltfUrl) : null;
 
-    return <div style={{display: 'flex', flexDirection: 'column'}}>
+    return <div className="edit-content flex flex-col h-screen">
         <div>
             <Input ref={fileInputRef} type="file" onChange={handleFileUpload} style={{display: "none"}}/>
         </div>
@@ -50,7 +50,7 @@ function Edit() {
             </MenubarMenu>
         </Menubar>
         {gltf &&
-            <div style={{flex: 1}}>
+            <div className="canvas-content flex-grow">
                 <Canvas>
                     <Suspense fallback={null}>
                         <ambientLight color={"white"} intensity={1}></ambientLight>
@@ -64,8 +64,8 @@ function Edit() {
                 </Canvas>
             </div>
         }
-        <div style={{marginLeft: "auto", padding: "10px"}}>
-            <Button style={{width: '100px'}}>Save</Button>
+        <div className={"footer-content ml-auto p-2"}>
+            <Button className={"footer-button w-28"}>Save</Button>
         </div>
 
     </div>
