@@ -1,5 +1,5 @@
 import {Canvas} from "@react-three/fiber";
-import {Suspense, useRef, useState} from "react";
+import {startTransition, Suspense, useRef, useState} from "react";
 import {Grid, OrbitControls, useGLTF} from "@react-three/drei";
 import {Vector3} from "three";
 import {Input} from "@/components/ui/input"
@@ -19,14 +19,15 @@ function Edit() {
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const result = e.target?.result as string;
-                console.log(result);
-                setGltfUrl(result);
-            };
-            reader.readAsDataURL(file);
+            // Create an object URL from the file
+            const objectUrl = URL.createObjectURL(file);
+            console.log("Generated Object URL:", objectUrl);
+
+            startTransition(() => {
+                setGltfUrl(objectUrl);
+            });
             //TODO: upload to server
         }
     };
