@@ -18,6 +18,7 @@ data class Config(
             val yamlConfig = Yaml.default.configuration.copy(
                 polymorphismStyle = PolymorphismStyle.Property,
                 polymorphismPropertyName = "type",
+                strictMode = false
             )
             val parser = Yaml(Yaml.default.serializersModule, yamlConfig)
             return try {
