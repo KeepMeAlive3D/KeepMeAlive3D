@@ -3,6 +3,7 @@ package de.keepmealive3d
 import de.keepmealive3d.adapters.auth.AuthController
 import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.auth.UserController
+import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.adapters.model.UploadController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
@@ -58,4 +59,5 @@ fun Application.appModule() {
     AuthController(this)
     UserController(this)
     UploadController(this)
+    ModelDownloadController(this)
 }

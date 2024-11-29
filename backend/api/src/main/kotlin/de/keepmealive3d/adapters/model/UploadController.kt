@@ -15,12 +15,12 @@ import org.koin.core.component.inject
 import java.util.*
 
 class UploadController(application: Application) : KoinComponent {
-    val modelRepository: ModelRepository by inject()
+    private val modelRepository: ModelRepository by inject()
 
     init {
         application.routing {
             authenticate("jwt") {
-                post("/api/upload") {
+                post("/api/model/{filename}") {
                     val user = call.principal<KmaUserPrincipal>()
                     val filename = call.parameters["filename"] ?: UUID.randomUUID().toString()
                     if (user == null) {
