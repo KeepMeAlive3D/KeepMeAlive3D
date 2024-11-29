@@ -64,5 +64,5 @@ dependencies {
 
     implementation("at.favre.lib:bcrypt:0.10.2")
 
-    implementation("com.influxdb:influxdb-client-kotlin:6.6.0")
+    implementation("com.influxdb:influxdb-client-kotlin:7.2.0")
 }
