@@ -14,6 +14,7 @@ databases:
     host: 'xxx'
     port: 1883
     clientId: 'xxx'
+    password: 'xxx'
     topic: 'xxx'
   influx:
     host: 'xxx'

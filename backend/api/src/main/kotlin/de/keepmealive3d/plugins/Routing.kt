@@ -11,6 +11,7 @@ import io.ktor.server.resources.Resources
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import java.io.File
 
 fun Application.configureRouting() {
     install(SwaggerUI) {
@@ -32,10 +33,7 @@ fun Application.configureRouting() {
         get("/hello") {
             call.respondText("Hello World!")
         }
-        get<Articles> { article ->
-            // Get all articles ...
-            call.respond("List of articles sorted starting from ${article.sort}")
-        }
+        staticFiles("/", File("dist"), "index.html")
         staticResources("/static", "static")
         route("api.json") {
             openApiSpec()
@@ -45,7 +43,3 @@ fun Application.configureRouting() {
         }
     }
 }
-
-@Serializable
-@Resource("/articles")
-class Articles(val sort: String? = "new")
