@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: migrate
-        run: mysql -u"root" -p"test" -h"localhost:3306" < ./run/db-migration.sql
+        run: mysql -u"root" -p"test" -h"mysql" --port=3306 < ./run/db-migration.sql
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
