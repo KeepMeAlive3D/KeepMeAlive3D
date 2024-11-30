@@ -30,8 +30,8 @@ fun Application.configureRouting() {
     }
     install(Resources)
     routing {
-        get("/hello") {
-            call.respondText("Hello World!")
+        get("/status") {
+            call.respondText("Up!")
         }
         staticFiles("/", File("dist"), "index.html")
         staticResources("/static", "static")

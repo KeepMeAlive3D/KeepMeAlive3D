@@ -1,21 +1,21 @@
-passphrase: 'xxx'
+passphrase: 'test'
 databases:
   sql:
-    host: 'xxx'
+    host: 'localhost'
     port: 3306
-    schema: 'xxx'
-    user: 'xxx'
-    password: 'xxx'
+    schema: 'kma'
+    user: 'root'
+    password: 'test'
   kafka:
     host: 'xxx'
     port: 8083
     password: 'xxx'
   mqtt:
-    host: 'xxx'
+    host: '127.0.0.1'
     port: 1883
-    clientId: 'xxx'
-    password: 'xxx'
-    topic: 'xxx'
+    clientId: 'kma'
+    password: 'test'
+    topic: 'test'
   influx:
     host: 'xxx'
     port: 8086

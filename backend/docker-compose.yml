@@ -1,0 +1,28 @@
+services:
+    mysql:
+        container_name: mysql
+        image: mysql:9
+        ports:
+            - '3306:3306'
+        environment:
+            - MYSQL_USER=kma
+            - MYSQL_PASSWORD=test
+            - MYSQL_ROOT_PASSWORD=test
+    mqtt:
+        container_name: mqtt
+        image: eclipse-mosquitto:latest
+        ports:
+            - "1883:1883"
+            - "9001:9001"
+        volumes:
+            - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            - ./mqtt/mosquitto:/etc/mosquitto
+    migrate:
+        container_name: migration
+        image: mysql:9
+        links:
+            - mysql
+        restart: no
+        volumes:
+            - ./run/db-migration.sql:/app/db-migration.sql
+        entrypoint: ["bash", "-c", "sleep 10 && mysql -u\"root\" -p\"test\" -h\"mysql\" < /app/db-migration.sql"]

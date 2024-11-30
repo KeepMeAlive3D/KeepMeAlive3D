@@ -14,8 +14,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class RegisterController(application: Application): KoinComponent {
-    val kmaDatabase: KmaSqlDatabase by inject()
-    val encryptionService: EncryptionService by inject()
+    private val kmaDatabase: KmaSqlDatabase by inject()
+    private val encryptionService: EncryptionService by inject()
 
     init {
         application.routing {
@@ -27,7 +27,7 @@ class RegisterController(application: Application): KoinComponent {
                     return@post
                 }
                 kmaDatabase.insertUser(body.username, pw, LoginType.BASIC)
-                call.respond(HttpStatusCode.OK)
+                call.respond(HttpStatusCode.Created)
             }
         }
     }
