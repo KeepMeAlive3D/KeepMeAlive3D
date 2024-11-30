@@ -48,7 +48,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("io.ktor:ktor-server-auth-jwt")
 
-    implementation("com.charleskorn.kaml:kaml:0.65.0")
+    implementation("com.charleskorn.kaml:kaml:0.66.0")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 
     //db
