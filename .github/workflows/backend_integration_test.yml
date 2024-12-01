@@ -17,15 +17,6 @@ jobs:
           --health-start-period 10s
           --health-timeout 5s
           --health-retries 10
-      mqtt:
-        image: eclipse-mosquitto:latest
-        ports:
-          - "1883:1883"
-          - "9001:9001"
-        volumes:
-          - ./backend/mqtt:/mosquitto/config
-          - ./backend/mqtt/mosquitto:/etc/mosquitto
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,8 +27,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: migrate
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
-#      - name: copy mqtt config
-#        run: docker cp ./mqtt/mosquitto.conf mqtt:/mosquitto/config/mosquitto.conf && docker cp ./mqtt/mosquitto mosquitto:/etc/mosquitto
+      - name: start mqtt
+        run: |
+              docker run\
+                --detach\
+                --name mqtt\
+                --volume ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro\
+                --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
+                eclipse-mosquitto:latest
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
