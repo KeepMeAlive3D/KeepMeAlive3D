@@ -22,9 +22,14 @@ jobs:
         ports:
           - "1883:1883"
           - "9001:9001"
-        volumes:
-          - ./backend/mqtt:/mosquitto/config
-          - ./backend/mqtt/mosquitto:/etc/mosquitto
+        #volumes:
+        #  - ./backend/mqtt:/mosquitto/config
+        #  - ./backend/mqtt/mosquitto:/etc/mosquitto
+        options: >
+          --health-cmd "curl --silent --fail http://localhost:1883 || exit 1"
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 5
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,6 +40,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: migrate
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
+      - name: copy mqtt config
+        run: docker cp ./backend/mqtt/mosquitto.conf mqtt:/mosquitto/config/mosquitto.conf && docker cp ./backend/mqtt/mosquitto mosquitto:/etc/mosquitto
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
