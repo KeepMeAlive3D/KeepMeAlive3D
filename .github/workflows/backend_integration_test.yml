@@ -25,12 +25,7 @@ jobs:
         volumes:
           - ./backend/mqtt:/mosquitto/config
           - ./backend/mqtt/mosquitto:/etc/mosquitto
-        options: >-
-          --health-cmd "mosquitto_pub -h localhost -p 1883 -t test -m 'health check' || exit 1"
-          --health-interval 10s
-          --health-start-period 10s
-          --health-timeout 5s
-          --health-retries 10
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
