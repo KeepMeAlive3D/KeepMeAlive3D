@@ -26,7 +26,7 @@ jobs:
         #  - ./backend/mqtt:/mosquitto/config
         #  - ./backend/mqtt/mosquitto:/etc/mosquitto
         options: >-
-          --health-cmd "curl --silent --fail http://localhost:1883 || exit 1"
+          --health-cmd "curl --silent --fail mqtt://localhost:1883 || exit 1"
           --health-interval 10s
           --health-start-period 10s
           --health-timeout 5s
