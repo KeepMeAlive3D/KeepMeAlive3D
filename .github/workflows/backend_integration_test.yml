@@ -32,6 +32,7 @@ jobs:
               docker run\
                 --detach\
                 --name mqtt\
+                --p 1883:1883
                 --volume ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro\
                 --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
                 eclipse-mosquitto:latest
