@@ -37,7 +37,7 @@ jobs:
                 --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
                 eclipse-mosquitto:latest
       - name: mqtt healthcheck
-        run: sleep 10 && curl --fail mqtt://127.0.0.1:1883/test -d helthcheck || exit 1
+        run: sleep 15 && curl --fail mqtt://localhost:1883/test -d helthcheck || exit 1
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
