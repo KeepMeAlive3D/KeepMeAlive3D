@@ -38,10 +38,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: migrate
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
-      - name: mqtt setup
-        run: |
-          docker exec mqtt sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
-          docker exec mqtt sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
       #      - name: start mqtt
 #        uses: namoshek/mosquitto-github-action@v1
 #        with:
@@ -67,6 +63,10 @@ jobs:
           nc -zv 127.0.0.1 1883
           sudo apt-get update && sudo apt-get install -y mosquitto-clients
           mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
+      - name: mqtt setup
+        run: |
+          docker exec mqtt sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
+          docker exec mqtt sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
