@@ -47,4 +47,12 @@ class ModelRepository {
             .map { file -> file.name }
             .toSet()
     }
+
+    /**
+     * deletes a file for a user
+     * @return true if the file was deleted, false if no file was found or there where fs problems
+     */
+    fun deleteFile(userid: Int, fileName: String): Boolean {
+        return getModel(userid, fileName)?.toFile()?.delete() == true
+    }
 }
