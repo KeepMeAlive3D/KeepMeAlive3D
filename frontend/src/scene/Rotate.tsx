@@ -1,13 +1,14 @@
 import {useRef} from "react";
-import {useFrame} from "@react-three/fiber";
+import {useFrame, useThree} from "@react-three/fiber";
 import {Light, Object3D} from "three";
-import {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
 
 
-function Rotate({gltf}: { gltf: GLTF }) {
+function Rotate() {
     const sel = useRef<Object3D | null>(null);
+    const state = useThree();
 
-    gltf.scene.traverse((node: Object3D) => {
+
+    state.scene.traverse((node: Object3D) => {
         if (node instanceof Light) {
             node.intensity *= 0.25; // Scale down light intensity
         }

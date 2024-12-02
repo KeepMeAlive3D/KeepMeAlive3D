@@ -26,7 +26,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                 <primitive scale={[1, 1, 1]} object={gltf.scene}/>
 
                 <OrbitControls/>
-                <Rotate gltf={gltf}/>
+                <Rotate/>
                 <ClickObjects></ClickObjects>
                 <Grid cellSize={2} cellColor={"teal"} sectionColor={"darkgray"} sectionSize={2}
                       position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
