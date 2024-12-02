@@ -58,11 +58,11 @@ jobs:
 #                eclipse-mosquitto:latest
       - name: mqtt setup
         run: |
+          sleep 10
           docker exec ${{job.services.mqtt.id}} sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
           docker exec ${{job.services.mqtt.id}} sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
       - name: mqtt healthcheck
         run: |
-          sleep 10
           docker ps
           nc -zv 127.0.0.1 1883
           sudo apt-get update && sudo apt-get install -y mosquitto-clients
