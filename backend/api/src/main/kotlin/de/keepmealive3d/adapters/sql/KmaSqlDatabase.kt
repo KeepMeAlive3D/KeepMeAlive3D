@@ -7,6 +7,7 @@ import de.keepmealive3d.core.user.LoginType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
+import org.ktorm.dsl.delete
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.entity.find
@@ -32,11 +33,16 @@ class KmaSqlDatabase : KoinComponent {
         return database.sequenceOf(DBUserTable).find { table -> table.name eq username }
     }
 
+    fun deleteUser(userid: Int): Int = database.delete(DBUserTable) {
+        it.id eq userid
+    }
+
+
     fun insertUser(name: String, encryptedPassword: ByteArray, loginType: LoginType) {
-         database.insert(DBUserTable) {
-             set(it.name, name)
-             set(it.password, encryptedPassword)
-             set(it.loginType, loginType)
-         }
+        database.insert(DBUserTable) {
+            set(it.name, name)
+            set(it.password, encryptedPassword)
+            set(it.loginType, loginType)
+        }
     }
 }

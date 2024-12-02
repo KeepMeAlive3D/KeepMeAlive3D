@@ -25,4 +25,4 @@ services:
         restart: no
         volumes:
             - ./run/db-migration.sql:/app/db-migration.sql
-        entrypoint: ["bash", "-c", "sleep 10 && mysql -u\"root\" -p\"test\" -h\"mysql\" < /app/db-migration.sql"]
+        entrypoint: ["bash", "-c", "sleep 20 && mysql -u\"root\" -p\"test\" -h\"mysql\" < /app/db-migration.sql"]
