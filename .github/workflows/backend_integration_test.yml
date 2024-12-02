@@ -40,6 +40,7 @@ jobs:
       - name: mqtt healthcheck
         run: |
           sleep 10
+          docker ps
           nc -zv 127.0.0.1 1883
           sudo apt-get update && sudo apt-get install -y mosquitto-clients
           mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
