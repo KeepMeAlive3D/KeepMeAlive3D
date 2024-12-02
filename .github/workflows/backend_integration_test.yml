@@ -33,7 +33,7 @@ jobs:
                 --detach\
                 --name mqtt\
                 --publish 1883:1883\
-                --network job.container.network\
+                --network ${{job.container.network}}\
                 --volume ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro\
                 --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
                 eclipse-mosquitto:latest
