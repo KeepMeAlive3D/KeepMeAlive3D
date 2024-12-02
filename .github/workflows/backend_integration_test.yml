@@ -28,22 +28,30 @@ jobs:
       - name: migrate
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
       - name: start mqtt
-        run: |
-              docker run\
-                --detach\
-                --name mqtt\
-                --publish 1883:1883\
-                --network ${{job.container.network}}\
-                --volume ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro\
-                --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
-                eclipse-mosquitto:latest
-      - name: mqtt healthcheck
-        run: |
-          sleep 10
-          docker ps
-          nc -zv 127.0.0.1 1883
-          sudo apt-get update && sudo apt-get install -y mosquitto-clients
-          mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
+        uses: namoshek/mosquitto-github-action@v1
+        with:
+          version: 'latest'
+          ports: '1883:1883 8883:8883'
+          config: ./mqtt/mosquitto.conf
+          password-file: ./mqtt/mosquitto/passwd
+          container-name: 'mqtt'
+#      - name: start mqtt
+#        run: |
+#              docker run\
+#                --detach\
+#                --name mqtt\
+#                --publish 1883:1883\
+#                --network ${{job.container.network}}\
+#                --volume ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro\
+#                --volume ./mqtt/mosquitto/passwd:/mosquitto/config/mosquitto.passwd:ro\
+#                eclipse-mosquitto:latest
+#      - name: mqtt healthcheck
+#        run: |
+#          sleep 10
+#          docker ps
+#          nc -zv 127.0.0.1 1883
+#          sudo apt-get update && sudo apt-get install -y mosquitto-clients
+#          mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
