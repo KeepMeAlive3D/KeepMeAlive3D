@@ -22,9 +22,6 @@ jobs:
         ports:
           - "1883:1883"
           - "9001:9001"
-        volumes:
-          - ./backend/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-          - ./backend/mqtt/mosquitto/passwd:/etc/mosquitto/passwd:ro
         options: >-
           --health-cmd "mosquitto_pub -h localhost -p 1883 -t test -m 'health check' || exit 1"
           --health-interval 10s
@@ -41,7 +38,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: migrate
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
-#      - name: start mqtt
+      - name: mqtt setup
+        run: |
+          docker exec mqtt sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
+          docker exec mqtt sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
+      #      - name: start mqtt
 #        uses: namoshek/mosquitto-github-action@v1
 #        with:
 #          version: 'latest'
