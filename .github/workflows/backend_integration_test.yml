@@ -23,8 +23,8 @@ jobs:
           - "1883:1883"
           - "9001:9001"
         volumes:
-          - ./backend/mqtt:/mosquitto/config
-          - ./backend/mqtt/mosquitto:/etc/mosquitto
+          - ./backend/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+          - ./backend/mqtt/mosquitto/passwd:/etc/mosquitto/passwd:ro
         options: >-
           --health-cmd "mosquitto_pub -h localhost -p 1883 -t test -m 'health check' || exit 1"
           --health-interval 10s
