@@ -1,7 +1,4 @@
-import {Canvas} from "@react-three/fiber";
-import {startTransition, Suspense, useRef, useState} from "react";
-import {Grid, OrbitControls, useGLTF} from "@react-three/drei";
-import {Vector3} from "three";
+import React, {startTransition, useRef, useState} from "react";
 import {Input} from "@/components/ui/input"
 import {
     Menubar,
@@ -11,10 +8,14 @@ import {
     MenubarTrigger,
 } from "@/components/ui/menubar"
 import {Button} from "@/components/ui/button.tsx";
+import DynamicModel from "@/scene/DynamicModel.tsx";
+
+
+
 
 
 function Edit() {
-    const fileInputRef = useRef();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [gltfUrl, setGltfUrl] = useState<string | null>(null);
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,17 +34,6 @@ function Edit() {
     };
 
 
-    const gltf = gltfUrl ? useGLTF(gltfUrl) : null;
-
-    if (gltf) {
-        gltf.scene.traverse((node) => {
-            if (node.isLight) {
-                node.intensity *= 0.25; // Scale down light intensity
-            }
-        });
-
-    }
-
     return <div className="edit-content flex flex-col h-screen">
         <div>
             <Input ref={fileInputRef} type="file" onChange={handleFileUpload} style={{display: "none"}}/>
@@ -53,25 +43,17 @@ function Edit() {
                 <MenubarTrigger>File</MenubarTrigger>
                 <MenubarContent>
                     <MenubarItem onClick={() => {
-                        fileInputRef.current.click()
+                        if (fileInputRef.current) {
+                            fileInputRef.current.click()
+                        }
                     }}>
                         Import
                     </MenubarItem>
                 </MenubarContent>
             </MenubarMenu>
         </Menubar>
-        {gltf &&
-            <div className="canvas-content flex-grow">
-                <Canvas>
-                    <Suspense fallback={null}>
-                        <primitive scale={[1, 1, 1]} object={gltf.scene}/>
-                        <OrbitControls/>
-
-                        <Grid cellSize={2} cellColor={"teal"} sectionColor={"darkgray"} sectionSize={2}
-                              position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
-                    </Suspense>
-                </Canvas>
-            </div>
+        {gltfUrl &&
+            <DynamicModel objectUrl={gltfUrl}/>
         }
         <div className={"footer-content ml-auto p-2"}>
             <Button className={"footer-button w-28"}>Save</Button>
