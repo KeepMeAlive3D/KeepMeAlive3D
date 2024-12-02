@@ -33,8 +33,7 @@ fun Application.configureRouting() {
         get("/status") {
             call.respondText("Up!")
         }
-        staticFiles("/", File("dist"), "index.html")
-        staticResources("/static", "static")
+        staticResources("/", "static")
         route("api.json") {
             openApiSpec()
         }
