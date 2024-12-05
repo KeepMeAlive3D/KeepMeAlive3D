@@ -18,13 +18,13 @@ class ModelDeleteController(application: Application): KoinComponent {
             authenticate("jwt") {
                 delete("/api/model/{filename}") {
                     val user = call.principal<KmaUserPrincipal>()
+                    if (user == null) {
+                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
+                        return@delete
+                    }
                     val filename = call.parameters["filename"]
                     if(filename == null) {
                         call.respond(HttpStatusCode.BadRequest, "No file specified!")
-                        return@delete
-                    }
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
                         return@delete
                     }
 

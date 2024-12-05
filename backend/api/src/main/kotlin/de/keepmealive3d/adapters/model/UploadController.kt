@@ -22,11 +22,11 @@ class UploadController(application: Application) : KoinComponent {
             authenticate("jwt") {
                 post("/api/model/{filename}") {
                     val user = call.principal<KmaUserPrincipal>()
-                    val filename = call.parameters["filename"] ?: UUID.randomUUID().toString()
                     if (user == null) {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
                         return@post
                     }
+                    val filename = call.parameters["filename"] ?: UUID.randomUUID().toString()
 
                     val path = modelRepository.saveFile(user.userId, filename)
                     call.receiveChannel().copyAndClose(path.toFile().writeChannel())
