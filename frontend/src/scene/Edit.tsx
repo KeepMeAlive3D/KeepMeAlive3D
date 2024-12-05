@@ -34,7 +34,7 @@ function Edit() {
     };
 
 
-    return <div className="edit-content flex flex-col h-screen">
+    return <div className="edit-content flex flex-col h-auto">
         <div>
             <Input ref={fileInputRef} type="file" onChange={handleFileUpload} style={{display: "none"}}/>
         </div>
@@ -52,14 +52,20 @@ function Edit() {
                 </MenubarContent>
             </MenubarMenu>
         </Menubar>
-        {gltfUrl &&
-            <DynamicModel objectUrl={gltfUrl}/>
-        }
+
+        <div className="canvas-content flex-grow">
+            {gltfUrl &&
+                <DynamicModel objectUrl={gltfUrl}/>
+            }
+        </div>
+
+
         <div className={"footer-content ml-auto p-2"}>
             <Button className={"footer-button w-28"}>Save</Button>
         </div>
 
     </div>
 }
+
 
 export default Edit

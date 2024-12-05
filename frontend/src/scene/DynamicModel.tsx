@@ -20,8 +20,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
         }
     });
 
-    return <div className="canvas-content flex-grow">
-        <Canvas id="canvas">
+    return <Canvas id="canvas">
             <Suspense fallback={null}>
                 <primitive scale={[1, 1, 1]} object={gltf.scene}/>
 
@@ -32,7 +31,6 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                       position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
             </Suspense>
         </Canvas>
-    </div>
 }
 
 
