@@ -20,3 +20,10 @@ Run-configs are provided for Intelij, run `ApplicationKt` to start the backend a
 ## Credits
 
 Icon https://www.flaticon.com/free-icon/robot-arm_936827?related_id=936827&origin=search
+
+## Dev Ops Notes
+
+### Mqtt set password for passwd file
+
+- set [user]:[password]
+- run when docker is running `sudo docker exec mqtt mosquitto_passwd -U /etc/mosquitto/passwd`

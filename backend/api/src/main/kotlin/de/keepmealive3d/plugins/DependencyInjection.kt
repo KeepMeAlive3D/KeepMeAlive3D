@@ -3,6 +3,7 @@ package de.keepmealive3d.plugins
 import de.keepmealive3d.adapters.influx.KmaInfluxDatabase
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.encryption.EncryptionService
+import de.keepmealive3d.core.model.ModelRepository
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -18,6 +19,7 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single { KmaSqlDatabase() }
                 single { EncryptionService() }
                 single { KmaInfluxDatabase() }
+                single { ModelRepository() }
             })
     }
 }

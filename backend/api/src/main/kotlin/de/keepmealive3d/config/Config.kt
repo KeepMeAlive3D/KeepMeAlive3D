@@ -3,9 +3,9 @@ package de.keepmealive3d.config
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import java.io.File
+import kotlin.io.path.Path
 
 @Serializable
 data class Config(
@@ -15,17 +15,29 @@ data class Config(
 ) {
     companion object {
         fun load(file: File): Result<Config> {
+            val path = Thread.currentThread().contextClassLoader?.getResource("config.yml")?.path
+            val content: String = if (file.exists()) {
+                file.readText()
+            } else if (path != null && Path(path).toFile().exists()) {
+                Path(path).toFile().readText()
+            } else {
+                readFromEnv() ?: return Result.failure(Exception("Config not found!"))
+            }
+
             val yamlConfig = Yaml.default.configuration.copy(
                 polymorphismStyle = PolymorphismStyle.Property,
                 polymorphismPropertyName = "type",
+                strictMode = false
             )
             val parser = Yaml(Yaml.default.serializersModule, yamlConfig)
             return try {
-                Result.success(parser.decodeFromString<Config>(file.readText()))
+                Result.success(parser.decodeFromString<Config>(content))
             } catch (exception: IllegalArgumentException) {
                 Result.failure(exception)
             }
         }
+
+        private fun readFromEnv(): String? = System.getenv("config")
     }
 }
 

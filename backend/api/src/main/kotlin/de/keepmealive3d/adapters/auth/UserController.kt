@@ -9,6 +9,7 @@ import io.ktor.server.application.log
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
@@ -40,6 +41,19 @@ class UserController(application: Application): KoinComponent {
                         return@get
                     }
                     call.respond(UserInfo(user.userName, dbUser.loginType))
+                }
+
+                delete("/api/user") {
+                    val user = call.principal<KmaUserPrincipal>()
+                    if(user == null) {
+                        call.respond(HttpStatusCode.Forbidden)
+                        return@delete
+                    }
+                    if(database.deleteUser(user.userId) == 1) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.Conflict)
+                    }
                 }
             }
         }

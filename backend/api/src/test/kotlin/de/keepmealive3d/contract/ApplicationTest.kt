@@ -1,4 +1,4 @@
-package de.keepmealive3d
+package de.keepmealive3d.contract
 
 import de.keepmealive3d.plugins.*
 import io.ktor.client.request.*
@@ -13,9 +13,9 @@ class ApplicationTest {
         application {
             configureRouting()
         }
-        client.get("/hello").apply {
+        client.get("/status").apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("Hello World!", bodyAsText())
+            assertEquals("Up!", bodyAsText())
         }
     }
 }
