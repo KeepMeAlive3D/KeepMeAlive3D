@@ -1,17 +1,12 @@
 import './App.css'
-import AppCanvas from "./scene/Scene.tsx";
+import Edit from "@/scene/Edit.tsx";
 
 function App() {
     return (
         <div className={"main-body"}>
-            <header className={"top-app-bar"}>
-                <h3>KeepMeAlive3D</h3>
-            </header>
             <main className={"main-content"}>
-                <nav>Nav</nav>
-                <AppCanvas></AppCanvas>
+                <Edit></Edit>
             </main>
-            <footer className={"bottom-app-bar"}>Footer</footer>
         </div>
     )
 }

@@ -3,6 +3,8 @@ import App from "@/App.tsx";
 import {LoginForm} from "@/components/login-form.tsx";
 import {refreshToken} from "@/service/login.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
+import {SidebarProvider} from "@/components/ui/sidebar.tsx";
+import {AppSidebar} from "@/AppSidebar.tsx";
 
 function Login() {
     const [authenticated, login] = useState(false)
@@ -27,7 +29,13 @@ function Login() {
 
     if(authenticated) {
         return (
-            <App></App>
+            <SidebarProvider>
+                <AppSidebar/>
+                <main className="w-full">
+                    <App></App>
+                </main>
+            </SidebarProvider>
+
         )
     } else {
         return (
