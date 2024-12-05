@@ -14,14 +14,7 @@
 
 ### Client Requests
 
-- GET: topic information
-
-```json
-{
-  "topic": "<topic-name>"
-}
-```
-
+- GET: topic information, encoded in url: `https://<host>/api/topic/<topic-name>`
 - WS: Subscribe to topic
 
 ```json
