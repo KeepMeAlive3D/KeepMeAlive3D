@@ -54,6 +54,7 @@ the information to the client. The client then parses this information in a way 
 
 - WS: Topic Data
 
+On Success:
 ```json
 {
   "manifest": {
@@ -64,6 +65,47 @@ the information to the client. The client then parses this information in a way 
   "message": {
     "topic": "<topic-name>",
     "eventData": "<data-point>"
+  }
+}
+```
+
+On Error:
+
+```json
+{
+  "manifest": {
+    "version": 1,
+    "msgType": "ERROR"
+  },
+  "message": {
+    "type": "BadRequest",
+    "message": "Message format invalid"
+  }
+}
+```
+
+```json
+{
+  "manifest": {
+    "version": 1,
+    "msgType": "ERROR"
+  },
+  "message": {
+    "type": "Unauthorized",
+    "message": "Bearer Token missing or invalid"
+  }
+}
+```
+
+```json
+{
+  "manifest": {
+    "version": 1,
+    "msgType": "ERROR"
+  },
+  "message": {
+    "type": "Forbidden",
+    "message": "You don't have the correct access permission to access this topic"
   }
 }
 ```
