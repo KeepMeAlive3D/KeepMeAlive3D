@@ -51,7 +51,10 @@ the information to the client. The client then parses this information in a way 
 {
   "topic": "<topic-name>",
   "historyEventData": [
-    "<data-point>"
+    {
+      "timestamp": 1733406822637,  //time on the server in milis
+      "data": "<data-point>"
+    }
   ]
 }
 ```
@@ -62,10 +65,12 @@ the information to the client. The client then parses this information in a way 
 {
   "manifest": {
     "version": 1,
-    "msgType": "TOPIC_DATAPOINT"
+    "msgType": "TOPIC_DATAPOINT",
+    "timestamp": 1733406822637 //time on the server in milis
   },
   "message": {
     "topic": "<topic-name>",
     "eventData": "<data-point>"
   }
 }
+```
