@@ -28,7 +28,7 @@ class UploadController(application: Application) : KoinComponent {
                     }
                     val filename = call.parameters["filename"] ?: UUID.randomUUID().toString()
 
-                    val path = modelRepository.saveFile(user.userId, filename)
+                    val path = modelRepository.createUniqueFileLocation(user.userId, filename)
                     call.receiveChannel().copyAndClose(path.toFile().writeChannel())
                     call.response.headers.append(
                         HttpHeaders.Location,

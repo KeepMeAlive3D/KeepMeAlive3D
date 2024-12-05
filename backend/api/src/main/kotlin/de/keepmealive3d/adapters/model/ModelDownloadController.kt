@@ -24,7 +24,7 @@ class ModelDownloadController(application: Application): KoinComponent {
                         return@get
                     }
 
-                    call.respond(AvailableFiles(files = modelRepository.getAllFileNames(user.userId)))
+                    call.respond(AvailableFiles(files = modelRepository.getAllModelFileNames(user.userId)))
                 }
                 get("api/model/{filename}") {
                     val filename = call.parameters["filename"]
@@ -38,7 +38,7 @@ class ModelDownloadController(application: Application): KoinComponent {
                         return@get
                     }
 
-                    val p = modelRepository.getModel(user.userId, filename)
+                    val p = modelRepository.getModelLocation(user.userId, filename)
                     if(p == null) {
                         call.respond(HttpStatusCode.NotFound, "File not found!")
                         return@get

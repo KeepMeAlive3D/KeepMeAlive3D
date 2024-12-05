@@ -11,7 +11,7 @@ class ModelRepository {
     /**
      * reruns a path to a valid location to save a model to
      */
-    fun saveFile(userid: Int, name: String): Path {
+    fun createUniqueFileLocation(userid: Int, name: String): Path {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         userModelPath.createDirectories()
         val filePath = if(userModelPath.resolve(name).exists()) {
@@ -26,7 +26,7 @@ class ModelRepository {
      * checks if the model file exist
      * @return the path to the file or null if it does not exist
      */
-    fun getModel(userid: Int, fileName: String): Path? {
+    fun getModelLocation(userid: Int, fileName: String): Path? {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         if(userModelPath.resolve(fileName).exists()) {
             return userModelPath.resolve(fileName)
@@ -37,7 +37,7 @@ class ModelRepository {
     /**
      * @return all uploaded files by a user
      */
-    fun getAllFileNames(userid: Int): Set<String> {
+    fun getAllModelFileNames(userid: Int): Set<String> {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         return userModelPath
             .toFile()
@@ -53,6 +53,6 @@ class ModelRepository {
      * @return true if the file was deleted, false if no file was found or there where fs problems
      */
     fun deleteFile(userid: Int, fileName: String): Boolean {
-        return getModel(userid, fileName)?.toFile()?.delete() == true
+        return getModelLocation(userid, fileName)?.toFile()?.delete() == true
     }
 }
