@@ -13,7 +13,7 @@ abstract class Plugin {
     }
 
     open suspend fun registerLiveDataAdapter(
-        rcv: (topic: String, value: String) -> Unit,
+        rcv: suspend (topic: String, value: String) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         return

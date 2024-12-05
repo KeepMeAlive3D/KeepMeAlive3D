@@ -1,18 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
+import {StrictMode} from 'react'
+import {createRoot} from 'react-dom/client'
 import './index.css'
-import {SidebarProvider} from "@/components/ui/sidebar.tsx";
-import {AppSidebar} from "@/AppSidebar.tsx";
+import Login from "@/Login.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
+import {ToastProvider} from "@/components/ui/toast.tsx";
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-      <SidebarProvider>
-          <AppSidebar/>
-          <main className="w-full">
-              <App/>
-          </main>
-      </SidebarProvider>
-
-  </StrictMode>,
+    <StrictMode>
+        <ToastProvider>
+            <Login></Login>
+            <Toaster/>
+        </ToastProvider>
+    </StrictMode>,
 )

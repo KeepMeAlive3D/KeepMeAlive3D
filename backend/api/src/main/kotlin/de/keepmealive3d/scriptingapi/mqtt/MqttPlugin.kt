@@ -3,6 +3,8 @@ package de.keepmealive3d.scriptingapi.mqtt
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.scriptingapi.Plugin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
@@ -33,7 +35,7 @@ class MqttPlugin : Plugin() {
     }
 
     override suspend fun registerLiveDataAdapter(
-        rcv: (topic: String, value: String) -> Unit,
+        rcv: suspend (topic: String, value: String) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         //sanity check
@@ -46,7 +48,11 @@ class MqttPlugin : Plugin() {
             }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                rcv(topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
+                runBlocking {
+                    launch {
+                        rcv(topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
+                    }
+                }
             }
 
             override fun deliveryComplete(token: IMqttDeliveryToken?) {
