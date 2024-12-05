@@ -15,7 +15,7 @@ function Rotate() {
 
         if (Object.keys(node.userData).length > 0 && node.userData["prop"]) {
             sel.current = node;
-            console.log(`Custom properties for ${node.name}:`, node.userData);
+            // TODO: save a list of all objects which have custom properties
         }
     });
 

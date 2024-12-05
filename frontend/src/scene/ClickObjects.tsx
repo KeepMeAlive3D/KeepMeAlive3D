@@ -18,8 +18,6 @@ function OnClick(state: RootState) {
 
         // Highlight
         first.object.scale.set(1.2, 1.2, 1.2);
-
-        console.log("Clicked " + first.object.name);
     }
 }
 

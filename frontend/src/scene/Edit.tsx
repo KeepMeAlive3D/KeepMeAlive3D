@@ -24,7 +24,6 @@ function Edit() {
         if (file) {
             // Create an object URL from the file
             const objectUrl = URL.createObjectURL(file);
-            console.log("Generated Object URL:", objectUrl);
 
             startTransition(() => {
                 setGltfUrl(objectUrl);
