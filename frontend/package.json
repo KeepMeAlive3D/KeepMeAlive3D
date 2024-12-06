@@ -21,7 +21,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@react-three/drei": "^9.115.0",
     "@react-three/fiber": "^8.17.10",
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "@types/three": "^0.170.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
