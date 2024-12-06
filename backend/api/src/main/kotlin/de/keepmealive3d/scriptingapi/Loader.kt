@@ -3,19 +3,28 @@ package de.keepmealive3d.scriptingapi
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.event.LiveDataEventHandler
+import de.keepmealive3d.core.event.messages.EventMessage
+import de.keepmealive3d.core.event.messages.EventMessageData
+import de.keepmealive3d.core.event.messages.Manifest
+import de.keepmealive3d.core.event.messages.MessageType
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.qualifier
 import java.io.File
 import java.net.URLClassLoader
 import kotlin.reflect.full.createInstance
 
-class Loader(private val pluginDirectories: List<File>) {
+class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private val yamlParser = createYamlParser()
+    private val eventChanel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
+
     val plugins: MutableList<Pair<Plugin, PluginConfig>> by lazy {
         val uris = pluginDirectories
             .map {
@@ -37,7 +46,6 @@ class Loader(private val pluginDirectories: List<File>) {
     }
 
     fun loadPlugins(application: Application, conf: Config) = with(application) {
-        val liveDataEventHandler = LiveDataEventHandler()
         runBlocking {   //we want to wait until all plugins are loaded
             plugins.forEach { p ->
                 try {
@@ -55,7 +63,7 @@ class Loader(private val pluginDirectories: List<File>) {
         }
         plugins.forEach { p ->
             launch {
-                p.first.registerLiveDataAdapter(liveDataEventHandler::receive) { false }
+                p.first.registerLiveDataAdapter(::receive) { false }
             }
         }
     }
@@ -66,5 +74,14 @@ class Loader(private val pluginDirectories: List<File>) {
             polymorphismPropertyName = "type",
         )
         return Yaml(Yaml.default.serializersModule, yamlConfig)
+    }
+
+    private fun receive(dataSource: String, topic: String, value: String) {
+        eventChanel.trySend(
+            EventMessage(
+                manifest = Manifest(messageType = MessageType.TOPIC_DATAPOINT),
+                message = EventMessageData(topic, dataSource, value)
+            )
+        )
     }
 }
