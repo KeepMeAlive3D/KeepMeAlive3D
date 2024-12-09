@@ -50,6 +50,7 @@ class MqttPlugin : Plugin() {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 runBlocking {
                     launch {
+                        println("MQTT: rcv: $topic -> ${message?.payload?.let { String(it) }}")
                         rcv("MQTT", topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
                     }
                 }

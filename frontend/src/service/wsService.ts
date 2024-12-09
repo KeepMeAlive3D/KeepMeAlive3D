@@ -41,6 +41,25 @@ function onClose(event: CloseEvent): void {
     console.error(`connection was closed by server? ${event}`)
 }
 
+export type EventError = {
+    manifest: EventManifest,
+    message: EventErrorData
+}
+
+export type EventErrorData = {
+    type: string,
+    message: string
+}
+
+export type EventSubscribe = {
+    manifest: EventManifest,
+    message: EventSubscribeDta
+}
+
+export type EventSubscribeDta = {
+    topic: string
+}
+
 export type EventMessage = {
     manifest: EventManifest
     message: EventDataMsg
@@ -55,11 +74,12 @@ export type EventDataMsg = {
 export type EventManifest = {
     version: number
     messageType: EventMessageType
-    timestamp: number
+    timestamp: number | undefined
     bearerToken: string | undefined
 }
 
 export enum EventMessageType {
     TOPIC_DATAPOINT,
-    ERROR
+    ERROR,
+    SUBSCRIBE_TOPIC
 }

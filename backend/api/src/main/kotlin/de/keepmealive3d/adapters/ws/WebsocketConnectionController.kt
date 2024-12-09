@@ -1,7 +1,10 @@
 package de.keepmealive3d.adapters.ws
 
+import de.keepmealive3d.core.event.messages.EventError
+import de.keepmealive3d.core.event.messages.EventErrorData
 import de.keepmealive3d.core.event.messages.EventMessage
 import de.keepmealive3d.core.event.messages.EventMessageData
+import de.keepmealive3d.core.event.messages.EventSubscribe
 import de.keepmealive3d.core.event.messages.Manifest
 import de.keepmealive3d.core.event.messages.MessageType
 import io.ktor.server.application.*
@@ -29,6 +32,14 @@ class WebsocketConnectionController(application: Application): KoinComponent {
                     for(frame in incoming) {
                         if(frame is Frame.Text) {
                             val text = frame.readText()
+                            try {
+                                val sub = Json.decodeFromString<EventSubscribe>(text)
+                            } catch (e: Exception) {
+                                outgoing.send(Frame.Text(Json.encodeToString(EventError(
+                                    Manifest(1, MessageType.ERROR),
+                                    EventErrorData("BadRequest", "Unable to read message!")
+                                ))))
+                            }
                             application.log.info("WS receive: $text")
                         }
                     }
@@ -39,7 +50,6 @@ class WebsocketConnectionController(application: Application): KoinComponent {
                         //todo filter + check
                         outgoing.send(Frame.Text(Json.encodeToString(event)))
                     }
-                    application.log.warn("=================== END OF CHANEL? =======================")
                 }
 
                 rcv.await()
