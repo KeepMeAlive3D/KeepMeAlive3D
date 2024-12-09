@@ -4,7 +4,7 @@ val flaxoos_extra_plugins_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.0"
-    id("io.ktor.plugin") version "3.0.1"
+    id("io.ktor.plugin") version "3.0.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
 }
 
@@ -53,8 +53,8 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-client-core-jvm:3.0.1")
-    implementation("io.ktor:ktor-client-apache-jvm:3.0.1")
+    implementation("io.ktor:ktor-client-core-jvm:3.0.2")
+    implementation("io.ktor:ktor-client-apache-jvm:3.0.2")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-client-content-negotiation")
