@@ -3,7 +3,7 @@ import {Suspense, useEffect, useRef} from "react";
 import {Grid, OrbitControls, useGLTF} from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
-import {Light, Mesh, Vector3} from "three";
+import {Light, Mesh, Object3D, Vector3} from "three";
 import {useAppDispatch} from "@/hooks/hooks.ts";
 import {add} from "@/slices/ModelPartSlice.ts";
 
@@ -16,9 +16,11 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
 
     useEffect(() => {
         if (!loaded.current) {
+            const lights: Array<Object3D> = [];
+
             gltf.scene.traverse((node) => {
                 if (node instanceof Light) {
-                    node.intensity *= 0.25; // Scale down light intensity
+                    lights.push(node);
                 }
 
                 if (Object.keys(node.userData).length > 0 && node.userData["prop"]) {
@@ -28,21 +30,26 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                     }
                 }
             });
+            // Remove lights. later custom lights will be spawned instead
+            lights.forEach(x => x.removeFromParent());
+
             loaded.current = true;
         }
     });
 
     return <Canvas id="canvas">
-            <Suspense fallback={null}>
-                <primitive scale={[1, 1, 1]} object={gltf.scene}/>
+        <Suspense fallback={null}>
+            <primitive scale={[1, 1, 1]} object={gltf.scene}/>
+            <spotLight position={[10000, 10000, 10000]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI * 10}/>
+            <pointLight position={[-10000, -10000, -10000]} decay={0} intensity={Math.PI * 10}/>
 
-                <OrbitControls/>
-                <Rotate/>
-                <ClickObjects></ClickObjects>
-                <Grid cellSize={2} cellColor={"teal"} sectionColor={"darkgray"} sectionSize={2}
-                      position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
-            </Suspense>
-        </Canvas>
+            <OrbitControls/>
+            <Rotate/>
+            <ClickObjects></ClickObjects>
+            <Grid cellSize={2} cellColor={"teal"} sectionColor={"darkgray"} sectionSize={2}
+                  position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
+        </Suspense>
+    </Canvas>
 }
 
 
