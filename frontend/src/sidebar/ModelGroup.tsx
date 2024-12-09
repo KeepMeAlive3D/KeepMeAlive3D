@@ -36,17 +36,18 @@ export function ModelGroup() {
                             <SheetHeader>
                                 <SheetTitle>Settings</SheetTitle>
                                 <SheetDescription>
-                                    Manage the settings for this model
+                                    Manage the local settings for this model
                                 </SheetDescription>
                             </SheetHeader>
-                            <div className="p-4">
-                                <p>Light</p>
-                                <Slider ref={sliderLight} defaultValue={[settings.light]} max={30} min={0} step={1}
+                            <div className="p-4 flex-col">
+                                <p className="m-4">Light</p>
+                                <Slider className="m-4" ref={sliderLight} defaultValue={[settings.light]} max={30}
+                                        min={0} step={1}
                                         onValueChange={(value) => {
                                             dispatch(setLight(value[0]))
                                         }}/>
-                                <p>Scale</p>
-                                <Slider defaultValue={[settings.scale]} max={10} min={0} step={0.1}
+                                <p className="m-4">Scale</p>
+                                <Slider className="m-4" defaultValue={[settings.scale]} max={10} min={0} step={0.1}
                                         onValueChange={(value) => {
                                             dispatch(setScale(value[0]));
                                             //Light has to be adjusted to prevent the dark bug
