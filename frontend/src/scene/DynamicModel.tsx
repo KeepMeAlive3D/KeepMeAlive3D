@@ -1,22 +1,34 @@
 import {Canvas} from "@react-three/fiber";
-import {Suspense} from "react";
+import {Suspense, useEffect, useRef} from "react";
 import {Grid, OrbitControls, useGLTF} from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
-import {Light, Vector3} from "three";
+import {Light, Mesh, Vector3} from "three";
+import {useAppDispatch} from "@/hooks/hooks.ts";
+import {add} from "@/slices/ModelPartSlice.ts";
 
 
 function DynamicModel({objectUrl}: { objectUrl: string }) {
 
+    const loaded = useRef(false);
     const gltf = useGLTF(objectUrl);
+    const dispatch = useAppDispatch()
 
-    gltf.scene.traverse((node) => {
-        if (node instanceof Light) {
-            node.intensity *= 0.25; // Scale down light intensity
-        }
+    useEffect(() => {
+        if (!loaded.current) {
+            gltf.scene.traverse((node) => {
+                if (node instanceof Light) {
+                    node.intensity *= 0.25; // Scale down light intensity
+                }
 
-        if (Object.keys(node.userData).length > 0 && node.userData["prop"]) {
-            console.log(`Custom properties found for ${node.name}:`, node.userData);
+                if (Object.keys(node.userData).length > 0 && node.userData["prop"]) {
+                    if (node instanceof Mesh) {
+                        console.log(`Custom properties found for ${node.name}:`, node.userData);
+                        dispatch(add(node))
+                    }
+                }
+            });
+            loaded.current = true;
         }
     });
 

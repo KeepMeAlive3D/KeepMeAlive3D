@@ -10,8 +10,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {useAppSelector} from "@/hooks/hooks.ts";
 
 export function AppSidebar() {
+    const modelParts = useAppSelector((state) => state.modelParts.parts);
+
     return (
         <Sidebar collapsible="icon">
             <SidebarContent>
@@ -39,6 +42,19 @@ export function AppSidebar() {
                             </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Components</SidebarGroupLabel>
+                    {modelParts.map((item) => (
+                        <SidebarMenuItem key={item.name}>
+                            <SidebarMenuButton asChild onClick={() => {
+                                item.scale.set(1.2, 1.2, 1.2);
+                            }}>
+                                <span>{item.name}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                    <SidebarGroupContent></SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
         </Sidebar>
