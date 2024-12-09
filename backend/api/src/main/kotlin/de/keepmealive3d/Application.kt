@@ -6,6 +6,7 @@ import de.keepmealive3d.adapters.auth.UserController
 import de.keepmealive3d.adapters.model.ModelDeleteController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.adapters.model.UploadController
+import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
@@ -59,6 +60,7 @@ fun Application.appModule() {
         jwt.configureJwt(this)
     }
 
+    WebsocketConnectionController(this)
     RegisterController(this)
     AuthController(this)
     UserController(this)

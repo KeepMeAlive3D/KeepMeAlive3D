@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.internal.wait
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
@@ -38,6 +39,7 @@ class WebsocketConnectionController(application: Application): KoinComponent {
                         //todo filter + check
                         outgoing.send(Frame.Text(Json.encodeToString(event)))
                     }
+                    application.log.warn("=================== END OF CHANEL? =======================")
                 }
 
                 rcv.await()

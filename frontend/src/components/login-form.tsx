@@ -16,11 +16,28 @@ import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {useToast} from "@/hooks/use-toast.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
+import {createWebsocket} from "@/service/wsService.ts";
+import {executeForAllMessages} from "@/service/eventMessage.ts";
 
 export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const { toast } = useToast()
+    const {toast} = useToast()
+
+    createWebsocket().then(
+        ws => {
+            ws.send(`Hello!`)
+            executeForAllMessages(event => {
+                toast({
+                    title: event.message.topic,
+                    description: event.message.eventData
+                })
+            }).then(() => toast({
+                title: `Ws finished!`
+            }));
+        }
+    )
+
 
     function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
