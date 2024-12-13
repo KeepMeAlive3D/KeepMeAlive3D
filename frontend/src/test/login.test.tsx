@@ -3,6 +3,9 @@ import {render, screen} from "@testing-library/react";
 import Login from "@/Login";
 import store from "@/store";
 import {Provider} from "react-redux";
+import {StrictMode} from "react";
+import {ToastProvider} from "@/components/ui/toast";
+import {Toaster} from "@/components/ui/toaster";
 
 
 vi.mock('@/components/login-form.tsx', () => {
@@ -14,9 +17,14 @@ vi.mock('@/components/login-form.tsx', () => {
 describe('Login is displayed if not logged in', () => {
     it('renders the LoginForm component', () => {
         render(
-            <Provider store={store}>
-                <Login/>
-            </Provider>
+            <StrictMode>
+                <Provider store={store}>
+                    <ToastProvider>
+                        <Login></Login>
+                        <Toaster/>
+                    </ToastProvider>
+                </Provider>
+            </StrictMode>
         );
 
         // Check if the mocked LoginForm component is rendered
