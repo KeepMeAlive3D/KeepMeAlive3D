@@ -18,7 +18,7 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
 
 class WebsocketConnectionController(application: Application): KoinComponent {
-    private val eventChanel: Channel<EventMessage> by inject(qualifier("events"))
+    private val eventChannel: Channel<EventMessage> by inject(qualifier("events"))
 
     init {
         application.routing {
@@ -39,7 +39,7 @@ class WebsocketConnectionController(application: Application): KoinComponent {
                 }
 
                 val send = launch {
-                    for (event in eventChanel) {
+                    for (event in eventChannel) {
                         //todo check if client is subscribed
                         outgoing.send(Frame.Text(Json.encodeToString(event)))
                     }

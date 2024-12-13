@@ -25,11 +25,11 @@ class KmaInfluxDatabase : KoinComponent {
         config.databases.influx.bucket
     )
 
-    private val chanel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
+    private val channel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
 
     suspend fun receiveEvents() = coroutineScope {
         launch {
-            for (event in chanel) {
+            for (event in channel) {
                 try {
                     // TODO: write actual data
                     write("mem", "test", 42.0)

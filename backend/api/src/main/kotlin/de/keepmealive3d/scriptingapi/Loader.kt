@@ -21,7 +21,7 @@ import kotlin.reflect.full.createInstance
 
 class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private val yamlParser = createYamlParser()
-    private val eventChanel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
+    private val eventChannel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
 
     val plugins: MutableList<Pair<Plugin, PluginConfig>> by lazy {
         val uris = pluginDirectories
@@ -75,7 +75,7 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
     }
 
     private fun receive(dataSource: String, topic: String, value: String) {
-        eventChanel.trySend(
+        eventChannel.trySend(
             wsCreateDataPointEventMessage(topic, dataSource, value)
         )
     }
