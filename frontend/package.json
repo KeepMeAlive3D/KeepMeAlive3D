@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,7 +24,7 @@
     "@react-three/fiber": "^8.17.10",
     "@reduxjs/toolkit": "^2.4.0",
     "@types/three": "^0.170.0",
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.462.0",
@@ -35,6 +35,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.171.0",
+    "typescript-channel": "^1.0.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -6,9 +6,14 @@ import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
 import com.influxdb.client.write.Point
 import com.influxdb.query.FluxRecord
 import de.keepmealive3d.config.Config
+import de.keepmealive3d.core.event.messages.EventMessage
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.qualifier.qualifier
 import java.time.Instant
 
 class KmaInfluxDatabase : KoinComponent {
@@ -20,6 +25,22 @@ class KmaInfluxDatabase : KoinComponent {
         config.databases.influx.bucket
     )
 
+    private val channel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
+
+    suspend fun receiveEvents() = coroutineScope {
+        launch {
+            for (event in channel) {
+                try {
+                    // TODO: write actual data
+                    write("mem", "test", 42.0)
+                    readAllMeasurements("mem").consumeAsFlow().collect { println("${it.value}") }
+                } catch (exception: Exception) {
+                    println(exception)
+                }
+                println("Received on topic: ${event.message.topic} -> ${event.message.eventData}")
+            }
+        }
+    }
 
     suspend fun write(measurementName: String, fieldName: String, value: Double) {
         val point = Point

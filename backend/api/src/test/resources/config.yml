@@ -15,7 +15,7 @@ databases:
     port: 1883
     clientId: 'kma'
     password: 'test'
-    topic: 'test'
+    topic: '#'
   influx:
     host: 'xxx'
     port: 8086

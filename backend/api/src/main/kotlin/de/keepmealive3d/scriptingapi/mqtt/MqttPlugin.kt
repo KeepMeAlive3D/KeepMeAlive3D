@@ -35,7 +35,7 @@ class MqttPlugin : Plugin() {
     }
 
     override suspend fun registerLiveDataAdapter(
-        rcv: suspend (topic: String, value: String) -> Unit,
+        rcv: suspend (dataSource: String, topic: String, value: String) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         //sanity check
@@ -50,7 +50,8 @@ class MqttPlugin : Plugin() {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 runBlocking {
                     launch {
-                        rcv(topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
+                        println("MQTT: rcv: $topic -> ${message?.payload?.let { String(it) }}")
+                        rcv("MQTT", topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
                     }
                 }
             }

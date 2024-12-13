@@ -19,7 +19,7 @@ fun main() {
         "tcp://${config.databases.mqtt.host}:${config.databases.mqtt.port}",
         MqttAsyncClient.generateClientId(),
     )
-    val topic = config.databases.mqtt.topic
+    val topic = "machine.test.rotor.speed"
     val connectionOptions = MqttConnectOptions()
 
     connectionOptions.userName = config.databases.mqtt.clientId
@@ -34,7 +34,7 @@ fun main() {
         while (true) {
             val randomNumber = range.random()
             client.publish(topic, MqttMessage("{\"value\": $randomNumber}".toByteArray()))
-            delay(1000)
+            delay(1000 * 10)
         }
     }
 }

@@ -6,9 +6,11 @@ import de.keepmealive3d.adapters.auth.UserController
 import de.keepmealive3d.adapters.model.ModelDeleteController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.adapters.model.UploadController
+import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
+import de.keepmealive3d.core.event.messages.EventMessage
 import de.keepmealive3d.plugins.*
 import de.keepmealive3d.scriptingapi.Loader
 import de.keepmealive3d.scriptingapi.PluginConfig
@@ -17,9 +19,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import kotlinx.coroutines.channels.Channel
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import java.io.File
-import kotlin.system.exitProcess
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::appModule)
@@ -36,6 +39,7 @@ fun Application.appModule() {
     val iniModule = module {
         single { conf }
         single { jwt }
+        single(qualifier = qualifier("events")) { Channel<EventMessage>() }
     }
 
     configureDependencyInjection(iniModule)
@@ -56,6 +60,7 @@ fun Application.appModule() {
         jwt.configureJwt(this)
     }
 
+    WebsocketConnectionController(this)
     RegisterController(this)
     AuthController(this)
     UserController(this)
