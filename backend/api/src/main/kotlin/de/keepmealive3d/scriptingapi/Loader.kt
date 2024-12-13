@@ -4,9 +4,7 @@ import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.event.messages.EventMessage
-import de.keepmealive3d.core.event.messages.EventMessageData
-import de.keepmealive3d.core.event.messages.Manifest
-import de.keepmealive3d.core.event.messages.MessageType
+import de.keepmealive3d.core.event.messages.wsCreateDataPointEventMessage
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -78,10 +76,7 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
 
     private fun receive(dataSource: String, topic: String, value: String) {
         eventChanel.trySend(
-            EventMessage(
-                manifest = Manifest(messageType = MessageType.TOPIC_DATAPOINT),
-                message = EventMessageData(topic, dataSource, value)
-            )
+            wsCreateDataPointEventMessage(topic, dataSource, value)
         )
     }
 }

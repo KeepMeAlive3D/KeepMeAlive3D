@@ -1,12 +1,8 @@
 package de.keepmealive3d.adapters.ws
 
-import de.keepmealive3d.core.event.messages.EventError
-import de.keepmealive3d.core.event.messages.EventErrorData
 import de.keepmealive3d.core.event.messages.EventMessage
-import de.keepmealive3d.core.event.messages.EventMessageData
 import de.keepmealive3d.core.event.messages.EventSubscribe
-import de.keepmealive3d.core.event.messages.Manifest
-import de.keepmealive3d.core.event.messages.MessageType
+import de.keepmealive3d.core.event.messages.wsCreateErrorEventMessage
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
@@ -17,7 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.internal.wait
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
@@ -34,20 +29,18 @@ class WebsocketConnectionController(application: Application): KoinComponent {
                             val text = frame.readText()
                             try {
                                 val sub = Json.decodeFromString<EventSubscribe>(text)
-                            } catch (e: Exception) {
-                                outgoing.send(Frame.Text(Json.encodeToString(EventError(
-                                    Manifest(1, MessageType.ERROR),
-                                    EventErrorData("BadRequest", "Unable to read message!")
-                                ))))
+                                //todo save subscriptions
+                            } catch (_: Exception) {
+                                val msg = wsCreateErrorEventMessage("BadRequest", "Unable to read message")
+                                outgoing.send(Frame.Text(Json.encodeToString(msg)))
                             }
-                            application.log.info("WS receive: $text")
                         }
                     }
                 }
 
                 val send = launch {
                     for (event in eventChanel) {
-                        //todo filter + check
+                        //todo check if client is subscribed
                         outgoing.send(Frame.Text(Json.encodeToString(event)))
                     }
                 }

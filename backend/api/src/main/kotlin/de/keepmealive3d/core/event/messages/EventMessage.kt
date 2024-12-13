@@ -3,7 +3,7 @@ package de.keepmealive3d.core.event.messages
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
-fun wsCreateEventMessage(topic: String, dataSource: String, eventData: String) = EventMessage(
+fun wsCreateDataPointEventMessage(topic: String, dataSource: String, eventData: String) = EventMessage(
     Manifest(1, MessageType.TOPIC_DATAPOINT, Instant.now()),
     EventMessageData(topic, dataSource, eventData)
 )
