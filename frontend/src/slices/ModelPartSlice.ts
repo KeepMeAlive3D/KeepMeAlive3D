@@ -29,4 +29,6 @@ export const {add} = modelPartSlice.actions
 // Other code such as selectors can use the imported `RootState` type
 export const selectModelParts = (state: RootState) => state.modelParts
 
+export type {ModelPartState};
+
 export default modelPartSlice.reducer
