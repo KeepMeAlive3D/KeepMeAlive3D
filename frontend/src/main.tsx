@@ -10,10 +10,10 @@ import store from './store';
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Provider store={store}>
-        <ToastProvider>
-            <Login></Login>
-            <Toaster/>
-        </ToastProvider>
+            <ToastProvider>
+                <Login></Login>
+                <Toaster/>
+            </ToastProvider>
         </Provider>
     </StrictMode>,
 )
