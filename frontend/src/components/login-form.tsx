@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import {FormEvent, useEffect, useState} from "react";
+import {FormEvent, useState} from "react";
 import {loginBasic} from "@/service/login.ts";
 import {Form} from "@/components/ui/form.tsx";
 import {zodResolver} from "@hookform/resolvers/zod"
@@ -10,46 +10,11 @@ import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {useToast} from "@/hooks/use-toast.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
-import {createWebsocket, EventMessageType, EventSubscribe} from "@/service/wsService.ts";
-import {executeForAllMessages} from "@/service/eventMessage.ts";
 
 export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const {toast} = useToast()
-
-    useEffect(() => {
-        console.warn("Use effect called!")
-        let websocketConnection: WebSocket | undefined = undefined
-        createWebsocket().then(
-            ws => {
-                const subscribeData: EventSubscribe = {
-                    manifest: {
-                        version: 1,
-                        messageType: EventMessageType.SUBSCRIBE_TOPIC,
-                        timestamp: undefined,
-                        bearerToken: "abc"
-                    },
-                    message: {
-                        topic: "*"
-                    }
-                }
-                websocketConnection = ws
-                ws.send(JSON.stringify(subscribeData))
-                executeForAllMessages(event => {
-                    toast({
-                        title: event.message.topic,
-                        description: event.message.eventData
-                    })
-                }).then(() => toast({
-                    title: `Ws finished!`
-                }));
-            }
-        )
-        return () => {
-            websocketConnection?.close()
-        };
-    }, [toast])
 
 
     function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
