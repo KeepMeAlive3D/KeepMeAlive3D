@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/menubar"
 import {Button} from "@/components/ui/button.tsx";
 import DynamicModel from "@/scene/DynamicModel.tsx";
-import MqttGraph from "@/scene/MqttGraph.tsx";
+import MqttGraph from "@/graphs/MqttGraph.tsx";
 
 
 function Edit() {
