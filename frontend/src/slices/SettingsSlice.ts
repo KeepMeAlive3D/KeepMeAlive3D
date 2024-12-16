@@ -33,4 +33,6 @@ export const {setLight, setScale} = settingsSlice.actions
 // Other code such as selectors can use the imported `RootState` type
 export const selectSettings = (state: RootState) => state.settings
 
+export type {SettingsState};
+
 export default settingsSlice.reducer
