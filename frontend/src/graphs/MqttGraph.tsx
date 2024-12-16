@@ -15,7 +15,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-function MqttGraph(topic: string) {
+function MqttGraph({topic}: { topic: string }) {
     const [data, setData] = useState<Array<Message>>([]);
 
     useEffect(() => {

@@ -61,7 +61,7 @@ function Edit() {
             </MenubarMenu>
         </Menubar>
 
-        {MqttGraph("abc")}
+        <MqttGraph topic={"abc"}/>
 
         <div className="canvas-content flex-grow">
             {gltfUrl &&
