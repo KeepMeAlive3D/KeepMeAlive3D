@@ -11,10 +11,11 @@ class ModelRepository {
     /**
      * reruns a path to a valid location to save a model to
      */
-    fun createUniqueFileLocation(userid: Int, name: String): Path {
-        val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
+    fun createUniqueFileLocation(userid: Int, path: String, name: String): Path {
+        val userModelPath =
+            Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString()).resolve(path)
         userModelPath.createDirectories()
-        val filePath = if(userModelPath.resolve(name).exists()) {
+        val filePath = if (userModelPath.resolve(name).exists()) {
             userModelPath.resolve(name + Random.nextBytes(4).toString())
         } else {
             userModelPath.resolve(name)
@@ -28,7 +29,7 @@ class ModelRepository {
      */
     fun getModelLocation(userid: Int, fileName: String): Path? {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
-        if(userModelPath.resolve(fileName).exists()) {
+        if (userModelPath.resolve(fileName).exists()) {
             return userModelPath.resolve(fileName)
         }
         return null
