@@ -28,7 +28,8 @@ class ModelDeleteController(application: Application): KoinComponent {
                         return@delete
                     }
 
-                    val deleted = modelRepository.deleteFile(user.userId, filename)
+                    val (model, name) = filename.split("%2F%0A")
+                    val deleted = modelRepository.deleteFile(user.userId, model, name)
                     if(deleted) {
                         call.respond(HttpStatusCode.OK, "File deleted successfully!")
                     } else {

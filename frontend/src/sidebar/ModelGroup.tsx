@@ -3,14 +3,14 @@ import {ModelSettings} from "@/sidebar/model/ModelSettings.tsx";
 import {UploadModel} from "@/sidebar/model/UploadModel.tsx";
 import {OpenModel} from "@/sidebar/model/OpenModel.tsx";
 
-export function ModelGroup() {
+export function ModelGroup({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
 
     return <SidebarGroup>
         <SidebarGroupLabel>Model</SidebarGroupLabel>
         <SidebarGroupContent>
             <SidebarMenu>
                 <OpenModel></OpenModel>
-                <UploadModel></UploadModel>
+                <UploadModel setModelUri={setModelUri}></UploadModel>
                 <ModelSettings></ModelSettings>
             </SidebarMenu>
         </SidebarGroupContent>

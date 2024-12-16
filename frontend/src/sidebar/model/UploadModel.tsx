@@ -15,10 +15,11 @@ import {useRef, useState} from "react";
 import {uploadFile} from "@/service/upload.ts";
 import {useToast} from "@/hooks/use-toast.ts";
 
-export function UploadModel() {
+export function UploadModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const modelName = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState("")
+    const [open, setOpen] = useState(false);
     const {toast} = useToast()
 
     const updateFileName = () => {
@@ -36,12 +37,14 @@ export function UploadModel() {
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
+            setOpen(false)
             console.debug(`File upload successful! ${p}`)
+            setModelUri(modelName?.current?.value ?? "undefined", file.name)
         })
     }
 
     return <SidebarMenuItem key="Upload">
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <SidebarMenuButton asChild>
                     <div>

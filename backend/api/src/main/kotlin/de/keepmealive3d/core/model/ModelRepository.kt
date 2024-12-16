@@ -27,10 +27,10 @@ class ModelRepository {
      * checks if the model file exist
      * @return the path to the file or null if it does not exist
      */
-    fun getModelLocation(userid: Int, fileName: String): Path? {
+    fun getModelLocation(userid: Int, model: String, fileName: String): Path? {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
-        if (userModelPath.resolve(fileName).exists()) {
-            return userModelPath.resolve(fileName)
+        if (userModelPath.resolve(model).resolve(fileName).exists()) {
+            return userModelPath.resolve(model).resolve(fileName)
         }
         return null
     }
@@ -53,7 +53,7 @@ class ModelRepository {
      * deletes a file for a user
      * @return true if the file was deleted, false if no file was found or there where fs problems
      */
-    fun deleteFile(userid: Int, fileName: String): Boolean {
-        return getModelLocation(userid, fileName)?.toFile()?.delete() == true
+    fun deleteFile(userid: Int, model: String, fileName: String): Boolean {
+        return getModelLocation(userid, model, fileName)?.toFile()?.delete() == true
     }
 }

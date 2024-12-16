@@ -1,11 +1,11 @@
 import './App.css'
 import Edit from "@/scene/Edit.tsx";
 
-function App() {
+function App({model}: { model: string | null }) {
     return (
         <div className={"main-body"}>
             <main className={"main-content"}>
-                <Edit></Edit>
+                <Edit modelUri={model}></Edit>
             </main>
         </div>
     )
