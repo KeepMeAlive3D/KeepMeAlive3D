@@ -33,8 +33,8 @@ fun main() {
     runBlocking {
         while (true) {
             val randomNumber = range.random()
-            client.publish(topic, MqttMessage("{\"value\": $randomNumber}".toByteArray()))
-            delay(1000 * 10)
+            client.publish(topic, MqttMessage("$randomNumber".toByteArray()))
+            delay(1000 * 3)
         }
     }
 }
