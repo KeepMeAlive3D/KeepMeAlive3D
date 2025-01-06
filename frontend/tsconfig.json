@@ -1,7 +1,5 @@
 {
-  "files": [
-    "node_modules/vitest/globals.d.ts"
-  ],
+  "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
@@ -10,13 +8,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": [
-      "vitest/globals"
-    ]
-  },
-  "include": [
-    "src",
-    "./src/test/setup.ts"
-  ]
+    }
+  }
 }
