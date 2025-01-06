@@ -40,7 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-sessions-jvm")
     implementation("org.webjars:jquery:3.7.1")
-    implementation("io.github.smiley4:ktor-swagger-ui:4.1.1")
+    implementation("io.github.smiley4:ktor-swagger-ui:4.1.2")
     implementation("io.ktor:ktor-server-resources-jvm")
     implementation("io.ktor:ktor-server-host-common-jvm")
     implementation("io.ktor:ktor-server-compression-jvm")
