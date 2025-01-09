@@ -50,7 +50,7 @@ function MqttGraph({topic}: { topic: string }) {
     }, [topic])
 
     return (
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className={"w-1/4 h-1/4"}>
             <LineChart width={500} height={300} data={data.map(x => parseInt(x.message.eventData))}>
                 <XAxis/>
                 <YAxis dataKey={(v) => v}/>
