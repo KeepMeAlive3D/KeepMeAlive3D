@@ -35,7 +35,6 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request."
             })
-            console.debug(err)
             console.error(err)
         })
     }

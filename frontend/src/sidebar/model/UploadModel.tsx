@@ -32,13 +32,12 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
         if (file == null) {
             return
         }
-        uploadFile(modelName?.current?.value ?? "undefined", file).then(p => {
+        uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
             toast({
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
             setOpen(false)
-            console.debug(`File upload successful! ${p}`)
             setModelUri(modelName?.current?.value ?? "undefined", file.name)
         })
     }
