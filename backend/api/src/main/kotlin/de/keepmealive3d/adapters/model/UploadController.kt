@@ -14,6 +14,7 @@ import kotlinx.io.readByteArray
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
+import kotlin.io.path.absolutePathString
 
 class UploadController(application: Application) : KoinComponent {
     private val modelRepository: ModelRepository by inject()
@@ -25,7 +26,6 @@ class UploadController(application: Application) : KoinComponent {
                 var fileName = ""
 
                 post("/api/model/{filepath}") {
-                    println("================================= HERE =================================")
                     val user = call.principal<KmaUserPrincipal>()
                     if (user == null) {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
@@ -46,6 +46,7 @@ class UploadController(application: Application) : KoinComponent {
                                 val fileBytes = part.provider().readRemaining().readByteArray()
                                 val path = modelRepository.createUniqueFileLocation(user.userId, filePath, fileName)
                                 path.toFile().writeBytes(fileBytes)
+                                println("path: ${path.absolutePathString()}")
                             }
 
                             else -> {}
