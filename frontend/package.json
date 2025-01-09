@@ -33,6 +33,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
     "react-redux": "^9.1.2",
+    "react-router": "^7.1.1",
     "recharts": "^2.15.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
