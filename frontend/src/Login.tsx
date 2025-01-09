@@ -1,10 +1,8 @@
 import {useEffect, useState} from 'react'
-import App from "@/App.tsx";
 import {LoginForm} from "@/components/login-form.tsx";
 import {refreshToken} from "@/service/login.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
-import {SidebarProvider} from "@/components/ui/sidebar.tsx";
-import {AppSidebar} from "@/sidebar/AppSidebar.tsx";
+import {AppModelHandling} from "@/components/app-model-handling.tsx";
 
 function Login() {
     const [authenticated, login] = useState(false)
