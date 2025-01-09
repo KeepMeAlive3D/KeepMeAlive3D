@@ -4,7 +4,7 @@ export function uploadFile(directory: string, file: File) {
     const formData = new FormData();
     formData.append('file', file);
 
-    return service.post(`/api/model/${directory}`, formData)
+    return service.post(`/api/model/upload/${directory}`, formData)
 }
 
 export function downloadModel(model: string, filename: string) {

@@ -25,7 +25,7 @@ class UploadController(application: Application) : KoinComponent {
                 var fileDescription = ""
                 var fileName = ""
 
-                post("/api/model/{filepath}") {
+                post("/api/model/upload/{filepath}") {
                     val user = call.principal<KmaUserPrincipal>()
                     if (user == null) {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
