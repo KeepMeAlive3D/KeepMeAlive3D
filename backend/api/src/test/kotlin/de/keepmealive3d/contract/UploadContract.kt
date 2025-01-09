@@ -63,7 +63,7 @@ class UploadContract {
 
         //upload
         client.submitFormWithBinaryData(
-            url = "/api/model/testmodel",
+            url = "/api/model/upload/testmodel",
             formData = formData {
                 append("file", file.readBytes(), Headers.build {
                     append(HttpHeaders.ContentDisposition, "filename=${file.name}")
