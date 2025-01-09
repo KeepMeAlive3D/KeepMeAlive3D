@@ -46,7 +46,6 @@ class UploadController(application: Application) : KoinComponent {
                                 val fileBytes = part.provider().readRemaining().readByteArray()
                                 val path = modelRepository.createUniqueFileLocation(user.userId, filePath, fileName)
                                 path.toFile().writeBytes(fileBytes)
-                                println("path: ${path.absolutePathString()}")
                             }
 
                             else -> {}

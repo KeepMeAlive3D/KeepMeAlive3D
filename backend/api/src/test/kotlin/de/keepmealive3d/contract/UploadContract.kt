@@ -83,7 +83,6 @@ class UploadContract {
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body<ModelDownloadController.AvailableFiles>()
 
-        println(files)
         assert(files.files.contains(ModelDownloadController.ModelInfo("testfile", "testmodel")))
 
         //download
