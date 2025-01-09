@@ -25,7 +25,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                     lights.push(node);
                 }
 
-                if (Object.keys(node.userData).length > 0 && node.userData["prop"]) {
+                if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
                     if (node instanceof Mesh) {
                         console.log(`Custom properties found for ${node.name}:`, node.userData);
                         dispatch(add(node))
