@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/menubar"
 import {Button} from "@/components/ui/button.tsx";
 import DynamicModel from "@/scene/DynamicModel.tsx";
-import MqttGraph from "@/graphs/MqttGraph.tsx";
 
 
 function Edit() {
@@ -60,8 +59,6 @@ function Edit() {
                 </MenubarContent>
             </MenubarMenu>
         </Menubar>
-
-        <MqttGraph topic={"abc"}/>
 
         <div className="canvas-content flex-grow">
             {gltfUrl &&
