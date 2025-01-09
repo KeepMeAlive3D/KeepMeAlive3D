@@ -7,6 +7,7 @@ import {Light, Mesh, Object3D, Vector3} from "three";
 import {useAppDispatch, useAppSelector} from "@/hooks/hooks.ts";
 import {add} from "@/slices/ModelPartSlice.ts";
 import {setLight} from "@/slices/SettingsSlice.ts";
+import Scaler from "@/scene/Scaler.tsx";
 
 
 function DynamicModel({objectUrl}: { objectUrl: string }) {
@@ -50,6 +51,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
             <spotLight position={[10000, 10000, 10000]} angle={0.15} penumbra={1} decay={0} intensity={settings.light}/>
             <pointLight position={[-10000, -10000, -10000]} decay={0} intensity={settings.light}/>
 
+            <Scaler/>
             <OrbitControls/>
             <Rotate/>
             <ClickObjects></ClickObjects>
