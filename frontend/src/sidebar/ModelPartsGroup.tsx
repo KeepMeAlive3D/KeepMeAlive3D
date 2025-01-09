@@ -1,4 +1,4 @@
-import {useAppSelector} from "@/hooks/hooks.ts";
+import {useAppDispatch, useAppSelector} from "@/hooks/hooks.ts";
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -6,16 +6,18 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "@/components/ui/sidebar.tsx";
+import {toggleIsSelected} from "@/slices/ModelPartSlice.ts";
 
 export function ModelPartsGroup() {
-    const modelParts = useAppSelector((state) => state.modelParts.parts);
+    const modelParts = useAppSelector((state) => state.modelParts.partIds);
+    const dispatch = useAppDispatch()
 
     return <SidebarGroup>
         <SidebarGroupLabel>Components</SidebarGroupLabel>
         {modelParts.map((item) => (
             <SidebarMenuItem key={item.name}>
                 <SidebarMenuButton asChild onClick={() => {
-                    item.scale.set(1.2, 1.2, 1.2);
+                    dispatch(toggleIsSelected(item))
                 }}>
                     <span>{item.name}</span>
                 </SidebarMenuButton>

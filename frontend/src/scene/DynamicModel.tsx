@@ -28,7 +28,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                 if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
                     if (node instanceof Mesh) {
                         console.log(`Custom properties found for ${node.name}:`, node.userData);
-                        dispatch(add(node))
+                        dispatch(add({id: node.id, name: node.name, isSelected: false, topic: node.userData["topic"]}));
                     }
                 }
             });
