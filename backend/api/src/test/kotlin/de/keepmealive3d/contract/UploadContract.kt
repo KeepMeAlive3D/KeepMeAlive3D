@@ -4,15 +4,14 @@ import de.keepmealive3d.adapters.auth.AuthController
 import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.appModule
-import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import io.ktor.util.cio.readChannel
 import kotlin.io.path.Path
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -62,10 +61,12 @@ class UploadContract {
         }).toFile()
 
         //upload
-        client.post("/api/model/testmodel") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-            setBody(file.readChannel())
-        }.apply {
+        client.submitFormWithBinaryData(
+            url = "/api/model/testmodel",
+            formData = formData {
+                append("file", file.readBytes())
+            }
+        ).apply {
             assertEquals(HttpStatusCode.Created, status)
         }
 

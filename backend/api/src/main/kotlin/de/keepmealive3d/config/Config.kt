@@ -18,8 +18,8 @@ data class Config(
             val path = Thread.currentThread().contextClassLoader?.getResource("config.yml")?.path
             val content: String = if (file.exists()) {
                 file.readText()
-            } else if (path != null && Path(path).toFile().exists()) {
-                Path(path).toFile().readText()
+            } else if (path != null && File(path).exists()) {
+                File(path).readText()
             } else {
                 readFromEnv() ?: return Result.failure(Exception("Config not found!"))
             }
