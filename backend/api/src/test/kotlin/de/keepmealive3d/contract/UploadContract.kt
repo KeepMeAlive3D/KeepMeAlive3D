@@ -62,7 +62,7 @@ class UploadContract {
         }).toFile()
 
         //upload
-        client.post("/api/model/testfile") {
+        client.post("/api/model/testmodel") {
             header(HttpHeaders.Authorization, "Bearer $token")
             setBody(file.readChannel())
         }.apply {
@@ -75,7 +75,7 @@ class UploadContract {
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body<ModelDownloadController.AvailableFiles>()
 
-        assert(files.files.contains("testfile"))
+        assert(files.files.contains(ModelDownloadController.ModelInfo("testfile", "testmodel")))
 
         //download
         val text = client.get("api/model/testfile") {
