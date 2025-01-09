@@ -4,7 +4,7 @@ val flaxoos_extra_plugins_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.0"
-    id("io.ktor.plugin") version "3.0.2"
+    id("io.ktor.plugin") version "3.0.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
 }
 
@@ -40,7 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-sessions-jvm")
     implementation("org.webjars:jquery:3.7.1")
-    implementation("io.github.smiley4:ktor-swagger-ui:4.1.0")
+    implementation("io.github.smiley4:ktor-swagger-ui:4.1.2")
     implementation("io.ktor:ktor-server-resources-jvm")
     implementation("io.ktor:ktor-server-host-common-jvm")
     implementation("io.ktor:ktor-server-compression-jvm")
@@ -53,14 +53,14 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-client-core-jvm:3.0.2")
-    implementation("io.ktor:ktor-client-apache-jvm:3.0.2")
+    implementation("io.ktor:ktor-client-core-jvm:3.0.3")
+    implementation("io.ktor:ktor-client-apache-jvm:3.0.3")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-client-content-negotiation")
     implementation("io.ktor:ktor-server-auth-jwt")
 
-    implementation("com.charleskorn.kaml:kaml:0.66.0")
+    implementation("com.charleskorn.kaml:kaml:0.67.0")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 
     //db

@@ -28,3 +28,5 @@ replay_pid*
 *.glb
 *.bin
 *.step
+
+.idea/

@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit'
-import modelPartSlice from "@/slices/ModelPartSlice.ts";
+
 import settingsSlice from "@/slices/SettingsSlice.ts";
+import modelPartSlice from "@/slices/ModelPartSlice";
 
 const store = configureStore({
     reducer: {
