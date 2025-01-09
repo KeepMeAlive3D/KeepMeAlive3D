@@ -16,7 +16,7 @@ export function MainGroup() {
             <SidebarMenu>
                 <SidebarMenuItem key="Home">
                     <SidebarMenuButton asChild>
-                        <a href="/frontend/public">
+                        <a href="/">
                             <Home/>
                             <span>Home</span>
                         </a>
