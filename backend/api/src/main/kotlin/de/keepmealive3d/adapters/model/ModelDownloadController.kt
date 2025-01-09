@@ -33,7 +33,7 @@ class ModelDownloadController(application: Application): KoinComponent {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
                         return@post
                     }
-                    val body = call.receive<ModelDownloadId>()
+                    val body = call.receive<ModelInfo>()
 
                     val p = modelRepository.getModelLocation(user.userId, body.model, body.filename)
                     if(p == null) {
@@ -48,11 +48,11 @@ class ModelDownloadController(application: Application): KoinComponent {
 
     @Serializable
     data class AvailableFiles(
-        val files: Set<String>
+        val files: Set<ModelInfo>
     )
 
     @Serializable
-    data class ModelDownloadId(
+    data class ModelInfo(
         val filename: String,
         val model: String
     )

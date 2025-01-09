@@ -14,3 +14,16 @@ export function downloadModel(model: string, filename: string) {
         filename: filename
     })
 }
+
+export function getRemoteModelNames() {
+    return service.get<AvailModels>(`/api/models`)
+}
+
+export type AvailModels = {
+    files: ModelInfo[]
+}
+
+export type ModelInfo = {
+    model: string,
+    filename: string
+}

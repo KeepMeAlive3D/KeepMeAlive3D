@@ -1,5 +1,7 @@
 package de.keepmealive3d.core.model
 
+import de.keepmealive3d.adapters.model.ModelDownloadController
+import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
@@ -38,14 +40,20 @@ class ModelRepository {
     /**
      * @return all uploaded files by a user
      */
-    fun getAllModelFileNames(userid: Int): Set<String> {
+    fun getAllModelFileNames(userid: Int): Set<ModelDownloadController.ModelInfo> {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         return userModelPath
             .toFile()
             .walk()
-            .maxDepth(1)
-            .filterNot { file -> file.name == userid.toString() }
-            .map { file -> file.name }
+            .filter { it.isFile }
+            .map { file ->
+                val path = file.absolutePath.removePrefix(userModelPath.toString()).removePrefix(File.separator)
+                val (modelName, fileName) = path.split(File.separator)
+                ModelDownloadController.ModelInfo(
+                    fileName,
+                    modelName,
+                )
+            }
             .toSet()
     }
 

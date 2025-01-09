@@ -9,7 +9,7 @@ export function ModelGroup({setModelUri}: { setModelUri: (model: string, name: s
         <SidebarGroupLabel>Model</SidebarGroupLabel>
         <SidebarGroupContent>
             <SidebarMenu>
-                <OpenModel></OpenModel>
+                <OpenModel setModelUri={setModelUri}></OpenModel>
                 <UploadModel setModelUri={setModelUri}></UploadModel>
                 <ModelSettings></ModelSettings>
             </SidebarMenu>

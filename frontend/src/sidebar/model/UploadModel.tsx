@@ -54,9 +54,9 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Edit profile</DialogTitle>
+                    <DialogTitle>Upload Model</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when you're done.
+                        Upload your model and give it a name. Click upload when you are done.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
