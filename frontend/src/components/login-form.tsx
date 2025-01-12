@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import {FormEvent, useEffect, useState} from "react";
+import {FormEvent, useState} from "react";
 import {loginBasic} from "@/service/login.ts";
 import {Form} from "@/components/ui/form.tsx";
 import {zodResolver} from "@hookform/resolvers/zod"
@@ -10,54 +10,23 @@ import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {useToast} from "@/hooks/use-toast.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
-import {createWebsocket, EventMessageType, EventSubscribe} from "@/service/wsService.ts";
-import {executeForAllMessages} from "@/service/eventMessage.ts";
+import useLocalStorage from "@/hooks/localstorage.ts";
 
 export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const {toast} = useToast()
 
-    useEffect(() => {
-        console.warn("Use effect called!")
-        let websocketConnection: WebSocket | undefined = undefined
-        createWebsocket().then(
-            ws => {
-                const subscribeData: EventSubscribe = {
-                    manifest: {
-                        version: 1,
-                        messageType: EventMessageType.SUBSCRIBE_TOPIC,
-                        timestamp: undefined,
-                        bearerToken: "abc"
-                    },
-                    message: {
-                        topic: "*"
-                    }
-                }
-                websocketConnection = ws
-                ws.send(JSON.stringify(subscribeData))
-                executeForAllMessages(event => {
-                    toast({
-                        title: event.message.topic,
-                        description: event.message.eventData
-                    })
-                }).then(() => toast({
-                    title: `Ws finished!`
-                }));
-            }
-        )
-        return () => {
-            websocketConnection?.close()
-        };
-    }, [toast])
-
+    const [, updateToken] = useLocalStorage("token", "")
+    const [, updateRefreshToken] = useLocalStorage("refresh", "")
+    const [, updateExpiration] = useLocalStorage("token_expire", "")
 
     function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
         loginBasic(username, password).then((response) => {
-            localStorage.setItem("token", response.data.token)
-            localStorage.setItem("refresh", response.data.refreshToken)
-            localStorage.setItem("token_expire", response.data.expiresIn.toString())
+            updateToken(response.data.token)
+            updateRefreshToken(response.data.refreshToken)
+            updateExpiration(response.data.refreshToken.toString())
             setDefaultRequestToken(response.data.token)
             setAuth(true)
         }, err => {
@@ -66,7 +35,6 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request."
             })
-            console.debug(err)
             console.error(err)
         })
     }

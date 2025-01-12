@@ -5,6 +5,7 @@ import de.keepmealive3d.core.model.ModelRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
@@ -26,22 +27,18 @@ class ModelDownloadController(application: Application): KoinComponent {
 
                     call.respond(AvailableFiles(files = modelRepository.getAllModelFileNames(user.userId)))
                 }
-                get("api/model/{filename}") {
-                    val filename = call.parameters["filename"]
+                post("api/model/download") {
                     val user = call.principal<KmaUserPrincipal>()
                     if (user == null) {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
+                        return@post
                     }
-                    if(filename == null) {
-                        call.respond(HttpStatusCode.BadRequest, "No filename specifed")
-                        return@get
-                    }
+                    val body = call.receive<ModelInfo>()
 
-                    val p = modelRepository.getModelLocation(user.userId, filename)
+                    val p = modelRepository.getModelLocation(user.userId, body.model, body.filename)
                     if(p == null) {
                         call.respond(HttpStatusCode.NotFound, "File not found!")
-                        return@get
+                        return@post
                     }
                     call.respondFile(p.toFile())
                 }
@@ -51,6 +48,12 @@ class ModelDownloadController(application: Application): KoinComponent {
 
     @Serializable
     data class AvailableFiles(
-        val files: Set<String>
+        val files: Set<ModelInfo>
+    )
+
+    @Serializable
+    data class ModelInfo(
+        val filename: String,
+        val model: String
     )
 }

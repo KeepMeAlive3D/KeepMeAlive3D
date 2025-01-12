@@ -3,12 +3,12 @@ import {MainGroup} from "@/sidebar/MainGroup.tsx";
 import {ModelGroup} from "@/sidebar/ModelGroup.tsx";
 import {ModelPartsGroup} from "@/sidebar/ModelPartsGroup.tsx";
 
-export function AppSidebar() {
+export function AppSidebar({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
     return (
         <Sidebar collapsible="icon">
             <SidebarContent>
                 {MainGroup()}
-                {ModelGroup()}
+                <ModelGroup setModelUri={setModelUri}></ModelGroup>
                 {ModelPartsGroup()}
             </SidebarContent>
         </Sidebar>
