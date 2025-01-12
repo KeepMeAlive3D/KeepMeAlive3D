@@ -52,7 +52,7 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                     </div>
                 </SidebarMenuButton>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Upload Model</DialogTitle>
                     <DialogDescription>

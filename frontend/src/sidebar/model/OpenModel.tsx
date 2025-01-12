@@ -40,7 +40,7 @@ export function OpenModel({setModelUri}: { setModelUri: (model: string, name: st
                     </div>
                 </SidebarMenuButton>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Open Model</DialogTitle>
                     <DialogDescription>
