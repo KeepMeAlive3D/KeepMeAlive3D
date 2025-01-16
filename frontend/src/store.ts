@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import modelPartSlice from "@/slices/ModelPartSlice.ts"
 import settingsSlice from "@/slices/SettingsSlice.ts"
@@ -9,6 +11,7 @@ const store = configureStore({
         settings: settingsSlice,
     })),
 
+    // @ts-ignore Middleware type from redux is not type supported (see comments)
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(createStateSyncMiddleware()),
 })
