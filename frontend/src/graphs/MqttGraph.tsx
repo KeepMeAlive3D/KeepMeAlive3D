@@ -60,13 +60,16 @@ function MqttGraph({topic}: { topic: string }) {
     }, [toast, topic])
 
     return (
-        <ChartContainer config={chartConfig} className={"w-1/4 h-1/4"}>
-            <LineChart width={500} height={300} data={data.map(x => parseInt(x.message.eventData))}>
-                <XAxis/>
-                <YAxis dataKey={(v) => v}/>
-                <Line type="monotone" dataKey={(v) => v} stroke="#8884d8" animationDuration={0}/>
-            </LineChart>
-        </ChartContainer>
+        <div>
+            <h3 className="m-auto">{topic}</h3>
+            <ChartContainer config={chartConfig} className={""}>
+                <LineChart width={500} height={300} data={data.map(x => parseInt(x.message.eventData))}>
+                    <XAxis/>
+                    <YAxis dataKey={(v) => v}/>
+                    <Line type="monotone" dataKey={(v) => v} stroke="#8884d8" animationDuration={0}/>
+                </LineChart>
+            </ChartContainer>
+        </div>
     )
 }
 

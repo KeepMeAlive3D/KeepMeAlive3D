@@ -5,9 +5,8 @@ import MqttGraph from "@/graphs/MqttGraph.tsx";
 function GraphView() {
     const modelParts = useAppSelector((state) => state.modelParts.partIds);
 
-
     return (
-        <div>
+        <div className="grid grid-cols-2 gap-5 p-5">
             {modelParts.map((item) => (
                 <MqttGraph key={item.topic} topic={item.topic}/>
             ))}
