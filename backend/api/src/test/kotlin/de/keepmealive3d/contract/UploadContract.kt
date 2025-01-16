@@ -4,15 +4,15 @@ import de.keepmealive3d.adapters.auth.AuthController
 import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.appModule
-import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import io.ktor.util.cio.readChannel
+import java.io.File
 import kotlin.io.path.Path
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -20,7 +20,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class UploadContract {
-    var token: String? = null
+    private var token: String? = null
 
     @BeforeTest
     fun setUp() = testApplication {
@@ -57,15 +57,23 @@ class UploadContract {
             }
         }
 
-        val file = Path(Thread.currentThread().contextClassLoader?.getResource("testfile")?.path ?: run {
+        val file = File(Thread.currentThread().contextClassLoader?.getResource("testfile")?.path ?: run {
             throw Exception("No upload file was found in the resources, where looking for 'testfile'!")
-        }).toFile()
+        })
 
         //upload
-        client.post("/api/model/testfile") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-            setBody(file.readChannel())
-        }.apply {
+        client.submitFormWithBinaryData(
+            url = "/api/model/upload/testmodel",
+            formData = formData {
+                append("file", file.readBytes(), Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=${file.name}")
+                })
+            },
+            block = {
+                method = HttpMethod.Post
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+        ).apply {
             assertEquals(HttpStatusCode.Created, status)
         }
 
@@ -75,18 +83,26 @@ class UploadContract {
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body<ModelDownloadController.AvailableFiles>()
 
-        assert(files.files.contains("testfile"))
+        assert(files.files.contains(ModelDownloadController.ModelInfo("testfile", "testmodel")))
 
         //download
-        val text = client.get("api/model/testfile") {
-            header(HttpHeaders.Authorization, "Bearer $token")
+        val text = client.post("api/model/download") {
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+                append(HttpHeaders.ContentType, "application/json")
+            }
+            setBody(ModelDownloadController.ModelInfo("testfile", "testmodel"))
         }.bodyAsText()
 
         assertEquals(file.readText(), text)
 
         //delete file
-        client.delete("/api/model/testfile") {
-            header(HttpHeaders.Authorization, "Bearer $token")
+        client.post("/api/model/delete") {
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+                append(HttpHeaders.ContentType, "application/json")
+            }
+            setBody(ModelDownloadController.ModelInfo("testfile", "testmodel"))
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
         }

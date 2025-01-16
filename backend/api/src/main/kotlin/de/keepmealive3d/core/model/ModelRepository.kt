@@ -1,5 +1,7 @@
 package de.keepmealive3d.core.model
 
+import de.keepmealive3d.adapters.model.ModelDownloadController
+import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
@@ -11,10 +13,11 @@ class ModelRepository {
     /**
      * reruns a path to a valid location to save a model to
      */
-    fun createUniqueFileLocation(userid: Int, name: String): Path {
-        val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
+    fun createUniqueFileLocation(userid: Int, path: String, name: String): Path {
+        val userModelPath =
+            Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString()).resolve(path)
         userModelPath.createDirectories()
-        val filePath = if(userModelPath.resolve(name).exists()) {
+        val filePath = if (userModelPath.resolve(name).exists()) {
             userModelPath.resolve(name + Random.nextBytes(4).toString())
         } else {
             userModelPath.resolve(name)
@@ -26,10 +29,10 @@ class ModelRepository {
      * checks if the model file exist
      * @return the path to the file or null if it does not exist
      */
-    fun getModelLocation(userid: Int, fileName: String): Path? {
+    fun getModelLocation(userid: Int, model: String, fileName: String): Path? {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
-        if(userModelPath.resolve(fileName).exists()) {
-            return userModelPath.resolve(fileName)
+        if (userModelPath.resolve(model).resolve(fileName).exists()) {
+            return userModelPath.resolve(model).resolve(fileName)
         }
         return null
     }
@@ -37,14 +40,20 @@ class ModelRepository {
     /**
      * @return all uploaded files by a user
      */
-    fun getAllModelFileNames(userid: Int): Set<String> {
+    fun getAllModelFileNames(userid: Int): Set<ModelDownloadController.ModelInfo> {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         return userModelPath
             .toFile()
             .walk()
-            .maxDepth(1)
-            .filterNot { file -> file.name == userid.toString() }
-            .map { file -> file.name }
+            .filter { it.isFile }
+            .map { file ->
+                val path = file.absolutePath.removePrefix(userModelPath.toString()).removePrefix(File.separator)
+                val (modelName, fileName) = path.split(File.separator)
+                ModelDownloadController.ModelInfo(
+                    fileName,
+                    modelName,
+                )
+            }
             .toSet()
     }
 
@@ -52,7 +61,7 @@ class ModelRepository {
      * deletes a file for a user
      * @return true if the file was deleted, false if no file was found or there where fs problems
      */
-    fun deleteFile(userid: Int, fileName: String): Boolean {
-        return getModelLocation(userid, fileName)?.toFile()?.delete() == true
+    fun deleteFile(userid: Int, model: String, fileName: String): Boolean {
+        return getModelLocation(userid, model, fileName)?.toFile()?.delete() == true
     }
 }

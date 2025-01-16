@@ -10,19 +10,23 @@ import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {useToast} from "@/hooks/use-toast.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
+import useLocalStorage from "@/hooks/localstorage.ts";
 
 export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const {toast} = useToast()
 
+    const [, updateToken] = useLocalStorage("token", "")
+    const [, updateRefreshToken] = useLocalStorage("refresh", "")
+    const [, updateExpiration] = useLocalStorage("token_expire", "")
 
     function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
         loginBasic(username, password).then((response) => {
-            localStorage.setItem("token", response.data.token)
-            localStorage.setItem("refresh", response.data.refreshToken)
-            localStorage.setItem("token_expire", response.data.expiresIn.toString())
+            updateToken(response.data.token)
+            updateRefreshToken(response.data.refreshToken)
+            updateExpiration(response.data.refreshToken.toString())
             setDefaultRequestToken(response.data.token)
             setAuth(true)
         }, err => {
@@ -31,7 +35,6 @@ export function LoginForm({setAuth}: { setAuth: React.Dispatch<React.SetStateAct
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request."
             })
-            console.debug(err)
             console.error(err)
         })
     }
