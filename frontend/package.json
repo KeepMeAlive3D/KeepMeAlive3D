@@ -24,7 +24,6 @@
     "@react-three/drei": "^9.120.6",
     "@react-three/fiber": "^8.17.12",
     "@reduxjs/toolkit": "^2.5.0",
-    "@rollup/rollup-darwin-x64": "^4.28.1",
     "@types/three": "^0.170.0",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
