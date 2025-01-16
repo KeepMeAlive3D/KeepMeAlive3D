@@ -9,7 +9,7 @@ function GraphView() {
     return (
         <div>
             {modelParts.map((item) => (
-                <MqttGraph topic={item.topic}/>
+                <MqttGraph key={item.topic} topic={item.topic}/>
             ))}
         </div>
     );
