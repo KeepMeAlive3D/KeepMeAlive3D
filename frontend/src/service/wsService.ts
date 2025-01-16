@@ -79,7 +79,7 @@ export type EventManifest = {
 }
 
 export enum EventMessageType {
-    TOPIC_DATAPOINT,
-    ERROR,
-    SUBSCRIBE_TOPIC
+    TOPIC_DATAPOINT = 'TOPIC_DATAPOINT',
+    ERROR = 'ERROR',
+    SUBSCRIBE_TOPIC = 'SUBSCRIBE_TOPIC',
 }

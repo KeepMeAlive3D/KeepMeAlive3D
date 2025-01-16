@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {createWebsocket, EventMessageType, EventSubscribe, Message} from "@/service/wsService.ts";
 import {type ChartConfig, ChartContainer} from "@/components/ui/chart.tsx";
 import {Line, LineChart, XAxis, YAxis} from "recharts";
+import {useToast} from "@/hooks/use-toast.ts";
 
 
 const chartConfig = {
@@ -17,6 +18,7 @@ const chartConfig = {
 
 function MqttGraph({topic}: { topic: string }) {
     const [data, setData] = useState<Array<Message>>([]);
+    const {toast} = useToast()
 
     useEffect(() => {
         let websocketConnection: WebSocket | undefined = undefined
@@ -37,17 +39,25 @@ function MqttGraph({topic}: { topic: string }) {
                 ws.send(JSON.stringify(subscribeData))
 
                 ws.onmessage = event => {
-                    console.debug(event.data.toString());
                     const e: string = event.data.toString()
-                    const msg: Message = JSON.parse(e)
-                    setData(d => [...d, msg])
+                    const msg: Message = JSON.parse(e) as Message
+
+                    if (msg.manifest.messageType === EventMessageType.ERROR) {
+                        toast({
+                            variant: "destructive",
+                            title: "Error",
+                            description: msg.message.eventData.toString(),
+                        });
+                    } else if (msg.manifest.messageType === EventMessageType.TOPIC_DATAPOINT) {
+                        setData(d => [...d, msg])
+                    }
                 }
             }
         )
         return () => {
             websocketConnection?.close()
         };
-    }, [topic])
+    }, [toast, topic])
 
     return (
         <ChartContainer config={chartConfig} className={"w-1/4 h-1/4"}>
