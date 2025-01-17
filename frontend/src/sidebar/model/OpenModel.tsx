@@ -12,10 +12,16 @@ import {Button} from "@/components/ui/button.tsx";
 import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 import {getRemoteModelNames, ModelInfo} from "@/service/upload.ts";
+import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
+import service from "@/service/service.ts";
+import {useAppDispatch} from "@/hooks/hooks.ts";
 
-export function OpenModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
+
+export function OpenModel() {
     const [open, setOpen] = useState(false);
     const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
+    const dispatch = useAppDispatch()
+
 
     useEffect(() => {
         getRemoteModelNames().then(req => {
@@ -26,8 +32,9 @@ export function OpenModel({setModelUri}: { setModelUri: (model: string, name: st
     }, []);
 
     const handleFileOpen = (name: string, filename: string) => {
-        setOpen(false)
-        setModelUri(name, filename)
+        setOpen(false);
+        dispatch(fetchAndSetModel({name: name, filename: filename}));
+        service.defaults.responseType = undefined
     }
 
     return <SidebarMenuItem key="Open">

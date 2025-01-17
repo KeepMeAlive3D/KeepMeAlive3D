@@ -14,13 +14,16 @@ import {Button} from "@/components/ui/button.tsx";
 import {useRef, useState} from "react";
 import {uploadFile} from "@/service/upload.ts";
 import {useToast} from "@/hooks/use-toast.ts";
+import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
+import {useAppDispatch} from "@/hooks/hooks.ts";
 
-export function UploadModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
+export function UploadModel() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const modelName = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState("")
     const [open, setOpen] = useState(false);
-    const {toast} = useToast()
+    const {toast} = useToast();
+    const dispatch = useAppDispatch();
 
     const updateFileName = () => {
         const name = fileInputRef?.current?.files?.item(0)?.name ?? ""
@@ -38,8 +41,8 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
             setOpen(false)
-            setModelUri(modelName?.current?.value ?? "undefined", file.name)
         })
+        dispatch(fetchAndSetModel({name: modelName?.current?.value ?? "undefined", filename: file.name}));
     }
 
     return <SidebarMenuItem key="Upload">
