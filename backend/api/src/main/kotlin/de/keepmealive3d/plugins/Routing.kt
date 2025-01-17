@@ -33,12 +33,14 @@ fun Application.configureRouting() {
         get("/status") {
             call.respondText("Up!")
         }
-        staticResources("/", "static")
         route("api.json") {
             openApiSpec()
         }
         route("swagger") {
             swaggerUI("/api.json")
+        }
+        route("{...}") {
+            staticResources("/", "static")
         }
     }
 }
