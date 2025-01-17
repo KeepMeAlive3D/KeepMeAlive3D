@@ -39,8 +39,9 @@ fun Application.configureRouting() {
         route("swagger") {
             swaggerUI("/api.json")
         }
-        route("{...}") {
-            staticResources("/", "static")
+        singlePageApplication {
+            useResources = true
+            react("static")
         }
     }
 }
