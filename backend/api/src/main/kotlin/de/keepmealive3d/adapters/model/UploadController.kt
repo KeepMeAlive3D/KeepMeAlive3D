@@ -33,7 +33,7 @@ class UploadController(application: Application) : KoinComponent {
                     }
                     val filePath = call.parameters["filepath"] ?: UUID.randomUUID().toString()
 
-                    val multipartData = call.receiveMultipart()
+                    val multipartData = call.receiveMultipart(Long.MAX_VALUE)
 
                     multipartData.forEachPart { part ->
                         when (part) {
