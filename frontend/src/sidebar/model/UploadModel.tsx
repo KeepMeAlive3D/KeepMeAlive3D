@@ -14,12 +14,14 @@ import {Button} from "@/components/ui/button.tsx";
 import {useRef, useState} from "react";
 import {uploadFile} from "@/service/upload.ts";
 import {useToast} from "@/hooks/use-toast.ts";
+import {LoadingSpinner} from "@/components/custom/loading-spinner.tsx";
 
 export function UploadModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const modelName = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState("")
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false)
     const {toast} = useToast()
 
     const updateFileName = () => {
@@ -28,8 +30,10 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
     }
 
     const handleFileUpload = () => {
+        setLoading(true)
         const file = fileInputRef?.current?.files?.item(0) ?? null
         if (file == null) {
+            setLoading(false)
             return
         }
         uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
@@ -37,8 +41,16 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
+            setLoading(false)
             setOpen(false)
             setModelUri(modelName?.current?.value ?? "undefined", file.name)
+        }, () => {
+            toast({
+                variant: "destructive",
+                title: "File upload failed",
+                description: `File ${modelName?.current?.value} could not be uploaded!`,
+            })
+            setLoading(false)
         })
     }
 
@@ -78,11 +90,14 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                             className="col-span-2"
                             value={fileName}
                         />
-                        <Button type="button" id="import" className="col-span-1" variant="outline" onClick={() => {
-                            if (fileInputRef.current) {
-                                fileInputRef.current.click()
-                            }
-                        }}>Load File</Button>
+                        <Button type="button" disabled={loading} id="import" className="col-span-1" variant="outline"
+                                onClick={() => {
+                                    if (fileInputRef.current) {
+                                        fileInputRef.current.click()
+                                    }
+                                }}>
+                            Load File
+                        </Button>
                         <Input
                             style={{display: "none"}}
                             ref={fileInputRef}
@@ -92,7 +107,9 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="button" onClick={() => handleFileUpload()}>Upload</Button>
+                    <Button type="button" disabled={loading} onClick={() => handleFileUpload()}>
+                        Upload<LoadingSpinner className={"static"} loading={loading}/>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
