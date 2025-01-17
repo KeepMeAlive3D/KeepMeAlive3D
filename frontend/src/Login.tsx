@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {LoginForm} from "@/components/login-form.tsx";
 import {refreshToken} from "@/service/login.ts";
 import {setDefaultRequestToken} from "@/service/service.ts";
-import {AppModelHandling} from "@/components/app-model-handling.tsx";
+import App from "@/App.tsx";
 
 function Login() {
     const [authenticated, login] = useState(false)
@@ -34,7 +34,7 @@ function Login() {
 
     if(authenticated) {
         return (
-            <AppModelHandling></AppModelHandling>
+            <App></App>
         )
     } else {
         return (
