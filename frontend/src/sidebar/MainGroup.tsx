@@ -6,7 +6,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "@/components/ui/sidebar.tsx";
-import {Home, Pencil} from "lucide-react";
+import {Home, LineChartIcon, Pencil} from "lucide-react";
+import {NavLink} from "react-router";
 
 export function MainGroup() {
     return <SidebarGroup>
@@ -15,7 +16,7 @@ export function MainGroup() {
             <SidebarMenu>
                 <SidebarMenuItem key="Home">
                     <SidebarMenuButton asChild>
-                        <a href="/frontend/public">
+                        <a href="/">
                             <Home/>
                             <span>Home</span>
                         </a>
@@ -29,6 +30,16 @@ export function MainGroup() {
                             <Pencil/>
                             <span>Edit</span>
                         </a>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+            <SidebarMenu>
+                <SidebarMenuItem key="Graphs">
+                    <SidebarMenuButton asChild>
+                        <NavLink to="/graphs">
+                            <LineChartIcon/>
+                            <span>Graphs</span>
+                        </NavLink>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

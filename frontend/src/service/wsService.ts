@@ -14,7 +14,7 @@ export async function createWebsocket(): Promise<WebSocket> {
     });
 }
 
-export const wsMessages = new Channel<EventMessage>()
+export const wsMessages = new Channel<Message>()
 export const wsError = new Channel<string>()
 
 export const wsCanceled = new Channel<boolean>()
@@ -23,7 +23,7 @@ export const wsCanceled = new Channel<boolean>()
 function onMessage(event: MessageEvent): void {
     try {
         const e: string = event.data.toString()
-        const msg: EventMessage = JSON.parse(e)
+        const msg: Message = JSON.parse(e)
         wsMessages.send(msg)
     } catch (e) {
         wsError.send(`${e}`)
@@ -60,7 +60,7 @@ export type EventSubscribeDta = {
     topic: string
 }
 
-export type EventMessage = {
+export type Message = {
     manifest: EventManifest
     message: EventDataMsg
 }
@@ -79,7 +79,7 @@ export type EventManifest = {
 }
 
 export enum EventMessageType {
-    TOPIC_DATAPOINT,
-    ERROR,
-    SUBSCRIBE_TOPIC
+    TOPIC_DATAPOINT = 'TOPIC_DATAPOINT',
+    ERROR = 'ERROR',
+    SUBSCRIBE_TOPIC = 'SUBSCRIBE_TOPIC',
 }
