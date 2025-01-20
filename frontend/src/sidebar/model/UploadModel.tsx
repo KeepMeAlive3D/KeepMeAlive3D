@@ -39,13 +39,14 @@ export function UploadModel() {
             setLoading(false)
             return
         }
-        await uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
+        const success = await uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
             toast({
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
             setLoading(false)
             setOpen(false)
+            return true;
         }, () => {
             toast({
                 variant: "destructive",
@@ -53,8 +54,13 @@ export function UploadModel() {
                 description: `File ${modelName?.current?.value} could not be uploaded!`,
             })
             setLoading(false)
+            return false;
         })
-        dispatch(fetchAndSetModel({name: modelName?.current?.value ?? "undefined", filename: file.name}));
+
+        if (success) {
+            dispatch(fetchAndSetModel({name: modelName?.current?.value ?? "undefined", filename: file.name}));
+        }
+
     }
 
     return <SidebarMenuItem key="Upload">
