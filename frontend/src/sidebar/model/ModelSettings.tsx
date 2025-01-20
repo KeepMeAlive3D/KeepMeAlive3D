@@ -37,9 +37,9 @@ export function ModelSettings() {
                                 dispatch(setLight(value[0]))
                             }}/>
                     <p className="m-4">Scale</p>
-                    <Slider className="m-4" defaultValue={[settings.scale]} max={10} min={0} step={0.1}
+                    <Slider className="m-4" defaultValue={[settings.scale]} max={2} min={0} step={0.01}
                             onValueChange={(value) => {
-                                dispatch(setScale(value[0]));
+                                dispatch(setScale(value[0] * value[0]));
                                 //Light has to be adjusted to prevent the dark bug
                                 dispatch(setLight(settings.light + 0.0000001));
                             }}/>
