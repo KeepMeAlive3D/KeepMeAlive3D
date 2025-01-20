@@ -11,8 +11,6 @@ import Scaler from "@/scene/Scaler.tsx";
 
 
 function DynamicModel({objectUrl}: { objectUrl: string }) {
-    console.debug("My URL is ", objectUrl);
-
     const loaded = useRef(false);
     const gltf = useGLTF(objectUrl);
     const dispatch = useAppDispatch()
