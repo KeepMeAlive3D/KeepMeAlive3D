@@ -3,6 +3,7 @@ package de.keepmealive3d
 import de.keepmealive3d.adapters.auth.AuthController
 import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.auth.UserController
+import de.keepmealive3d.adapters.event.EventController
 import de.keepmealive3d.adapters.model.ModelDeleteController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.adapters.model.UploadController
@@ -20,6 +21,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import java.io.File
@@ -48,6 +50,7 @@ fun Application.appModule() {
     //current workaround: MqttPlugin stays in the :api module for better debugging experience
     loader.plugins.add(MqttPlugin() to PluginConfig("mqtt", "<none>", "1"))
     loader.loadPlugins(this, conf)
+    launch { loader.persistEvents() }
 
     configureHTTP()
     configureMonitoring()
@@ -67,4 +70,5 @@ fun Application.appModule() {
     UploadController(this)
     ModelDownloadController(this)
     ModelDeleteController(this)
+    EventController(this)
 }

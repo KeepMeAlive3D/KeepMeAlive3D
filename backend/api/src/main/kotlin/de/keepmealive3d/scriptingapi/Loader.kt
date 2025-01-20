@@ -2,8 +2,10 @@ package de.keepmealive3d.scriptingapi
 
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
+import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.event.messages.EventMessage
+import de.keepmealive3d.core.event.messages.MessageType
 import de.keepmealive3d.core.event.messages.wsCreateDataPointEventMessage
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineStart
@@ -22,6 +24,7 @@ import kotlin.reflect.full.createInstance
 class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private val yamlParser = createYamlParser()
     private val eventChannel: Channel<EventMessage> by inject(qualifier = qualifier("events"))
+    private val eventDao: EventDao by inject()
 
     val plugins: MutableList<Pair<Plugin, PluginConfig>> by lazy {
         val uris = pluginDirectories
@@ -66,6 +69,10 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
         }
     }
 
+    suspend fun persistEvents() {
+        eventDao.saveEvents()
+    }
+
     private fun createYamlParser(): Yaml {
         val yamlConfig = Yaml.default.configuration.copy(
             polymorphismStyle = PolymorphismStyle.Property,
@@ -74,9 +81,9 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
         return Yaml(Yaml.default.serializersModule, yamlConfig)
     }
 
-    private fun receive(dataSource: String, topic: String, value: String) {
+    private fun receive(dataSource: String, topic: String, value: String, type: MessageType) {
         eventChannel.trySend(
-            wsCreateDataPointEventMessage(topic, dataSource, value)
+            wsCreateDataPointEventMessage(topic, dataSource, value, type)
         )
     }
 }

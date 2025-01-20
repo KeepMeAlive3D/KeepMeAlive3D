@@ -1,6 +1,7 @@
 package de.keepmealive3d.scriptingapi.mqtt
 
 import de.keepmealive3d.config.Config
+import de.keepmealive3d.core.event.messages.MessageType
 import de.keepmealive3d.scriptingapi.Plugin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,7 +36,7 @@ class MqttPlugin : Plugin() {
     }
 
     override suspend fun registerLiveDataAdapter(
-        rcv: suspend (dataSource: String, topic: String, value: String) -> Unit,
+        rcv: suspend (dataSource: String, topic: String, value: String, type: MessageType) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         //sanity check
@@ -50,8 +51,17 @@ class MqttPlugin : Plugin() {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 runBlocking {
                     launch {
-                        println("MQTT: rcv: $topic -> ${message?.payload?.let { String(it) }}")
-                        rcv("MQTT", topic ?: "<unknown>", message?.payload?.let { String(it) } ?: "empty")
+                        var type = MessageType.TOPIC_DATAPOINT
+                        val data = message?.payload?.let { String(it) } ?: ""
+                        if (topic != null && topic.startsWith("machine.move.")) {
+                            type = MessageType.ANIMATION
+                        }
+                        rcv(
+                            "MQTT",
+                            topic ?: "<unknown>",
+                            data,
+                            type
+                        )
                     }
                 }
             }
