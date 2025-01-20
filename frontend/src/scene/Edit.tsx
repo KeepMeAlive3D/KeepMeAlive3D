@@ -1,4 +1,3 @@
-import {Button} from "@/components/ui/button.tsx";
 import DynamicModel from "@/scene/DynamicModel.tsx";
 
 function Edit({modelUri}: { modelUri: string | null }) {
@@ -8,11 +7,6 @@ function Edit({modelUri}: { modelUri: string | null }) {
                 <DynamicModel objectUrl={modelUri}/>
             }
         </div>
-
-        <div className={"footer-content ml-auto p-2"}>
-            <Button className={"footer-button w-28"}>Save</Button>
-        </div>
-
     </div>
 }
 
