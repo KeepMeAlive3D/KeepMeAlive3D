@@ -30,12 +30,12 @@ export function UploadModel() {
         setFileName(name)
     }
 
-    const handleFileUpload = () => {
+    const handleFileUpload = async () => {
         const file = fileInputRef?.current?.files?.item(0) ?? null
         if (file == null) {
             return
         }
-        uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
+        await uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
             toast({
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
