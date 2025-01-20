@@ -22,5 +22,8 @@ const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
-initStateWithPrevTab(store);
+if (window.location.pathname === "/graphs") {
+    initStateWithPrevTab(store);
+}
+
 export default store;
