@@ -12,14 +12,15 @@ import {Button} from "@/components/ui/button.tsx";
 import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 import {getRemoteModelNames, ModelInfo} from "@/service/upload.ts";
-import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
-import service from "@/service/service.ts";
+import {LoadingSpinner} from "@/components/custom/loading-spinner.tsx";
 import {useAppDispatch} from "@/hooks/hooks.ts";
+import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
 
 
 export function OpenModel() {
     const [open, setOpen] = useState(false);
     const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
+    const [loading, setLoading] = useState(false)
     const dispatch = useAppDispatch()
 
 
@@ -29,12 +30,12 @@ export function OpenModel() {
         }, err => {
             console.error(err)
         })
-    }, []);
+    }, [open]);
 
     const handleFileOpen = (name: string, filename: string) => {
-        setOpen(false);
+        setLoading(true)
         dispatch(fetchAndSetModel({name: name, filename: filename}));
-        service.defaults.responseType = undefined
+        setOpen(false);
     }
 
     return <SidebarMenuItem key="Open">
@@ -47,7 +48,7 @@ export function OpenModel() {
                     </div>
                 </SidebarMenuButton>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className={"max-w-3xl"}>
                 <DialogHeader>
                     <DialogTitle>Open Model</DialogTitle>
                     <DialogDescription>
@@ -72,7 +73,10 @@ export function OpenModel() {
                                             <Button type="button" id={`load-${info.model + info.filename}`}
                                                     className="col-span-1"
                                                     variant="outline"
-                                                    onClick={() => handleFileOpen(info.model, info.filename)}>Load</Button>
+                                                    disabled={loading}
+                                                    onClick={() => handleFileOpen(info.model, info.filename)}>
+                                                Load
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 )
@@ -81,7 +85,10 @@ export function OpenModel() {
                     </TableBody>
                 </Table>
                 <DialogFooter>
-                    <Button type="button" onClick={() => setOpen(false)}>Close</Button>
+                    <Button type="button" disabled={loading} onClick={() => setOpen(false)}>
+                        Close
+                        <LoadingSpinner className={"static"} loading={loading}/>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
