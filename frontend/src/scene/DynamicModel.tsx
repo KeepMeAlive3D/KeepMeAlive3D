@@ -13,7 +13,7 @@ import Scaler from "@/scene/Scaler.tsx";
 function DynamicModel({objectUrl}: { objectUrl: string }) {
 
     const loaded = useRef(false);
-    const gltf = useGLTF(objectUrl);
+    const gltf = useGLTF(objectUrl, undefined, true);
     const dispatch = useAppDispatch()
     const settings = useAppSelector((state) => state.settings);
 
