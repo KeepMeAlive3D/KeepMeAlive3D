@@ -1,4 +1,3 @@
-import {Button} from "@/components/ui/button.tsx";
 import DynamicModel from "@/scene/DynamicModel.tsx";
 import {useAppSelector} from "@/hooks/hooks.ts";
 import {Suspense} from "react";
@@ -16,11 +15,6 @@ function Edit() {
             }
             <p>{error}</p>
         </div>
-
-        <div className={"footer-content ml-auto p-2"}>
-            <Button className={"footer-button w-28"}>Save</Button>
-        </div>
-
     </div>
 }
 
