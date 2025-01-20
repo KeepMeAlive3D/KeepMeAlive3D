@@ -8,11 +8,12 @@ export function uploadFile(directory: string, file: File) {
 }
 
 export function downloadModel(model: string, filename: string) {
-    service.defaults.responseType = "blob"
     return service.post<Blob>(`/api/model/download`, {
         model: model,
         filename: filename
-    })
+    }, {
+        responseType: "blob", // Set responseType for this request only
+    });
 }
 
 export function getRemoteModelNames() {
