@@ -1,6 +1,10 @@
 package de.keepmealive3d.core.model
 
 import de.keepmealive3d.adapters.model.ModelDownloadController
+import de.keepmealive3d.core.auth.JWT
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.slf4j.Logger
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -8,7 +12,9 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.random.Random
 
-class ModelRepository {
+class ModelRepository : KoinComponent {
+
+    val log: Logger by inject()
 
     /**
      * reruns a path to a valid location to save a model to
@@ -48,12 +54,21 @@ class ModelRepository {
             .filter { it.isFile }
             .map { file ->
                 val path = file.absolutePath.removePrefix(userModelPath.toString()).removePrefix(File.separator)
-                val (modelName, fileName) = path.split(File.separator)
-                ModelDownloadController.ModelInfo(
+                val split = path.split(File.separator)
+
+                if (split.size != 2) {
+                    log.warn("Could not load file '" + file.name + "'. Invalid file or path.")
+                    return@map null
+                }
+
+                val (modelName, fileName) = split
+
+                return@map ModelDownloadController.ModelInfo(
                     fileName,
                     modelName,
                 )
             }
+            .filterNotNull()
             .toSet()
     }
 
