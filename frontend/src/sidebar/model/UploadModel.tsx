@@ -14,36 +14,39 @@ import {Button} from "@/components/ui/button.tsx";
 import {useRef, useState} from "react";
 import {uploadFile} from "@/service/upload.ts";
 import {useToast} from "@/hooks/use-toast.ts";
+import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
+import {useAppDispatch} from "@/hooks/hooks.ts";
 import {LoadingSpinner} from "@/components/custom/loading-spinner.tsx";
 
-export function UploadModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
+export function UploadModel() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const modelName = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState("")
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false)
-    const {toast} = useToast()
+    const {toast} = useToast();
+    const dispatch = useAppDispatch();
 
     const updateFileName = () => {
         const name = fileInputRef?.current?.files?.item(0)?.name ?? ""
         setFileName(name)
     }
 
-    const handleFileUpload = () => {
+    const handleFileUpload = async () => {
         setLoading(true)
         const file = fileInputRef?.current?.files?.item(0) ?? null
         if (file == null) {
             setLoading(false)
             return
         }
-        uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
+        const success = await uploadFile(modelName?.current?.value ?? "undefined", file).then(() => {
             toast({
                 title: "File uploaded",
                 description: `File ${modelName?.current?.value} was uploaded`,
             })
             setLoading(false)
             setOpen(false)
-            setModelUri(modelName?.current?.value ?? "undefined", file.name)
+            return true;
         }, () => {
             toast({
                 variant: "destructive",
@@ -51,7 +54,13 @@ export function UploadModel({setModelUri}: { setModelUri: (model: string, name: 
                 description: `File ${modelName?.current?.value} could not be uploaded!`,
             })
             setLoading(false)
+            return false;
         })
+
+        if (success) {
+            dispatch(fetchAndSetModel({name: modelName?.current?.value ?? "undefined", filename: file.name}));
+        }
+
     }
 
     return <SidebarMenuItem key="Upload">

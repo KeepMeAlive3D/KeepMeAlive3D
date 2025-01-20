@@ -7,7 +7,7 @@ import {
     SidebarMenuItem
 } from "@/components/ui/sidebar.tsx";
 import {Home, LineChartIcon} from "lucide-react";
-import {NavLink} from "react-router";
+import {Link} from "react-router";
 
 export function MainGroup() {
     return <SidebarGroup>
@@ -26,10 +26,10 @@ export function MainGroup() {
             <SidebarMenu>
                 <SidebarMenuItem key="Graphs">
                     <SidebarMenuButton asChild>
-                        <NavLink to="/graphs">
+                        <Link to="/graphs" target="_blank">
                             <LineChartIcon/>
                             <span>Graphs</span>
-                        </NavLink>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

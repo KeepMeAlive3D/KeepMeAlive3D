@@ -11,7 +11,6 @@ import Scaler from "@/scene/Scaler.tsx";
 
 
 function DynamicModel({objectUrl}: { objectUrl: string }) {
-
     const loaded = useRef(false);
     const gltf = useGLTF(objectUrl);
     const dispatch = useAppDispatch()
@@ -28,7 +27,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
 
                 if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
                     if (node instanceof Mesh) {
-                        console.log(`Custom properties found for ${node.name}:`, node.userData);
+                        console.debug(`Custom properties found for ${node.name}:`, node.userData);
                         dispatch(add({id: node.id, name: node.name, isSelected: false, topic: node.userData["topic"]}));
                     }
                 }
@@ -46,7 +45,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
     })
 
     return <Canvas id="canvas">
-        <Suspense fallback={null}>
+        <Suspense fallback={<div>Loading...</div>}>
             <primitive scale={[settings.scale, settings.scale, settings.scale]} object={gltf.scene}/>
             <spotLight position={[10000, 10000, 10000]} angle={0.15} penumbra={1} decay={0} intensity={settings.light}/>
             <pointLight position={[-10000, -10000, -10000]} decay={0} intensity={settings.light}/>
@@ -59,6 +58,7 @@ function DynamicModel({objectUrl}: { objectUrl: string }) {
                   position={new Vector3(0, -2, 0)} infiniteGrid={true} fadeDistance={20}></Grid>
         </Suspense>
     </Canvas>
+
 }
 
 
