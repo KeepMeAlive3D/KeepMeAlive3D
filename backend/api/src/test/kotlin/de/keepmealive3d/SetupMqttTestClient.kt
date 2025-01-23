@@ -12,5 +12,7 @@ class SetupMqttTestClient : KoinComponent {
     fun getClient() = MqttClient(
         "tcp://${config.databases.mqtt.host}:${config.databases.mqtt.port}",
         MqttAsyncClient.generateClientId(),
-    )
+    ).also {
+        it.connect()
+    }
 }

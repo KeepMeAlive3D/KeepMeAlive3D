@@ -12,6 +12,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import kotlin.test.AfterTest
@@ -27,24 +29,29 @@ class DataPointTest {
     fun setUp() = testApplication {
         application {
             appModule()
-            mqttClient = SetupMqttTestClient().getClient()
         }
 
         token = setupTestUser()
     }
 
-    @Test
+    @Test(timeout = 15_000)
     fun publishDataPointHappyPathRestProvidesData() = testApplication {
         application {
             appModule()
+
+            mqttClient = SetupMqttTestClient().getClient()
+            assert(mqttClient != null)
+            assert(mqttClient!!.isConnected)
+            mqttClient!!.publish("data.point.test.foo", MqttMessage("0.3".toByteArray(Charsets.UTF_8)))
+            mqttClient!!.disconnect()
+            Thread.sleep(1_000)
         }
+
         val client = createClient {
             this.install(ContentNegotiation) {
                 json()
             }
         }
-
-        mqttClient?.publish("data.point.test.foo", MqttMessage("0.3".toByteArray(Charsets.UTF_8)))
 
         val req = client.get("/api/event/MQTT/dataPoints/data.point.test.foo/limit/10") {
             headers {
@@ -54,6 +61,7 @@ class DataPointTest {
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
         }
+
         val events = req.body<List<GenericEventMessage>>()
         assert(events.all { it.message.topic == "data.point.test.foo" })
         assert(events.all { it.message.dataSource == "MQTT" })
