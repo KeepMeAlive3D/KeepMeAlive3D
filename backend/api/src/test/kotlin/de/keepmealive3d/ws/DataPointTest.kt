@@ -27,9 +27,9 @@ class DataPointTest {
     fun setUp() = testApplication {
         application {
             appModule()
+            mqttClient = SetupMqttTestClient().getClient()
         }
 
-        mqttClient = SetupMqttTestClient().getClient()
         token = setupTestUser()
     }
 

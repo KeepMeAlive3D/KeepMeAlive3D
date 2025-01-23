@@ -64,7 +64,8 @@ On Success:
   },
   "message": {
     "topic": "<topic-name>",
-    "eventData": "<data-point>"
+    "source": "MQTT",
+    "point": 4.3
   }
 }
 ```
