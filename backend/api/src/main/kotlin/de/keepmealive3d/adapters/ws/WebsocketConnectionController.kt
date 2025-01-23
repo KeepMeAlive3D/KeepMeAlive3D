@@ -1,7 +1,7 @@
 package de.keepmealive3d.adapters.ws
 
-import de.keepmealive3d.core.event.messages.EventMessage
 import de.keepmealive3d.core.event.messages.EventSubscribe
+import de.keepmealive3d.core.event.messages.GenericEventMessage
 import de.keepmealive3d.core.event.messages.wsCreateErrorEventMessage
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -18,7 +18,7 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
 
 class WebsocketConnectionController(application: Application): KoinComponent {
-    private val eventChannel: Channel<EventMessage> by inject(qualifier("events"))
+    private val eventChannel: Channel<GenericEventMessage> by inject(qualifier("events"))
 
     init {
         application.routing {
