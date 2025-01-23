@@ -13,11 +13,16 @@ import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 import {getRemoteModelNames, ModelInfo} from "@/service/upload.ts";
 import {LoadingSpinner} from "@/components/custom/loading-spinner.tsx";
+import {useAppDispatch} from "@/hooks/hooks.ts";
+import {fetchAndSetModel} from "@/slices/ModelSlice.ts";
 
-export function OpenModel({setModelUri}: { setModelUri: (model: string, name: string) => void }) {
+
+export function OpenModel() {
     const [open, setOpen] = useState(false);
     const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
     const [loading, setLoading] = useState(false)
+    const dispatch = useAppDispatch()
+
 
     useEffect(() => {
         getRemoteModelNames().then(req => {
@@ -29,8 +34,8 @@ export function OpenModel({setModelUri}: { setModelUri: (model: string, name: st
 
     const handleFileOpen = (name: string, filename: string) => {
         setLoading(true)
-        setModelUri(name, filename)
-        setOpen(false)
+        dispatch(fetchAndSetModel({name: name, filename: filename}));
+        setOpen(false);
     }
 
     return <SidebarMenuItem key="Open">

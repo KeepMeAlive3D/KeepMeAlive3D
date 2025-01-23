@@ -41,6 +41,7 @@ fun Application.appModule() {
     val iniModule = module {
         single { conf }
         single { jwt }
+        single { log }
         single(qualifier = qualifier("events")) { Channel<GenericEventMessage>() }
     }
 
