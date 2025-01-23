@@ -16,7 +16,7 @@ class EventController(application: Application) : KoinComponent {
     init {
         application.routing {
             authenticate("jwt") {
-                get("/api/event/{source}/{topic}/dataPoints/{datapoint}") {
+                get("/api/event/{source}/dataPoints/{topic}/limit/{limit}") {
                     val user = call.principal<KmaUserPrincipal>()
                     if (user == null) {
                         call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
@@ -30,11 +30,11 @@ class EventController(application: Application) : KoinComponent {
                         call.respond(HttpStatusCode.BadRequest, "topic could not be found!")
                         return@get
                     }
-                    val dataPoints = call.parameters["datapoint"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "datapoint could not be found!")
+                    val limit = call.parameters["limit"]?.toIntOrNull() ?: run {
+                        call.respond(HttpStatusCode.BadRequest, "limit could not be found!")
                         return@get
                     }
-                    call.respond(eventDao.loadEvents(source, topic, dataPoints))
+                    call.respond(eventDao.loadEvents(source, topic, limit))
                 }
             }
         }

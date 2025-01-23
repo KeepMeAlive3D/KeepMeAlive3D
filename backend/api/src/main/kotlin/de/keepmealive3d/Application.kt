@@ -11,7 +11,7 @@ import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
-import de.keepmealive3d.core.event.messages.EventMessage
+import de.keepmealive3d.core.event.messages.GenericEventMessage
 import de.keepmealive3d.plugins.*
 import de.keepmealive3d.scriptingapi.Loader
 import de.keepmealive3d.scriptingapi.PluginConfig
@@ -41,7 +41,7 @@ fun Application.appModule() {
     val iniModule = module {
         single { conf }
         single { jwt }
-        single(qualifier = qualifier("events")) { Channel<EventMessage>() }
+        single(qualifier = qualifier("events")) { Channel<GenericEventMessage>() }
     }
 
     configureDependencyInjection(iniModule)

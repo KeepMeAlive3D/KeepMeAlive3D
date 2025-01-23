@@ -1,7 +1,7 @@
 package de.keepmealive3d.scriptingapi.mqtt
 
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.event.messages.MessageType
+import de.keepmealive3d.core.event.messages.*
 import de.keepmealive3d.scriptingapi.Plugin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ class MqttPlugin : Plugin() {
     }
 
     override suspend fun registerLiveDataAdapter(
-        rcv: suspend (dataSource: String, topic: String, value: String, type: MessageType) -> Unit,
+        rcv: suspend (msg: GenericEventMessage) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         //sanity check
@@ -51,16 +51,26 @@ class MqttPlugin : Plugin() {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 runBlocking {
                     launch {
-                        var type = MessageType.TOPIC_DATAPOINT
                         val data = message?.payload?.let { String(it) } ?: ""
-                        if (topic != null && topic.startsWith("machine.move.")) {
-                            type = MessageType.ANIMATION
+                        if (topic == null)
+                            return@launch
+                        if (topic.startsWith("machine.move.")) {
+                            val (x, y, z) = data.split(",")
+                            rcv(
+                                wsCreatePositionMessageEvent(
+                                    topic,
+                                    "MQTT",
+                                    Triple(
+                                        x.toDoubleOrNull() ?: 0.0,
+                                        y.toDoubleOrNull() ?: 0.0,
+                                        z.toDoubleOrNull() ?: 0.0
+                                    )
+                                )
+                            )
+                            return@launch
                         }
                         rcv(
-                            "MQTT",
-                            topic ?: "<unknown>",
-                            data,
-                            type
+                            wsCreateDataPointEventMessage(topic, "MQTT", data.toDoubleOrNull() ?: 0.0)
                         )
                     }
                 }
