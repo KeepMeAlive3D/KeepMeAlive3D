@@ -1,6 +1,7 @@
 package de.keepmealive3d.plugins
 
 import de.keepmealive3d.adapters.influx.KmaInfluxDatabase
+import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.encryption.EncryptionService
 import de.keepmealive3d.core.model.ModelRepository
@@ -17,6 +18,7 @@ fun Application.configureDependencyInjection(initModule: Module) {
             initModule,
             module {
                 single { KmaSqlDatabase() }
+                single { EventDao() }
                 single { EncryptionService() }
                 single { KmaInfluxDatabase() }
                 single { ModelRepository() }

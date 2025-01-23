@@ -20,6 +20,7 @@ fun main() {
         MqttAsyncClient.generateClientId(),
     )
     val topic = "machine.test.rotor.speed"
+    val moveTopic = "machine.move.rotor.speed"
     val connectionOptions = MqttConnectOptions()
 
     connectionOptions.userName = config.databases.mqtt.clientId
@@ -33,7 +34,16 @@ fun main() {
     runBlocking {
         while (true) {
             val randomNumber = range.random()
-            client.publish(topic, MqttMessage("$randomNumber".toByteArray()))
+            if (randomNumber < 50) {
+                client.publish(
+                    moveTopic,
+                    MqttMessage(
+                        "0,${randomNumber + 1},0".toByteArray(),
+                    )
+                )
+            } else {
+                client.publish(topic, MqttMessage("$randomNumber".toByteArray()))
+            }
             delay(1000 * 3)
         }
     }

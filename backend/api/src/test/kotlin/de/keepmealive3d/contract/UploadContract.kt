@@ -1,9 +1,9 @@
 package de.keepmealive3d.contract
 
-import de.keepmealive3d.adapters.auth.AuthController
-import de.keepmealive3d.adapters.auth.RegisterController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.appModule
+import de.keepmealive3d.cleanupTestUser
+import de.keepmealive3d.setupTestUser
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import java.io.File
-import kotlin.io.path.Path
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,22 +26,7 @@ class UploadContract {
         application {
             appModule()
         }
-
-        val client = createClient {
-            this.install(ContentNegotiation) {
-                json()
-            }
-        }
-
-        client.post("/api/register/basic") {
-            header(HttpHeaders.ContentType, "application/json")
-            setBody(RegisterController.RegisterData("Test User", "Test Password"))
-        }
-        val response = client.post("/api/login/basic") {
-            header(HttpHeaders.ContentType, "application/json")
-            setBody(AuthController.BasicAuthRequest("Test User", "Test Password"))
-        }.body<AuthController.AuthResponse>()
-        token = response.token
+        token = setupTestUser()
     }
 
     @Test
@@ -113,16 +97,6 @@ class UploadContract {
         application {
             appModule()
         }
-
-        val client = createClient {
-            this.install(ContentNegotiation) {
-                json()
-            }
-        }
-
-        client.delete("/api/user") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }
-        client.close()
+        cleanupTestUser(token!!)
     }
 }
