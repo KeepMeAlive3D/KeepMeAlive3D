@@ -4,6 +4,7 @@ import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.encryption.EncryptionService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -30,8 +31,9 @@ class AuthController(application: Application) : KoinComponent {
         val password: String
     )
 
-    val jwt: JWT by inject()
-    val database: KmaSqlDatabase by inject()
+    private val jwt: JWT by inject()
+    private val database: KmaSqlDatabase by inject()
+    private val encryptionService: EncryptionService by inject()
 
     init {
         application.routing {
@@ -53,7 +55,11 @@ class AuthController(application: Application) : KoinComponent {
                 val body = call.receive<BasicAuthRequest>()
                 val dbUser = database.getUser(body.username)
                 if (dbUser == null) {
-                    call.respond(HttpStatusCode.BadRequest, "Could not Authenticate!")
+                    call.respond(HttpStatusCode.Unauthorized, "Wrong username or password!")
+                    return@post
+                }
+                if(!encryptionService.verifyHash(body.password, dbUser.password)) {
+                    call.respond(HttpStatusCode.Unauthorized, "Wrong username or password!")
                     return@post
                 }
                 val token = jwt.generateToken(dbUser.userid, dbUser.name)
