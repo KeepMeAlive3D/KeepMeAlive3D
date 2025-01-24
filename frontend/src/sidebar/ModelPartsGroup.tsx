@@ -1,28 +1,33 @@
-import {useAppDispatch, useAppSelector} from "@/hooks/hooks.ts";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import {
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenuButton,
-    SidebarMenuItem
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
-import {toggleIsSelected} from "@/slices/ModelPartSlice.ts";
+import { toggleIsSelected } from "@/slices/ModelPartSlice.ts";
 
 export function ModelPartsGroup() {
-    const modelParts = useAppSelector((state) => state.modelParts.partIds);
-    const dispatch = useAppDispatch()
+  const modelParts = useAppSelector((state) => state.modelParts.partIds);
+  const dispatch = useAppDispatch();
 
-    return <SidebarGroup>
-        <SidebarGroupLabel>Components</SidebarGroupLabel>
-        {modelParts.map((item) => (
-            <SidebarMenuItem key={item.name}>
-                <SidebarMenuButton asChild onClick={() => {
-                    dispatch(toggleIsSelected(item))
-                }}>
-                    <span>{item.name}</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        ))}
-        <SidebarGroupContent></SidebarGroupContent>
-    </SidebarGroup>;
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Components</SidebarGroupLabel>
+      {modelParts.map((item) => (
+        <SidebarMenuItem key={item.name}>
+          <SidebarMenuButton
+            asChild
+            onClick={() => {
+              dispatch(toggleIsSelected(item));
+            }}
+          >
+            <span>{item.name}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+      <SidebarGroupContent></SidebarGroupContent>
+    </SidebarGroup>
+  );
 }
