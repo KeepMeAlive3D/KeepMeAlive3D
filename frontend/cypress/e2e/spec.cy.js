@@ -1,8 +1,8 @@
 describe('Basic tests', () => {
     it('Healthcheck', () => {
-        cy.visit("http://localhost:5173/")
-        cy.contains('login')
-    })
+        cy.visit("http://localhost:5173/");
+        cy.contains('login');
+    });
 
     it('Login with correct data', () => {
         cy.visit("http://localhost:5173/")
@@ -15,7 +15,7 @@ describe('Basic tests', () => {
         cy.wait('@loginRequest');
 
         cy.get('#username').should('not.exist');
-    })
+    });
 
     it('Login with incorrect data', () => {
         cy.visit("http://localhost:5173/")
@@ -29,5 +29,9 @@ describe('Basic tests', () => {
         cy.wait('@loginRequest');
 
         cy.get('#username').should('exist');
-    })
+    });
+
+    it("Test session", () => {
+        cy.login("admin", "123");
+    });
 })
