@@ -56,7 +56,7 @@ jobs:
 
       - name: Run with Gradle Wrapper
         run: |
-          ./gradlew :api:run
+          nohup ./gradlew :api:run &
 
       - name: Sleep 10 sec
         run: sleep 10
