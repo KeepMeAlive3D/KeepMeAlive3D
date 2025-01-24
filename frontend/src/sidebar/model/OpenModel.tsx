@@ -47,6 +47,7 @@ export function OpenModel() {
   const handleFileOpen = (name: string, filename: string) => {
     setLoading(true);
     dispatch(fetchAndSetModel({ name: name, filename: filename }));
+    setLoading(false);
     setOpen(false);
   };
 
