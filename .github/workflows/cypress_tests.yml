@@ -21,44 +21,44 @@ jobs:
       ports:
         - "1883:1883"
         - "9001:9001"
-  cypress-run:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: migrate
-        run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
-      - name: mqtt setup
-        run: |
-          sleep 10
-          docker exec ${{job.services.mqtt.id}} sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
-          docker exec ${{job.services.mqtt.id}} sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
-          docker restart ${{job.services.mqtt.id}}
-      - name: mqtt healthcheck
-        run: |
-          sleep 10
-          docker ps
-          nc -zv 127.0.0.1 1883
-          sudo apt-get update && sudo apt-get install -y mosquitto-clients
-          mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
-      - name: Set up JDK 23
-        uses: actions/setup-java@v4
-        with:
-          java-version: '23'
-          distribution: 'temurin'
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+cypress-run:
+  runs-on: ubuntu-24.04
+  steps:
+    - uses: actions/checkout@v4
+    - name: migrate
+      run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
+    - name: mqtt setup
+      run: |
+        sleep 10
+        docker exec ${{job.services.mqtt.id}} sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
+        docker exec ${{job.services.mqtt.id}} sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
+        docker restart ${{job.services.mqtt.id}}
+    - name: mqtt healthcheck
+      run: |
+        sleep 10
+        docker ps
+        nc -zv 127.0.0.1 1883
+        sudo apt-get update && sudo apt-get install -y mosquitto-clients
+        mosquitto_pub -h 127.0.0.1 -p 1883 -t "test" -m "healthcheck" || exit 1
+    - name: Set up JDK 23
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Run with Gradle Wrapper
-        run: ./gradlew :api:run
+    - name: Run with Gradle Wrapper
+      run: ./gradlew :api:run
 
 
-      - name: Checkout
-        uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: npm run build
-          start: npm start
-          browser: firefox
+    - name: Checkout
+      uses: actions/checkout@v4
+    # Install npm dependencies, cache them correctly
+    # and run all Cypress tests
+    - name: Cypress run
+      uses: cypress-io/github-action@v6
+      with:
+        build: npm run build
+        start: npm start
+        browser: firefox
