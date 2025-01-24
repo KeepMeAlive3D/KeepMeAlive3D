@@ -18,18 +18,13 @@ import de.keepmealive3d.scriptingapi.PluginConfig
 import de.keepmealive3d.scriptingapi.mqtt.MqttPlugin
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import java.io.File
 
-fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::appModule)
-        .start(wait = true)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.appModule() {
     val conf = Config.load(File("config.yml")).getOrElse {
