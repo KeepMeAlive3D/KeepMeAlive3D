@@ -55,7 +55,11 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Run with Gradle Wrapper
-        run: ./gradlew :api:run
+        run: |
+          ./gradlew :api:run
+
+      - name: Sleep 10 sec
+        run: sleep 10
 
       - name: Change dir
         run: cd ../frontend
