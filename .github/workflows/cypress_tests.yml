@@ -13,8 +13,8 @@ jobs:
           - "3306:3306"
         env:
           MYSQL_ROOT_PASSWORD: test
-        options: >
-          --health-cmd "mysqladmin ping -ptest"
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
           --health-interval 10s
           --health-start-period 10s
           --health-timeout 5s
