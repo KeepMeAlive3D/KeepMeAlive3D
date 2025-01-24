@@ -61,12 +61,10 @@ jobs:
       - name: Sleep 10 sec
         run: sleep 10
 
-      - name: Change dir
-        run: cd ../frontend
-
       - name: Cypress Run
         uses: cypress-io/github-action@v6
         with:
           build: npm run build
           start: npm start
           browser: firefox
+        working-directory: ../frontend
