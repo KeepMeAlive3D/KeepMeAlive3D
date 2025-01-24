@@ -26,20 +26,20 @@ jobs:
           - "9001:9001"
     permissions:
       contents: read
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
       - uses: actions/checkout@v4
       - name: migrate
+        working-directory: ./backend
         run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
       - name: mqtt setup
+        working-directory: ./backend
         run: |
           sleep 10
           docker exec ${{job.services.mqtt.id}} sh -c "echo listener 1883 > /mosquitto/config/mosquitto.conf"
           docker exec ${{job.services.mqtt.id}} sh -c "echo allow_anonymous true >> /mosquitto/config/mosquitto.conf"
           docker restart ${{job.services.mqtt.id}}
       - name: mqtt healthcheck
+        working-directory: ./backend
         run: |
           sleep 10
           docker ps
@@ -55,6 +55,7 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Run with Gradle Wrapper
+        working-directory: ./backend
         run: |
           nohup ./gradlew :api:run &
 
@@ -63,9 +64,8 @@ jobs:
 
       - name: Cypress Run
         uses: cypress-io/github-action@v6
-        working-directory: ../frontend
         with:
-          build: npm run build
-          start: npm start
+          build: cd ./frontend/ | npm run build
+          start: cd ./frontend/ | npm start
           browser: firefox
 
