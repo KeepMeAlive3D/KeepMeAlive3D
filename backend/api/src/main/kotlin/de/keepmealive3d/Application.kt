@@ -48,7 +48,7 @@ fun Application.appModule() {
     loader.loadPlugins(this, conf)
     launch { loader.persistEvents() }
 
-    configureHTTP()
+    configureHTTP(conf)
     configureMonitoring()
     configureSerialization()
     configureSockets()

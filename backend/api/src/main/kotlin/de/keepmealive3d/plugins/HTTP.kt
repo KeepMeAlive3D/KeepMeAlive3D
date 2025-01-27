@@ -1,12 +1,12 @@
 package de.keepmealive3d.plugins
 
+import de.keepmealive3d.config.Config
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.response.*
 
-fun Application.configureHTTP() {
+fun Application.configureHTTP(config: Config) {
     install(Compression)
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -17,6 +17,13 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Post)
         allowHeader("content-type")
         allowHeader("Content-Type")
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+
+        if(config.allowedCORS.isNotEmpty()) {
+            config.allowedCORS.forEach {
+                allowHost(it, listOf("https"))
+            }
+        } else {
+            anyHost()
+        }
     }
 }
