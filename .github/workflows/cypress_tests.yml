@@ -71,7 +71,7 @@ jobs:
         with:
           working-directory: ./frontend
           build: npm run build
-          start: npm start
+          start: npm run dev
           browser: firefox
 
 
