@@ -18,7 +18,7 @@ export const fetchAndSetModel = createAsyncThunk(
 // Define a type for the slice state
 interface ModelState {
   url: string;
-  error: unknown;
+  error: string | null;
 }
 
 // Define the initial state using that type
@@ -38,7 +38,7 @@ export const modelSlice = createSlice({
         state.url = action.payload;
       })
       .addCase(fetchAndSetModel.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload as string;
       });
   },
 });
