@@ -64,8 +64,8 @@ jobs:
         run: |
           ./gradlew :api:run &
 
-      - name: Sleep 30 sec
-        run: sleep 30
+      - name: Wait for the server to start
+        run: npx wait-on http://localhost:8080
 
       - name: Install Cypress Dependencies
         run: npm install
