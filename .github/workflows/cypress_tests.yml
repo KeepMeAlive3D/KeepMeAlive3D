@@ -54,6 +54,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
+      - name: Copy test config
+        working-directory: ./backend
+        run: |
+          cp ./api/src/test/resources/config.yml ./api/config.yml
+
       - name: Run with Gradle Wrapper
         working-directory: ./backend
         run: |
