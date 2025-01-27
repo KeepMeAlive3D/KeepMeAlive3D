@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-import {
-  createWebsocket,
-  EventMessageType,
-  EventSubscribe,
-  Message,
-} from "@/service/wsService.ts";
-import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
-import { Line, LineChart, XAxis, YAxis } from "recharts";
-import { useToast } from "@/hooks/use-toast.ts";
+import {useEffect, useState} from "react";
+import {createWebsocket,} from "@/service/wsService.ts";
+import {type ChartConfig, ChartContainer} from "@/components/ui/chart.tsx";
+import {Line, LineChart, XAxis, YAxis} from "recharts";
+import {useToast} from "@/hooks/use-toast.ts";
+import {DataPointEventMessage, EventError, EventSubscribe, MessageType} from "@/service/wsTypes.ts";
 
 const chartConfig = {
   desktop: {
@@ -21,7 +17,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 function MqttGraph({ topic }: { topic: string }) {
-  const [data, setData] = useState<Array<Message>>([]);
+  const [data, setData] = useState<Array<DataPointEventMessage>>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -30,7 +26,7 @@ function MqttGraph({ topic }: { topic: string }) {
       const subscribeData: EventSubscribe = {
         manifest: {
           version: 1,
-          messageType: EventMessageType.SUBSCRIBE_TOPIC,
+          messageType: MessageType.SUBSCRIBE_TOPIC,
           timestamp: new Date().valueOf(),
           bearerToken: localStorage.getItem("token") ?? "null",
         },
@@ -43,18 +39,21 @@ function MqttGraph({ topic }: { topic: string }) {
 
       ws.onmessage = (event) => {
         const e: string = event.data.toString();
-        const msg: Message = JSON.parse(e) as Message;
+        const jsonMsg = JSON.parse(e);
+        const msgType = jsonMsg["manifest"]["messageType"];
 
-        if (msg.manifest.messageType === EventMessageType.ERROR) {
+        if (msgType === MessageType.ERROR) {
+          const error = jsonMsg as EventError;
+
           toast({
             variant: "destructive",
             title: "Error",
-            description: msg.message.eventData.toString(),
+            description: error.message.message.toString(),
           });
         } else if (
-          msg.manifest.messageType === EventMessageType.TOPIC_DATAPOINT
+            msgType === MessageType.TOPIC_DATAPOINT
         ) {
-          setData((d) => [...d, msg]);
+          setData((d) => [...d, jsonMsg as DataPointEventMessage]);
         }
       };
     });
@@ -70,7 +69,7 @@ function MqttGraph({ topic }: { topic: string }) {
         <LineChart
           width={500}
           height={300}
-          data={data.map((x) => parseInt(x.message.eventData))}
+          data={data.map((x) => x.message.point)}
         >
           <XAxis />
           <YAxis dataKey={(v) => v} />
