@@ -7,26 +7,14 @@ export async function createWebsocket(): Promise<WebSocket> {
     ws.onopen = () => {
       resolve(ws);
     };
-    ws.onmessage = onMessage;
     ws.onerror = onError;
     ws.onclose = onClose;
   });
 }
 
-export const wsMessages = new Channel<unknown>();
 export const wsError = new Channel<string>();
 
 export const wsCanceled = new Channel<boolean>();
-
-//An event listener to be called when a message is received from the server
-function onMessage(event: MessageEvent): void {
-  try {
-    const e: string = event.data.toString();
-    wsMessages.send(e);
-  } catch (e) {
-    wsError.send(`${e}`);
-  }
-}
 
 //An event listener to be called when an error occurs. This is a simple event named "error".
 function onError(event: Event): void {
