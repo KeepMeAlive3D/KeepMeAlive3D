@@ -2,7 +2,7 @@ FROM node:20.18.0-slim AS frontend
 WORKDIR /app
 COPY ./frontend .
 RUN npm i
-RUN npm run build
+RUN npm run build-prod
 
 
 FROM gradle:8-jdk23-alpine AS api
