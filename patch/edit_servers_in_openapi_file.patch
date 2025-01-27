@@ -1,0 +1,22 @@
+Subject: [PATCH] edit servers in openapi file
+---
+Index: backend/api/src/main/resources/openapi/documentation.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/api/src/main/resources/openapi/documentation.yaml b/backend/api/src/main/resources/openapi/documentation.yaml
+--- a/backend/api/src/main/resources/openapi/documentation.yaml	(revision 77b2b420072a323e42df5c5c0938fb8336db40a8)
++++ b/backend/api/src/main/resources/openapi/documentation.yaml	(date 1737967374040)
+@@ -4,7 +4,10 @@
+   description: "backend API"
+   version: "1.0.0"
+ servers:
+-- url: "https://backend"
++  - url: "https://kma.matthiasklenz.de"
++    description: "remote"
++  - url: "localhost:8080"
++    description: "local"
+ paths:
+   /status:
+     get:

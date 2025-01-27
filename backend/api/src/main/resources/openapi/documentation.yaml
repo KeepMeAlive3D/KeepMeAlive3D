@@ -4,7 +4,10 @@ info:
   description: "backend API"
   version: "1.0.0"
 servers:
-- url: "https://backend"
+  - url: "https://kma.matthiasklenz.de"
+    description: "remote"
+  - url: "localhost:8080"
+    description: "local"
 paths:
   /status:
     get:
