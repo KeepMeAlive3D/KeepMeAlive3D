@@ -135,15 +135,17 @@ paths:
               $ref: "#/components/schemas/BasicAuthRequest"
         required: true
       responses:
-        "400":
-          description: "Bad Request"
+        "401":
+          description: "Unauthorized"
           content:
             '*/*':
               schema:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Could not Authenticate!"
+                  value: "Wrong username or password!"
+                Example#2:
+                  value: "Wrong username or password!"
         "200":
           description: "OK"
           content:

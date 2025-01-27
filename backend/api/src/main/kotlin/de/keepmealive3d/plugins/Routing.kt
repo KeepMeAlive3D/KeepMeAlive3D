@@ -13,7 +13,7 @@ fun Application.configureRouting() {
         get("/status") {
             call.respondText("Up!")
         }
-        swaggerUI("/swagger", "openapi/documentation.yaml")
+        swaggerUI("/swagger", "openapi/documentation.yaml") {}
         singlePageApplication {
             useResources = true
             react("static")
