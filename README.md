@@ -1,3 +1,6 @@
+![GitHub Release Date](https://img.shields.io/github/release-date/KeepMeAlive3D/KeepMeAlive3D)
+
+
 # KeepMeAlive3D
 A service that renders GLTF models in the context of manufacturing
 
