@@ -73,7 +73,7 @@ dependencies {
     // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
     implementation("io.insert-koin:koin-ktor:4.0.1")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
-    implementation("io.insert-koin:koin-logger-slf4j:4.0.1")
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
 
     implementation("at.favre.lib:bcrypt:0.10.2")
 
