@@ -25,9 +25,12 @@ describe('Basic tests', () => {
         cy.get('input[id="password"]').type('1235678');
         cy.get('button[type="submit"]').click();
 
-        // Wait until
-        cy.wait('@loginRequest');
+        // Check status code
+        cy.wait('@loginRequest').then((interception) => {
+            expect(interception.response.statusCode).to.equal(401);
+        })
 
+        // Login still visible
         cy.get('#username').should('exist');
     });
 
