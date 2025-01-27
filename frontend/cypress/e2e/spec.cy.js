@@ -3,7 +3,7 @@ describe('Healthcheck', () => {
         cy.visit("http://localhost:5173/");
         cy.contains('login');
     });
-})
+});
 
 describe('Login', () => {
     it('Login with correct data', () => {
@@ -39,4 +39,20 @@ describe('Login', () => {
     it("Test session", () => {
         cy.login("admin", "123");
     });
-})
+});
+
+describe('Model', () => {
+    it.only("Upload model", () => {
+        cy.login("admin", "123");
+        cy.visit("http://localhost:5173/");
+
+        cy.get("#UploadMenuBar").click();
+
+        cy.wait
+
+        cy.get("#filename").should('be.enabled');
+        cy.get("#filename").type("test");
+        cy.get("#hiddenFileInput").selectFile(cy.fixture("cube.glb"));
+
+    });
+});

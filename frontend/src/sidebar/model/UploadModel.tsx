@@ -78,7 +78,7 @@ export function UploadModel() {
   };
 
   return (
-    <SidebarMenuItem key="Upload">
+      <SidebarMenuItem key="Upload" id="UploadMenuBar">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <SidebarMenuButton asChild>
@@ -127,6 +127,7 @@ export function UploadModel() {
               </Button>
               <Input
                 style={{ display: "none" }}
+                id="hiddenFileInput"
                 ref={fileInputRef}
                 type="file"
                 onChange={() => updateFileName()}
