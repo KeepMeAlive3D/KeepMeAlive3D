@@ -65,7 +65,7 @@ jobs:
           ./gradlew :api:run &
 
       - name: Wait for the server to start
-        run: npx wait-on http://localhost:8080
+        run: npx wait-on http-get://localhost:8080
 
       - name: Install Cypress Dependencies
         run: npm install
