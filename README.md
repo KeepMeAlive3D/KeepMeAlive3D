@@ -1,4 +1,6 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/KeepMeAlive3D/KeepMeAlive3D)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/KeepMeAlive3D/KeepMeAlive3D/backend_integration_test.yml?label=backend%20test)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/KeepMeAlive3D/KeepMeAlive3D/frontend_tests.yml?label=frontend%20test)
 
 
 # KeepMeAlive3D
