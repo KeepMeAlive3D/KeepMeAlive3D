@@ -11,7 +11,8 @@ import kotlin.io.path.Path
 data class Config(
     val passphrase: String,
     val databases: Databases,
-    val pluginDirs: List<String>
+    val pluginDirs: List<String>,
+    val allowedCORS: List<String> = listOf(),
 ) {
     companion object {
         fun load(file: File): Result<Config> {
