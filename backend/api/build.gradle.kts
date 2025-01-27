@@ -12,7 +12,7 @@ group = "de.keepmealive3d"
 version = "0.0.1"
 
 application {
-    mainClass.set("de.keepmealive3d.ApplicationKt")
+    mainClass.set("io.ktor.server.netty.EngineMain")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -40,7 +40,8 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-sessions-jvm")
     implementation("org.webjars:jquery:3.7.1")
-    implementation("io.github.smiley4:ktor-swagger-ui:4.1.5")
+    implementation("io.ktor:ktor-server-openapi")
+    implementation("io.ktor:ktor-server-swagger-jvm")
     implementation("io.ktor:ktor-server-resources-jvm")
     implementation("io.ktor:ktor-server-host-common-jvm")
     implementation("io.ktor:ktor-server-compression-jvm")
@@ -65,14 +66,14 @@ dependencies {
 
     //db
     implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
-    implementation("com.mysql:mysql-connector-j:9.1.0")
+    implementation("com.mysql:mysql-connector-j:9.2.0")
 
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
-    runtimeOnly("io.insert-koin:koin-core:4.0.1")
+    runtimeOnly("io.insert-koin:koin-core:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
-    implementation("io.insert-koin:koin-ktor:4.0.1")
+    implementation("io.insert-koin:koin-ktor:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
-    implementation("io.insert-koin:koin-logger-slf4j:4.0.1")
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
 
     implementation("at.favre.lib:bcrypt:0.10.2")
 

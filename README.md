@@ -15,7 +15,9 @@ cd frontend
 npm i
 ```
 
-Run-configs are provided for Intelij, run `ApplicationKt` to start the backend and run `dev` to start the frontend.
+Run-configs are provided for IntelliJ, run `ApplicationKt` to start the backend and run `dev` to start the frontend.
+
+Run `npx prettier . --write` to reformat js files.
 
 ## Credits
 
