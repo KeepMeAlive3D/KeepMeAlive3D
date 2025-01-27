@@ -1,9 +1,9 @@
 // vite.config.ts
 /// <reference types="vite/client" />
-import path from "path"
-import react from "@vitejs/plugin-react"
-import {defineConfig as defineViteConfig, mergeConfig} from 'vite';
-import {defineConfig as defineVitestConfig} from 'vitest/config';
+import path from "path";
+import react from "@vitejs/plugin-react";
+import { defineConfig as defineViteConfig, mergeConfig } from "vite";
+import { defineConfig as defineVitestConfig } from "vitest/config";
 
 // https://vitejs.dev/config/
 // Merge taken from: https://stackoverflow.com/a/77229505
@@ -19,8 +19,8 @@ const viteConfig = defineViteConfig({
 const vitestConfig = defineVitestConfig({
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.ts",
     css: true,
   },
 });
