@@ -59,8 +59,8 @@ jobs:
         run: |
           ./gradlew :api:run &
 
-      - name: Sleep 10 sec
-        run: sleep 10
+      - name: Sleep 30 sec
+        run: sleep 30
 
       - name: Install Cypress Dependencies
         run: npm install
