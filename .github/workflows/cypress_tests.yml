@@ -64,12 +64,12 @@ jobs:
         run: |
           ./gradlew :api:run &
 
-      - name: Wait for the server to start
-        run: npx wait-on http-get://localhost:8080
-
       - name: Install Cypress Dependencies
         run: npm install
         working-directory: ./frontend
+
+      - name: Wait for the server to start
+        run: npx wait-on http-get://localhost:8080
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
