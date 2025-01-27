@@ -1,9 +1,11 @@
-describe('Basic tests', () => {
+describe('Healthcheck', () => {
     it('Healthcheck', () => {
         cy.visit("http://localhost:5173/");
         cy.contains('login');
     });
+})
 
+describe('Login', () => {
     it('Login with correct data', () => {
         cy.visit("http://localhost:5173/")
         cy.intercept('POST', '/api/login/basic').as('loginRequest');
