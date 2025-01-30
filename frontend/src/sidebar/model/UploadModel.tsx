@@ -78,7 +78,7 @@ export function UploadModel() {
   };
 
   return (
-      <SidebarMenuItem key="Upload" id="UploadMenuBar">
+    <SidebarMenuItem key="Upload" id="UploadMenuBar">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <SidebarMenuButton asChild>
@@ -136,10 +136,10 @@ export function UploadModel() {
           </div>
           <DialogFooter>
             <Button
-                id="uploadButton"
-                type="button"
-                disabled={loading}
-                onClick={() => handleFileUpload()}
+              id="uploadButton"
+              type="button"
+              disabled={loading}
+              onClick={() => handleFileUpload()}
             >
               Upload
               <LoadingSpinner className={"static"} loading={loading} />

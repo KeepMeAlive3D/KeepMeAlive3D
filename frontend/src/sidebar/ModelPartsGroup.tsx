@@ -16,7 +16,7 @@ export function ModelPartsGroup() {
     <SidebarGroup>
       <SidebarGroupLabel>Components</SidebarGroupLabel>
       {modelParts.map((item, i) => (
-          <SidebarMenuItem key={item.name} id={"Component" + i}>
+        <SidebarMenuItem key={item.name} id={"Component" + i}>
           <SidebarMenuButton
             asChild
             onClick={() => {
