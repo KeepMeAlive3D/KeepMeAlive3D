@@ -23,13 +23,15 @@ class WebsocketConnectionController(application: Application): KoinComponent {
     init {
         application.routing {
             webSocket("/ws") {
+                val subscriptions = hashSetOf<String>()
+
                 val rcv = async(Dispatchers.IO) {
                     for(frame in incoming) {
                         if(frame is Frame.Text) {
                             val text = frame.readText()
                             try {
                                 val sub = Json.decodeFromString<EventSubscribe>(text)
-                                //todo save subscriptions
+                                subscriptions.add(sub.message.topic)
                             } catch (_: Exception) {
                                 val msg = wsCreateErrorEventMessage("BadRequest", "Unable to read message")
                                 outgoing.send(Frame.Text(Json.encodeToString(msg)))
@@ -40,8 +42,9 @@ class WebsocketConnectionController(application: Application): KoinComponent {
 
                 val send = launch {
                     for (event in eventChannel) {
-                        //todo check if client is subscribed
-                        outgoing.send(Frame.Text(Json.encodeToString(event)))
+                        if(subscriptions.contains(event.message.topic)) {
+                            outgoing.send(Frame.Text(Json.encodeToString(event)))
+                        }
                     }
                 }
 
