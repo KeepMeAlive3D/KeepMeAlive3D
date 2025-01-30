@@ -136,9 +136,10 @@ export function UploadModel() {
           </div>
           <DialogFooter>
             <Button
-              type="button"
-              disabled={loading}
-              onClick={() => handleFileUpload()}
+                id="uploadButton"
+                type="button"
+                disabled={loading}
+                onClick={() => handleFileUpload()}
             >
               Upload
               <LoadingSpinner className={"static"} loading={loading} />
