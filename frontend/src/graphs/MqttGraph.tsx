@@ -1,9 +1,14 @@
-import {useEffect, useState} from "react";
-import {createWebsocket,} from "@/service/wsService.ts";
-import {type ChartConfig, ChartContainer} from "@/components/ui/chart.tsx";
-import {Line, LineChart, XAxis, YAxis} from "recharts";
-import {useToast} from "@/hooks/use-toast.ts";
-import {DataPointEventMessage, EventError, EventSubscribe, MessageType} from "@/service/wsTypes.ts";
+import { useEffect, useState } from "react";
+import { createWebsocket } from "@/service/wsService.ts";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
+import { Line, LineChart, XAxis, YAxis } from "recharts";
+import { useToast } from "@/hooks/use-toast.ts";
+import {
+  DataPointEventMessage,
+  EventError,
+  EventSubscribe,
+  MessageType,
+} from "@/service/wsTypes.ts";
 
 const chartConfig = {
   desktop: {
@@ -50,9 +55,7 @@ function MqttGraph({ topic }: { topic: string }) {
             title: "Error",
             description: error.message.message.toString(),
           });
-        } else if (
-            msgType === MessageType.TOPIC_DATAPOINT
-        ) {
+        } else if (msgType === MessageType.TOPIC_DATAPOINT) {
           setData((d) => [...d, jsonMsg as DataPointEventMessage]);
         }
       };

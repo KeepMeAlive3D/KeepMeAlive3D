@@ -15,6 +15,7 @@ service.interceptors.response.use(
 
       window.location.href = window.location.origin; //refresh window
     }
+    return Promise.reject(error);
   }
 );
 

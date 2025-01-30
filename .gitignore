@@ -28,5 +28,6 @@ replay_pid*
 *.glb
 *.bin
 *.step
+!**/fixtures/cube.glb
 
 .idea/
