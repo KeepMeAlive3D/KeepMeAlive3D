@@ -2,6 +2,7 @@ package de.keepmealive3d.adapters.sql
 
 import de.keepmealive3d.adapters.sql.tables.DBEventTable
 import de.keepmealive3d.core.event.messages.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -47,17 +48,25 @@ class EventDao : KoinComponent {
         }
     }
 
-    private fun saveDbEvent(type: MessageType, source: String, topic: String, data: String, timestamp: Instant?) {
-        try {
-            kmaDatabase.database.insert(DBEventTable) {
-                set(it.type, type)
-                set(it.source, source)
-                set(it.topic, topic)
-                set(it.data, data)
-                set(it.timestamp, timestamp)
+    private suspend fun saveDbEvent(
+        type: MessageType,
+        source: String,
+        topic: String,
+        data: String,
+        timestamp: Instant?
+    ) = coroutineScope {
+        launch(Dispatchers.IO) {
+            try {
+                kmaDatabase.database.insert(DBEventTable) {
+                    set(it.type, type)
+                    set(it.source, source)
+                    set(it.topic, topic)
+                    set(it.data, data)
+                    set(it.timestamp, timestamp)
+                }
+            } catch (exception: Exception) {
+                exception.printStackTrace()
             }
-        } catch (exception: Exception) {
-            exception.printStackTrace()
         }
     }
 
