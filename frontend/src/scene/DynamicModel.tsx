@@ -3,7 +3,7 @@ import { Suspense, useEffect, useRef } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
-import { Light, Mesh, Object3D, Vector3 } from "three";
+import { Light, Object3D, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { add } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
@@ -25,24 +25,12 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         }
 
         if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
-          if (node instanceof Mesh) {
-            console.debug(
-              `Custom properties found for ${node.name}:`,
-              node.userData
-            );
-            dispatch(
-              add({
-                id: node.id,
-                name: node.name,
-                isSelected: false,
-                topic: node.userData["topic"],
-              })
-            );
-          }
+          console.debug(`Custom properties found for ${node.name}:`, node.userData["topic"]);
+          dispatch(add({ id: node.id, name: node.name, isSelected: false, topic: node.userData["topic"] }));
         }
       });
       // Remove lights. later custom lights will be spawned instead
-      lights.forEach((x) => x.removeFromParent());
+      lights.forEach(x => x.removeFromParent());
 
       loaded.current = true;
     }
