@@ -7,7 +7,7 @@ function Edit() {
 
   return (
     <div className="edit-content flex flex-col h-auto">
-      <div className="canvas-content flex-grow">
+      <div className="canvas-content grow">
         {url && (
           <Suspense>
             <DynamicModel objectUrl={url} />
