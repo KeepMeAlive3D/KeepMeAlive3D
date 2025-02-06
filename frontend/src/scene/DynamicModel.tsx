@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { add } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
+import Animator from "@/scene/Animator.tsx";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const loaded = useRef(false);
@@ -61,6 +62,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
           intensity={settings.light}
         />
 
+        <Animator />
         <Scaler />
         <OrbitControls />
         <Rotate />
