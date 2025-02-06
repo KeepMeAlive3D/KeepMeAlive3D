@@ -5,7 +5,7 @@ val flaxoos_extra_plugins_version: String by project
 plugins {
     kotlin("jvm") version "2.1.0"
     id("io.ktor.plugin") version "3.0.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
 }
 
 group = "de.keepmealive3d"
