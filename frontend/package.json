@@ -23,7 +23,7 @@
     "@radix-ui/react-toast": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-three/drei": "^9.120.6",
-    "@react-three/fiber": "^8.17.12",
+    "@react-three/fiber": "^8.17.14",
     "@reduxjs/toolkit": "^2.5.0",
     "@types/three": "^0.172.0",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
