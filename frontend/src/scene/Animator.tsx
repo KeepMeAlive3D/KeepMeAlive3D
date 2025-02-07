@@ -19,7 +19,7 @@ function Animator() {
     }
   }, [state.scene]);
 
-  useFilteredWebsocket("machine.move.mouse", MessageType.ANIMATION_POSITION, animationCallback);
+  useFilteredWebsocket("machine.move.gripper", MessageType.ANIMATION_POSITION, animationCallback);
 
 
   return null;
