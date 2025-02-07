@@ -12,7 +12,7 @@ export default defineConfig({
           headers: { "Content-Type": "application/json" },
           data: { username: "tester", password: "123" },
         };
-        console.log("Running REGISTER");
+
         axios
           .request(options)
           .then(function(response) {
