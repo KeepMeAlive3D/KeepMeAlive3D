@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { Line, LineChart, XAxis, YAxis } from "recharts";
 import {
@@ -21,9 +21,11 @@ const chartConfig = {
 function MqttGraph({ topic }: { topic: string }) {
   const [data, setData] = useState<Array<DataPointEventMessage>>([]);
 
-  useFilteredWebsocket<DataPointEventMessage>(topic, MessageType.TOPIC_DATAPOINT, (msg) => {
+  const dataCallback = useCallback((msg: DataPointEventMessage) => {
     setData((d) => [...d, msg]);
-  });
+  }, []);
+
+  useFilteredWebsocket<DataPointEventMessage>(topic, MessageType.TOPIC_DATAPOINT, dataCallback);
 
   return (
     <div>
