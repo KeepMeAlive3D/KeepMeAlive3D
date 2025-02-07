@@ -26,6 +26,9 @@ export const modelPartSlice = createSlice({
     add: (state, action: PayloadAction<ComponentInformation>) => {
       state.partIds.push(action.payload);
     },
+    clearPartsList: (state) => {
+      state.partIds = [];
+    },
     toggleIsSelected: (state, action: PayloadAction<ComponentInformation>) => {
       const index = state.partIds.findIndex(
         (part) => part.id === action.payload.id
@@ -37,7 +40,7 @@ export const modelPartSlice = createSlice({
   },
 });
 
-export const { add, toggleIsSelected } = modelPartSlice.actions;
+export const { add, clearPartsList, toggleIsSelected } = modelPartSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectModelParts = (state: RootState) => state.modelParts;
