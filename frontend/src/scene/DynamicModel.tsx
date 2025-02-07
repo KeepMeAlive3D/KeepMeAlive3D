@@ -5,7 +5,7 @@ import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
 import { Light, Mesh, Object3D, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { add, clearPartsList } from "@/slices/ModelPartSlice.ts";
+import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
 
@@ -31,7 +31,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
             node.userData,
           );
           dispatch(
-            add({
+            addPart({
               id: node.id,
               name: node.name,
               isSelected: false,

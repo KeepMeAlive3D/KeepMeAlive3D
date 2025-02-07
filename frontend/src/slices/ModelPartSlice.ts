@@ -23,7 +23,7 @@ export const modelPartSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    add: (state, action: PayloadAction<ComponentInformation>) => {
+    addPart: (state, action: PayloadAction<ComponentInformation>) => {
       state.partIds.push(action.payload);
     },
     clearPartsList: (state) => {
@@ -40,7 +40,7 @@ export const modelPartSlice = createSlice({
   },
 });
 
-export const { add, clearPartsList, toggleIsSelected } = modelPartSlice.actions;
+export const { addPart, clearPartsList, toggleIsSelected } = modelPartSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectModelParts = (state: RootState) => state.modelParts;
