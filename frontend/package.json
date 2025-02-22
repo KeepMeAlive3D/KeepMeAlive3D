@@ -56,7 +56,7 @@
     "@types/redux-state-sync": "^3.1.10",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
-    "cypress": "^14.0.1",
+    "cypress": "^14.0.3",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-react-hooks": "^5.0.0",
