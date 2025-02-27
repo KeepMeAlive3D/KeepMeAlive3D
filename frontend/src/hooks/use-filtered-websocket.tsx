@@ -8,26 +8,35 @@ import {
 } from "@/service/wsTypes.ts";
 
 
-function useFilteredWebsocket<Type extends GenericEventMessage>(topic: string, messageType: MessageType, onMessage: (msg: Type) => void) {
+function useFilteredWebsocket<Type extends GenericEventMessage>(topics: Array<string>, messageType: MessageType, onMessage: (msg: Type) => void) {
   const { toast } = useToast();
 
   useEffect(() => {
     let websocketConnection: WebSocket | undefined = undefined;
     createWebsocket().then(
       ws => {
-        const subscribeData: EventSubscribe = {
-          manifest: {
-            version: 1,
-            messageType: MessageType.SUBSCRIBE_TOPIC,
-            timestamp: new Date().valueOf(),
-            bearerToken: localStorage.getItem("token") ?? "null",
-          },
-          message: {
-            topic: topic,
-          },
-        };
+        const subscriptions = topics.map((topic) => {
+          return {
+            manifest: {
+              version: 1,
+              messageType: MessageType.SUBSCRIBE_TOPIC,
+              timestamp: new Date().valueOf(),
+              bearerToken: localStorage.getItem("token") ?? "null",
+            },
+            message: {
+              topic: topic,
+            },
+          } as EventSubscribe;
+        });
+
         websocketConnection = ws;
-        ws.send(JSON.stringify(subscribeData));
+
+        subscriptions.forEach((subscription) => {
+          ws.send(JSON.stringify(subscription));
+        });
+
+
+
 
         ws.onmessage = event => {
           const e: string = event.data.toString();
@@ -54,7 +63,7 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topic: string, m
     return () => {
       websocketConnection?.close();
     };
-  }, [messageType, onMessage, toast, topic]);
+  }, [messageType, onMessage, toast, topics]);
 }
 
 export default useFilteredWebsocket;

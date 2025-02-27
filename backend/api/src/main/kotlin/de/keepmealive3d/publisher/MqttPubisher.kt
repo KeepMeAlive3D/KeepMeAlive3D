@@ -20,7 +20,7 @@ fun main() {
         MqttAsyncClient.generateClientId(),
     )
     val topic = "machine.test.rotor.speed"
-    val moveTopic = "machine.move.gripper"
+    val moveTopic = "machine.move.9V_querausleger_sauger_id2046_step"
     val connectionOptions = MqttConnectOptions()
 
     connectionOptions.userName = config.databases.mqtt.clientId
