@@ -14,7 +14,7 @@ import kotlin.random.Random
 
 class ModelRepository : KoinComponent {
 
-    val log: Logger by inject()
+    private val log: Logger by inject()
 
     /**
      * reruns a path to a valid location to save a model to

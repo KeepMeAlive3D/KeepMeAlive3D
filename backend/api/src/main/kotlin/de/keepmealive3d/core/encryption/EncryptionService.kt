@@ -1,12 +1,8 @@
 package de.keepmealive3d.core.encryption
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import de.keepmealive3d.config.Config
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class EncryptionService: KoinComponent {
-    val config: Config by inject()
+class EncryptionService {
 
     //Hashing
     fun hash(data: String): ByteArray? {
