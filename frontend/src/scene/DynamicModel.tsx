@@ -1,41 +1,48 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
 import { Light, Object3D, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { add } from "@/slices/ModelPartSlice.ts";
+import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
-  const loaded = useRef(false);
   const gltf = useGLTF(objectUrl, undefined, true);
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
 
   useEffect(() => {
-    if (!loaded.current) {
-      const lights: Array<Object3D> = [];
+    const lights: Array<Object3D> = [];
 
-      gltf.scene.traverse((node) => {
-        if (node instanceof Light) {
-          lights.push(node);
-        }
+    dispatch(clearPartsList());
 
-        if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
-          console.debug(`Custom properties found for ${node.name}:`, node.userData["topic"]);
-          dispatch(add({ id: node.id, name: node.name, isSelected: false, topic: node.userData["topic"] }));
-        }
-      });
-      // Remove lights. later custom lights will be spawned instead
-      lights.forEach(x => x.removeFromParent());
+    gltf.scene.traverse((node) => {
+      if (node instanceof Light) {
+        lights.push(node);
+      }
 
-      loaded.current = true;
-    }
-  });
+      if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
+          console.debug(
+            `Custom properties found for ${node.name}:`,
+            node.userData,
+          );
+          dispatch(
+            addPart({
+              id: node.id,
+              name: node.name,
+              isSelected: false,
+              topic: node.userData["topic"],
+            }),
+          );
+      }
+    });
+    // Remove lights. later custom lights will be spawned instead
+    lights.forEach((x) => x.removeFromParent());
+  }, [objectUrl]);
 
   // Fix the dark bug on window resizing
   window.addEventListener("resize", () => {

@@ -4,7 +4,7 @@ val flaxoos_extra_plugins_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
-    id("io.ktor.plugin") version "3.0.3"
+    id("io.ktor.plugin") version "3.1.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
 }
 
@@ -54,22 +54,32 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-client-core-jvm:3.0.3")
-    implementation("io.ktor:ktor-client-apache-jvm:3.0.3")
+    implementation("io.ktor:ktor-client-core-jvm:3.1.0")
+    implementation("io.ktor:ktor-client-apache-jvm:3.1.0")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-client-content-negotiation")
+    testImplementation("io.mockk:mockk:1.13.16")
     implementation("io.ktor:ktor-server-auth-jwt")
 
-    implementation("com.charleskorn.kaml:kaml:0.67.1")
+    implementation("com.charleskorn.kaml:kaml:0.72.0")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 
     //db
     implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
     implementation("com.mysql:mysql-connector-j:9.2.0")
 
+    // Koin for Ktor
+    implementation("io.insert-koin:koin-ktor:4.0.2")
+    // SLF4J Logger
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
-    runtimeOnly("io.insert-koin:koin-core:4.0.2")
+    implementation("io.insert-koin:koin-core:4.0.2")
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-test
+    testImplementation("io.insert-koin:koin-test:4.0.2")
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-test-junit5
+    testImplementation("io.insert-koin:koin-test-junit5:4.0.2")
+
     // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
     implementation("io.insert-koin:koin-ktor:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
