@@ -27,6 +27,7 @@ import kotlin.test.BeforeTest
 class EventDaoTest : KoinTest {
     @BeforeTest
     fun setup() {
+        stopKoin()
         startKoin {
             modules(
                 module {
