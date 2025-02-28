@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
-import { createWebsocket } from "@/service/wsService.ts";
+import { useCallback, useState } from "react";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { Line, LineChart, XAxis, YAxis } from "recharts";
-import { useToast } from "@/hooks/use-toast.ts";
 import {
   DataPointEventMessage,
-  EventError,
-  EventSubscribe,
   MessageType,
 } from "@/service/wsTypes.ts";
+import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 
 const chartConfig = {
   desktop: {
@@ -23,47 +20,12 @@ const chartConfig = {
 
 function MqttGraph({ topic }: { topic: string }) {
   const [data, setData] = useState<Array<DataPointEventMessage>>([]);
-  const { toast } = useToast();
 
-  useEffect(() => {
-    let websocketConnection: WebSocket | undefined = undefined;
-    createWebsocket().then((ws) => {
-      const subscribeData: EventSubscribe = {
-        manifest: {
-          version: 1,
-          messageType: MessageType.SUBSCRIBE_TOPIC,
-          timestamp: new Date().valueOf(),
-          bearerToken: localStorage.getItem("token") ?? "null",
-        },
-        message: {
-          topic: topic,
-        },
-      };
-      websocketConnection = ws;
-      ws.send(JSON.stringify(subscribeData));
+  const dataCallback = useCallback((msg: DataPointEventMessage) => {
+    setData((d) => [...d, msg]);
+  }, []);
 
-      ws.onmessage = (event) => {
-        const e: string = event.data.toString();
-        const jsonMsg = JSON.parse(e);
-        const msgType = jsonMsg["manifest"]["messageType"];
-
-        if (msgType === MessageType.ERROR) {
-          const error = jsonMsg as EventError;
-
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: error.message.message.toString(),
-          });
-        } else if (msgType === MessageType.TOPIC_DATAPOINT) {
-          setData((d) => [...d, jsonMsg as DataPointEventMessage]);
-        }
-      };
-    });
-    return () => {
-      websocketConnection?.close();
-    };
-  }, [toast, topic]);
+  useFilteredWebsocket<DataPointEventMessage>([topic], MessageType.TOPIC_DATAPOINT, dataCallback);
 
   return (
     <div>
