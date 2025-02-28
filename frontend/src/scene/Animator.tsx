@@ -54,12 +54,9 @@ function Animator() {
 
   const animationCallback = useCallback((msg: PositionEventMessage) => {
     const name = msg.message.topic.split(".").reverse()[0];
-    console.debug(name);
     const selectedObject = state.scene.getObjectByName(name);
 
     if (selectedObject) {
-      console.debug("Moving object from " + selectedObject.position.x + ";" + selectedObject.position.y + ";" + selectedObject.position.z + " to " + msg.message.position.x + ";" + msg.message.position.y + ";" + msg.message.position.z);
-
       const targetPosition = new Vector3(
         msg.message.position.x,
         msg.message.position.y,
