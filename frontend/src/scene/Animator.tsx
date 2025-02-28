@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 import { MessageType, PositionEventMessage } from "@/service/wsTypes.ts";
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Object3D, Vector3 } from "three";
 
@@ -52,12 +52,13 @@ function Animator() {
   }, [state.scene]);
 
 
-  const topics = modelParts.map(modelPart => {
+  const topics = useMemo(() => modelParts.map(modelPart => {
     return "machine.move." + modelPart.name;
-  });
+  }), [modelParts]);
 
 
   useFilteredWebsocket(topics, MessageType.ANIMATION_POSITION, animationCallback);
+
 
   return null;
 }
