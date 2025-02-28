@@ -2,12 +2,14 @@ package de.keepmealive3d.publisher
 
 import de.keepmealive3d.config.Config
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.io.File
+import kotlin.random.Random
 
 fun main() {
     val config = Config.load(File("config.yml")).getOrElse {
@@ -19,8 +21,9 @@ fun main() {
         "tcp://${config.databases.mqtt.host}:${config.databases.mqtt.port}",
         MqttAsyncClient.generateClientId(),
     )
-    val topic = "machine.test.rotor.speed"
-    val moveTopic = "machine.move.9V_querausleger_sauger_id2046_step"
+
+    val moveTopic = "move.querausleger"
+    val rotationTopic = "rot.drehkranz_oben001"
     val connectionOptions = MqttConnectOptions()
 
     connectionOptions.userName = config.databases.mqtt.clientId
@@ -29,19 +32,35 @@ fun main() {
 
     client.connect(connectionOptions)
 
-    val range = (1..10)
+
 
     runBlocking {
-        while (true) {
-            for(i in 1..100) {
-                val z = -0.19853481650352478 + (i/1000.0)
-                client.publish(
-                    moveTopic,
-                    MqttMessage(
-                        "-0.22887501120567322,0.48093798756599426,${z}".toByteArray(),
+        launch {
+            while (true) {
+                for (i in 1..100) {
+                    val z = -0.15872880816459656 + (i / 1000.0)
+                    client.publish(
+                        moveTopic,
+                        MqttMessage(
+                            "-0.025958789512515068,0.3047788739204407,${z}".toByteArray(),
+                        )
                     )
-                )
-                delay(1000 )
+                    delay(Random.nextLong(100, 1000))
+                }
+            }
+        }
+
+        launch {
+            while (true) {
+                for (i in 1..100) {
+                    client.publish(
+                        rotationTopic,
+                        MqttMessage(
+                            "0,${i / 25.0},0".toByteArray(),
+                        )
+                    )
+                    delay(Random.nextLong(100, 2000))
+                }
             }
         }
     }
