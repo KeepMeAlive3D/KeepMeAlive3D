@@ -1,5 +1,5 @@
 import { createWebsocket } from "@/service/wsService.ts";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast.ts";
 import {
   EventError,
@@ -8,14 +8,21 @@ import {
 } from "@/service/wsTypes.ts";
 
 
-function useFilteredWebsocket<Type extends GenericEventMessage>(topics: Array<string>, messageType: MessageType, onMessage: (msg: Type) => void) {
+function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array<string>, messageType: MessageType, onMessage: (msg: Type) => void) {
   const { toast } = useToast();
+
+  const topics = useRef<string[]>([]);
+
+  // Only update if the topics actually changed and not only the reference of the array
+  if (!topics.current || (topicsArg.every(x => topics.current.find(y => x == y)) && topics.current.every(x => topicsArg.find(y => x == y)))) {
+    topics.current = topicsArg;
+  }
 
   useEffect(() => {
     let websocketConnection: WebSocket | undefined = undefined;
     createWebsocket().then(
       ws => {
-        const subscriptions = topics.map((topic) => {
+        const subscriptions = topics.current.map((topic) => {
           return {
             manifest: {
               version: 1,
