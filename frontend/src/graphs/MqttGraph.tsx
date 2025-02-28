@@ -25,7 +25,7 @@ function MqttGraph({ topic }: { topic: string }) {
     setData((d) => [...d, msg]);
   }, []);
 
-  useFilteredWebsocket<DataPointEventMessage>(topic, MessageType.TOPIC_DATAPOINT, dataCallback);
+  useFilteredWebsocket<DataPointEventMessage>([topic], MessageType.TOPIC_DATAPOINT, dataCallback);
 
   return (
     <div>
