@@ -54,7 +54,7 @@ class MqttPlugin : Plugin() {
                         val data = message?.payload?.let { String(it) } ?: ""
                         if (topic == null)
                             return@launch
-                        if (topic.startsWith("machine.move.")) {
+                        if (topic.startsWith("move.") || topic.startsWith("rot.")) {
                             val (x, y, z) = data.split(",")
                             rcv(
                                 wsCreatePositionMessageEvent(
