@@ -193,6 +193,41 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/AuthResponse"
+  /api/model/{id}/download:
+    get:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "userid could not be found!"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Missing or malformed model id!"
+        "200":
+          description: "OK <br> A file response"
+          content:
+            application/*:
+              schema:
+                type: "object"
+                format: "binary"
   /api/model/download:
     post:
       description: ""
@@ -200,7 +235,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ModelInfo"
+              $ref: "#/components/schemas/FileModelInfo"
         required: true
       responses:
         "403":
@@ -228,25 +263,6 @@ paths:
               schema:
                 type: "object"
                 format: "binary"
-  /api/models:
-    get:
-      description: ""
-      responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/AvailableFiles"
   /api/model/upload/{filepath}:
     post:
       description: ""
@@ -275,15 +291,15 @@ paths:
               examples:
                 Example#1:
                   value: "File created!"
-  /api/model/delete:
-    post:
+  /api/model/{id}:
+    delete:
       description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ModelInfo"
+      parameters:
+      - name: "id"
+        in: "path"
         required: true
+        schema:
+          type: "integer"
       responses:
         "403":
           description: "Forbidden"
@@ -294,24 +310,21 @@ paths:
               examples:
                 Example#1:
                   value: "userid could not be found!"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Missing or malformed id!"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "File deleted successfully!"
-        "500":
-          description: "Internal Server Error"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "File could not be deleted!"
+                type: "object"
   /api/event/{source}/dataPoints/{topic}/limit/{limit}:
     get:
       description: ""
@@ -362,6 +375,68 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/GenericEventMessage"
+  /api/model/{id}/setting:
+    get:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "userid could not be found!"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Missing or malformed id!"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "The model does not exist!"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ModelSettings"
+  /api/models:
+    get:
+      description: ""
+      responses:
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "userid could not be found!"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AvailableFiles"
 components:
   schemas:
     UserInfo:
@@ -412,7 +487,7 @@ components:
       required:
       - "token"
       - "refreshToken"
-    ModelInfo:
+    FileModelInfo:
       type: "object"
       properties:
         filename:
@@ -420,6 +495,35 @@ components:
         model:
           type: "string"
       required:
+      - "filename"
+      - "model"
+    GenericEventMessage:
+      type: "object"
+      properties: {}
+    ModelSettings:
+      type: "object"
+      properties:
+        lightIntensity:
+          type: "number"
+          format: "double"
+        scale:
+          type: "number"
+          format: "double"
+      required:
+      - "lightIntensity"
+      - "scale"
+    ModelInfo:
+      type: "object"
+      properties:
+        modelId:
+          type: "integer"
+          format: "int32"
+        filename:
+          type: "string"
+        model:
+          type: "string"
+      required:
+      - "modelId"
       - "filename"
       - "model"
     AvailableFiles:
@@ -431,6 +535,3 @@ components:
             $ref: "#/components/schemas/ModelInfo"
       required:
       - "files"
-    GenericEventMessage:
-      type: "object"
-      properties: {}
