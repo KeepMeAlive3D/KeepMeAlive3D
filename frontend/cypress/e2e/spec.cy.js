@@ -1,7 +1,64 @@
+import axios from "axios";
+
 describe("Healthcheck", () => {
   it("Healthcheck", () => {
     cy.visit("http://localhost:5173/");
     cy.contains("login");
+  });
+});
+
+describe("Register", () => {
+  it("Register new account correctly", () => {
+    cy.visit("http://localhost:5173/");
+    cy.intercept("POST", "/api/register/basic").as("registerRequest");
+
+    cy.get("input[id=\"username\"]").type("a");
+    cy.get("input[id=\"password\"]").type("123");
+    cy.get("button[name=\"register\"]").click();
+
+    cy.wait("@registerRequest");
+
+    cy.get("#username").should("not.exist");
+    cy.window()
+      .its("localStorage.token")
+      .should("not.be.null");
+  });
+
+  it("Register already present account", () => {
+    cy.visit("http://localhost:5173/");
+    cy.intercept("POST", "/api/register/basic").as("registerRequest");
+
+    cy.get("input[id=\"username\"]").type("tester");
+    cy.get("input[id=\"password\"]").type("123");
+    cy.get("button[name=\"register\"]").click();
+
+    cy.wait("@registerRequest");
+
+    cy.get("#username").should("exist");
+  });
+
+  after(() => {
+    const token = window.localStorage.getItem("token");
+
+    console.debug("Deleting user with token" + token);
+
+    const options = {
+      method: "DELETE",
+      url: "http://localhost:8080/api/user",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `bearer ${token}`,
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function(response) {
+        console.log("Deleted current user");
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
   });
 });
 
