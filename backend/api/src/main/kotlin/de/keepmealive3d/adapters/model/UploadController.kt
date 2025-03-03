@@ -2,8 +2,6 @@ package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
 import de.keepmealive3d.core.model.IModelService
-import de.keepmealive3d.core.model.ModelRepository
-import de.keepmealive3d.core.model.ModelService
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -16,7 +14,6 @@ import kotlinx.io.readByteArray
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
-import kotlin.io.path.absolutePathString
 
 class UploadController(application: Application) : KoinComponent {
     private val modelService: IModelService by inject()

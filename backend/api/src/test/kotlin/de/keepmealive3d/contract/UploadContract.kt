@@ -1,9 +1,6 @@
 package de.keepmealive3d.contract
 
 import de.keepmealive3d.adapters.data.AvailableFiles
-import de.keepmealive3d.adapters.data.FileModelInfo
-import de.keepmealive3d.adapters.data.ModelInfo
-import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.appModule
 import de.keepmealive3d.cleanupTestUser
 import de.keepmealive3d.setupTestUser

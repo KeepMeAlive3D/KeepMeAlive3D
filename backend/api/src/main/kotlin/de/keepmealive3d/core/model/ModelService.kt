@@ -6,7 +6,6 @@ import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
 import de.keepmealive3d.core.persistence.IModelDao
 import de.keepmealive3d.core.persistence.IModelRepository
-import okhttp3.internal.http2.Settings
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.file.Path

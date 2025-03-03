@@ -1,6 +1,5 @@
 package de.keepmealive3d.core.model
 
-import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo
 import de.keepmealive3d.adapters.data.ModelSettings
 import java.nio.file.Path
