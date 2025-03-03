@@ -6,7 +6,7 @@ info:
 servers:
   - url: "https://kma.matthiasklenz.de"
     description: "remote"
-  - url: "localhost:8080"
+  - url: "http://localhost:8080"
     description: "local"
 paths:
   /status:

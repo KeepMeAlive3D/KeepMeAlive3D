@@ -1,12 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
-import { downloadModel } from "@/service/upload.ts";
+import { downloadModel, getLastCreatedModel } from "@/service/upload.ts";
 
 export const fetchAndSetModel = createAsyncThunk(
   "model/fetchAndSetModel",
-  async ({ name, filename }: { name: string; filename: string }, thunkAPI) => {
+  async ({ modelId }: { modelId: number | null }, thunkAPI) => {
     try {
-      const response = await downloadModel(name, filename);
+      let innerModelId = modelId
+      if(innerModelId === null) {
+        const model = await getLastCreatedModel()
+        innerModelId = model.data.modelId
+      }
+      const response = await downloadModel(innerModelId);
       const href = URL.createObjectURL(response.data);
       return href;
     } catch {

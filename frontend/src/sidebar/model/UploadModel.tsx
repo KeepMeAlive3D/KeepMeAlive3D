@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast.ts";
 import { fetchAndSetModel } from "@/slices/ModelSlice.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
+import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
 
 export function UploadModel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,12 +69,8 @@ export function UploadModel() {
     );
 
     if (success) {
-      dispatch(
-        fetchAndSetModel({
-          name: modelName?.current?.value ?? "undefined",
-          filename: file.name,
-        })
-      );
+      dispatch(fetchAndSetModel({ modelId: null }));
+      dispatch(fetchAndSetModelSettings({modelId: null}))
     }
   };
 

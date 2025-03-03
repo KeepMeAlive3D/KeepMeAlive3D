@@ -34,6 +34,14 @@ class ModelService : IModelService, KoinComponent {
         return models
     }
 
+    override fun getLatestModel(userid: Int): ModelInfo? {
+        return getAllModels(userid).maxByOrNull { it.modelId }
+    }
+
+    override fun getRequiredLastModel(userid: Int): ModelInfo {
+        return getLatestModel(userid) ?: throw EntityNotFoundException("No model found for user: $userid.")
+    }
+
     override fun getSettings(modelId: Int): ModelSettings? {
         return modelDao.getModelSetting(modelId)
     }

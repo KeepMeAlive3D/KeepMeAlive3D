@@ -1,5 +1,26 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
+import { getLastCreatedModel, getModelSettings, ModelSetting } from "@/service/upload.ts";
+
+export const fetchAndSetModelSettings = createAsyncThunk(
+  "model/fetchAndSetSettings",
+  async ({ modelId }: { modelId: number | null }, thunkAPI) => {
+    try {
+      let innerModelId = modelId
+      if(innerModelId === null) {
+        const model = await getLastCreatedModel()
+        innerModelId = model.data.modelId
+      }
+      const response = await getModelSettings(innerModelId);
+      const setting: ModelSetting = response.data
+      return setting;
+    } catch {
+      //unused, user can set this himself in case of an error
+      return thunkAPI.rejectWithValue("Failed to get model setting");
+    }
+  }
+);
+
 
 // Define a type for the slice state
 interface SettingsState {
@@ -24,6 +45,13 @@ export const settingsSlice = createSlice({
     setScale: (state, action: PayloadAction<number>) => {
       state.scale = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAndSetModelSettings.fulfilled, (state, action) => {
+        state.light = action.payload.lightIntensity;
+        state.scale = action.payload.scale;
+      })
   },
 });
 
