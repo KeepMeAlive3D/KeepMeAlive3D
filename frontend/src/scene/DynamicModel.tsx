@@ -26,18 +26,18 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
       }
 
       if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
-          console.debug(
-            `Custom properties found for ${node.name}:`,
-            node.userData,
-          );
-          dispatch(
-            addPart({
-              id: node.id,
-              name: node.name,
-              isSelected: false,
-              topic: node.userData["topic"],
-            }),
-          );
+        console.debug(
+          `Custom properties found for ${node.name}:`,
+          node.userData,
+        );
+        dispatch(
+          addPart({
+            id: node.id,
+            name: node.name,
+            isSelected: false,
+            topic: node.userData["topic"],
+          }),
+        );
       }
     });
     // Remove lights. later custom lights will be spawned instead
