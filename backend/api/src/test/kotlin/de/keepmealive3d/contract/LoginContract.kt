@@ -44,12 +44,12 @@ class LoginContract {
             assertEquals(HttpStatusCode.Created, status)
         }
 
-        client.post("/api/login/basic") {
+        val response = client.post("/api/login/basic") {
             header(HttpHeaders.ContentType, "application/json")
             setBody(AuthController.BasicAuthRequest(username, password))
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
-        }
+        }.body<AuthController.AuthResponse>()
 
         client.post("/api/login/basic") {
             header(HttpHeaders.ContentType, "application/json")
@@ -57,6 +57,12 @@ class LoginContract {
         }.apply {
             assertEquals(HttpStatusCode.Unauthorized, status)
             assertEquals("Wrong username or password!", body<String>())
+        }
+
+        client.delete("/api/user") {
+            header(HttpHeaders.Authorization, "Bearer ${response.token}")
+        }.apply {
+            assertEquals(HttpStatusCode.OK, status)
         }
     }
 }

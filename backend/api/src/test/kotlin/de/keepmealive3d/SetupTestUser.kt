@@ -8,6 +8,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
+import junit.framework.TestCase.assertEquals
 
 suspend fun ApplicationTestBuilder.setupTestUser(): String {
     val client = createClient {
@@ -36,6 +37,8 @@ suspend fun ApplicationTestBuilder.cleanupTestUser(token: String) {
 
     client.delete("/api/user") {
         header(HttpHeaders.Authorization, "Bearer $token")
+    }.also {
+        assertEquals(HttpStatusCode.OK, it.status)
     }
     client.close()
 }

@@ -1,7 +1,9 @@
 package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.model.IModelService
 import de.keepmealive3d.core.model.ModelRepository
+import de.keepmealive3d.core.model.ModelService
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -17,7 +19,7 @@ import java.util.*
 import kotlin.io.path.absolutePathString
 
 class UploadController(application: Application) : KoinComponent {
-    private val modelRepository: ModelRepository by inject()
+    private val modelService: IModelService by inject()
 
     init {
         application.routing {
@@ -44,8 +46,7 @@ class UploadController(application: Application) : KoinComponent {
                             is PartData.FileItem -> {
                                 fileName = part.originalFileName as String
                                 val fileBytes = part.provider().readRemaining().readByteArray()
-                                val path = modelRepository.createUniqueFileLocation(user.userId, filePath, fileName)
-                                path.toFile().writeBytes(fileBytes)
+                                modelService.createNewModel(user.userId, filePath, fileName, fileBytes)
                             }
 
                             else -> {}
