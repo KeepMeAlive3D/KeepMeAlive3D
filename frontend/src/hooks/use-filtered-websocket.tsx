@@ -14,7 +14,7 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
   const topics = useRef<string[]>([]);
 
   // Only update if the topics actually changed and not only the reference of the array
-  if (!topics.current || (topicsArg.every(x => topics.current.find(y => x == y)) && topics.current.every(x => topicsArg.find(y => x == y)))) {
+  if (!topics.current || !areArraysEqual(topicsArg, topics.current)) {
     topics.current = topicsArg;
   }
 
@@ -71,6 +71,11 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
       websocketConnection?.close();
     };
   }, [messageType, onMessage, toast, topics]);
+}
+
+function areArraysEqual(arr1: string[], arr2: string[]): boolean {
+  return arr1.length === arr2.length && new Set(arr1).size === new Set(arr2).size &&
+    [...new Set(arr1)].every(item => arr2.includes(item));
 }
 
 export default useFilteredWebsocket;
