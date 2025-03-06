@@ -13,7 +13,12 @@ export const fetchAndSetModel = createAsyncThunk(
       }
       const response = await downloadModel(innerModelId);
       const href = URL.createObjectURL(response.data);
-      return href;
+      const modelState: ModelState = {
+        url: href,
+        error: null,
+        modelId: innerModelId,
+      }
+      return modelState
     } catch {
       return thunkAPI.rejectWithValue("Failed to download model");
     }
@@ -24,12 +29,14 @@ export const fetchAndSetModel = createAsyncThunk(
 interface ModelState {
   url: string;
   error: string | null;
+  modelId: number;
 }
 
 // Define the initial state using that type
 const initialState: ModelState = {
   url: "",
   error: null,
+  modelId: -1,
 };
 
 export const modelSlice = createSlice({
@@ -40,7 +47,8 @@ export const modelSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAndSetModel.fulfilled, (state, action) => {
-        state.url = action.payload;
+        state.url = action.payload.url
+        state.modelId = action.payload.modelId
       })
       .addCase(fetchAndSetModel.rejected, (state, action) => {
         state.error = action.payload as string;
