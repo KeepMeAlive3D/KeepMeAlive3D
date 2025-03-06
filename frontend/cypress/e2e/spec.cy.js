@@ -12,7 +12,7 @@ describe("Register", () => {
     cy.visit("http://localhost:5173/");
     cy.intercept("POST", "/api/register/basic").as("registerRequest");
 
-    cy.get("input[id=\"username\"]").type("a");
+    cy.get("input[id=\"username\"]").type("tttt");
     cy.get("input[id=\"password\"]").type("123");
     cy.get("button[name=\"register\"]").click();
 
@@ -22,6 +22,8 @@ describe("Register", () => {
     cy.window()
       .its("localStorage.token")
       .should("not.be.null");
+
+    cy.deleteCurrentUser();
   });
 
   it("Register already present account", () => {
@@ -35,30 +37,6 @@ describe("Register", () => {
     cy.wait("@registerRequest");
 
     cy.get("#username").should("exist");
-  });
-
-  after(() => {
-    const token = window.localStorage.getItem("token");
-
-    console.debug("Deleting user with token" + token);
-
-    const options = {
-      method: "DELETE",
-      url: "http://localhost:8080/api/user",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `bearer ${token}`,
-      },
-    };
-
-    axios
-      .request(options)
-      .then(function(response) {
-        console.log("Deleted current user");
-      })
-      .catch(function(error) {
-        console.error(error);
-      });
   });
 });
 
