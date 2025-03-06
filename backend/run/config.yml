@@ -1,0 +1,25 @@
+passphrase: 'test'
+databases:
+  sql:
+    host: 'localhost'
+    port: 3306
+    schema: 'kma'
+    user: 'root'
+    password: 'test'
+  kafka:
+    host: 'xxx'
+    port: 8083
+    password: 'xxx'
+  mqtt:
+    host: '127.0.0.1'
+    port: 1883
+    clientId: 'kma'
+    password: 'test'
+    topic: '#'
+  influx:
+    host: 'xxx'
+    port: 8086
+    org: 'xxx'
+    bucket: 'xxx'
+    token: 'xxx'
+pluginDirs: ["plugins"]
