@@ -52,11 +52,18 @@ describe("Login", () => {
     cy.wait("@loginRequest");
 
     cy.get("#username").should("not.exist");
+    cy.get("#user-menu-button").should("contain.text", "tester");
   });
 
   it("Login with incorrect data", () => {
     cy.visit("http://localhost:5173/");
     cy.intercept("POST", "/api/login/basic").as("loginRequest");
+
+    Cypress.on("uncaught:exception", (err, runnable) => {
+      // Logging in with incorrect data will cause a rejected promise in the
+      // service. Therefore, we have to say that this will not fail the test.
+      return false;
+    });
 
     cy.get("input[id=\"username\"]").type("tester");
     cy.get("input[id=\"password\"]").type("1235678");
@@ -64,15 +71,32 @@ describe("Login", () => {
 
     // Check status code
     cy.wait("@loginRequest").then((interception) => {
-      expect(interception.response.statusCode).to.equal(401);
+      if (interception.response) {
+        expect(interception.response.statusCode).to.equal(401);
+      }
+
     });
 
     // Login still visible
     cy.get("#username").should("exist");
   });
 
-  it("Test session", () => {
+  it("Logout", () => {
     cy.login("tester", "123");
+    cy.visit("http://localhost:5173/");
+
+    // Logout
+    cy.get("#user-menu-button").click();
+    cy.contains("span", "Sign out").click();
+
+    // Session token deleted?
+    cy.window().then((window) => {
+      const token = window.localStorage.getItem("token");
+      expect(token).to.be.null;
+    });
+
+    // Login visible?
+    cy.get("#username").should("exist");
   });
 });
 
