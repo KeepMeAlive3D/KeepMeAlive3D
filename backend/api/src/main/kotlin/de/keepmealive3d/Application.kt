@@ -8,6 +8,7 @@ import de.keepmealive3d.adapters.model.ModelDeleteController
 import de.keepmealive3d.adapters.model.ModelDownloadController
 import de.keepmealive3d.adapters.model.ModelInfoController
 import de.keepmealive3d.adapters.model.UploadController
+import de.keepmealive3d.adapters.sql.migrations.MigrationRunner
 import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
@@ -27,29 +28,25 @@ import java.io.File
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application.appModule() {
-    val conf = Config.load(File("config.yml")).getOrElse {
-        log.error("couldn't load config.yml")
-        log.error(it.message)
-        return
-    }
-    val jwt = JWT(conf)
+fun Application.appModule(config: Config = Config.load(File("config.yml")).getOrThrow()) {
+    val jwt = JWT(config)
     val iniModule = module {
-        single { conf }
+        single { config }
         single { jwt }
         single { log }
         single(qualifier = qualifier("events")) { Channel<GenericEventMessage>() }
     }
 
     configureDependencyInjection(iniModule)
+    MigrationRunner().executeUp()
 
-    val loader = Loader(conf.pluginDirs.map { File(it) })
+    val loader = Loader(config.pluginDirs.map { File(it) })
     //current workaround: MqttPlugin stays in the :api module for better debugging experience
     loader.plugins.add(MqttPlugin() to PluginConfig("mqtt", "<none>", "1"))
-    loader.loadPlugins(this, conf)
+    loader.loadPlugins(this, config)
     launch { loader.persistEvents() }
 
-    configureHTTP(conf)
+    configureHTTP(config)
     configureMonitoring()
     configureSerialization()
     configureSockets()

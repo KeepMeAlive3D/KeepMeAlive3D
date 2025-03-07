@@ -45,6 +45,7 @@ data class Config(
 @Serializable
 data class Databases(
     val sql: SqlDatabase,
+    val sqlMigrate: SqlDatabase,
     val kafka: KafkaDatabase,
     val mqtt: MqttDatabase,
     val influx: InfluxDatabase
@@ -53,10 +54,8 @@ data class Databases(
 @Serializable
 data class SqlDatabase(
     val host: String,
-    val port: Int,
     val user: String,
-    val password: String,
-    val schema: String
+    val password: String
 )
 
 @Serializable
