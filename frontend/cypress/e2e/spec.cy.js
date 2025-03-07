@@ -41,7 +41,7 @@ describe("Login", () => {
     cy.login("tester", "123");
   })
 
-  it.only("Logout", () => {
+  it("Logout", () => {
     cy.login("tester", "123");
     cy.visit("http://localhost:5173/");
 
