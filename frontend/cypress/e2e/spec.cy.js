@@ -37,10 +37,6 @@ describe("Login", () => {
     cy.get("#username").should("exist");
   });
 
-  it("Test session", () => {
-    cy.login("tester", "123");
-  })
-
   it("Logout", () => {
     cy.login("tester", "123");
     cy.visit("http://localhost:5173/");
