@@ -30,8 +30,6 @@ jobs:
         working-directory: ./backend
     steps:
       - uses: actions/checkout@v4
-      - name: migrate
-        run: mysql -u"root" -p"test" -h"127.0.0.1" --port=3306 < ./run/db-migration.sql
       - name: mqtt setup
         run: |
           sleep 10

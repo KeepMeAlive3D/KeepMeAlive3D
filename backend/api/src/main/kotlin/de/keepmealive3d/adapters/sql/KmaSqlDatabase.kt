@@ -19,7 +19,7 @@ class KmaSqlDatabase : KoinComponent {
 
     init {
         database = Database.connect(
-            "jdbc:mysql://${config.databases.sql.host}:${config.databases.sql.port}/${config.databases.sql.schema}",
+            config.databases.sql.host,
             user = config.databases.sql.user,
             password = config.databases.sql.password
         )
