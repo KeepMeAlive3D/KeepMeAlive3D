@@ -25,7 +25,7 @@ export function Footer() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton>
+            <SidebarMenuButton id="user-menu-button">
               <User2 /> {userName}
               <ChevronUp className="ml-auto" />
             </SidebarMenuButton>

@@ -17,6 +17,7 @@ describe("Login", () => {
     cy.wait("@loginRequest");
 
     cy.get("#username").should("not.exist");
+    cy.get("#user-menu-button").should("contain.text", "tester");
   });
 
   it("Login with incorrect data", () => {
@@ -38,6 +39,24 @@ describe("Login", () => {
 
   it("Test session", () => {
     cy.login("tester", "123");
+  })
+
+  it.only("Logout", () => {
+    cy.login("tester", "123");
+    cy.visit("http://localhost:5173/");
+
+    // Logout
+    cy.get("#user-menu-button").click();
+    cy.contains("span", "Sign out").click();
+
+    // Session token deleted?
+    cy.window().then((window) => {
+      const token = window.localStorage.getItem("token");
+      expect(token).to.be.null;
+    });
+
+    // Login visible?
+    cy.get("#username").should("exist");
   });
 });
 
