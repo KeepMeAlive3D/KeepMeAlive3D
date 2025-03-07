@@ -1,9 +1,11 @@
 passphrase: 'test'
 databases:
   sql:
-    host: 'localhost'
-    port: 3306
-    schema: 'kma'
+    host: 'jdbc:mysql://localhost:3306/kma'
+    user: 'root'
+    password: 'test'
+  sqlMigrate:
+    host: 'jdbc:mysql://localhost:3306'
     user: 'root'
     password: 'test'
   kafka:
