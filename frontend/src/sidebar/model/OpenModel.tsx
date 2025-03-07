@@ -47,10 +47,11 @@ export function OpenModel() {
 
   const handleFileOpen = (modelId: number) => {
     setLoading(true);
-    dispatch(fetchAndSetModel({ modelId: modelId }));
-    setTimeout(() => {
-      dispatch(fetchAndSetModelSettings({modelId: modelId}))
-    }, 1000)
+    dispatch(fetchAndSetModel({ modelId: modelId })).then(() => {
+      setTimeout(() => {
+        dispatch(fetchAndSetModelSettings({modelId: modelId}))
+      }, 1000)
+    });
 
     setLoading(false);
     setOpen(false);
