@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormEvent, useState } from "react";
-import { loginBasic } from "@/service/login.ts";
+import { loginBasic, registerBasic } from "@/service/login.ts";
 import { Form } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,6 +33,43 @@ export function LoginForm({
 
   function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const action = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("name");
+
+    if (action === "login") {
+      login();
+    } else if (action === "register") {
+      register();
+    } else {
+      console.error("Incorrect submit name");
+    }
+  }
+
+  function register() {
+    registerBasic(username, password).then(
+      (response) => {
+        if (response.status === 201) {
+          toast({
+            variant: "default",
+            title: "Successfully Registered!",
+            description: "The account has been registered and logged in directly.",
+          });
+          //If successfully, then login directly
+          login();
+        }
+      },
+      (err) => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your request.",
+        });
+        console.error(err);
+      },
+    );
+  }
+
+  function login() {
     loginBasic(username, password).then(
       (response) => {
         updateToken(response.data.token);
@@ -48,7 +85,7 @@ export function LoginForm({
           description: "There was a problem with your request.",
         });
         console.error(err);
-      }
+      },
     );
   }
 
@@ -99,17 +136,14 @@ export function LoginForm({
                 />
               </div>
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" name="login" className="w-full">
                 Login
               </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
+              <Button variant="outline" name="register" className="w-full">
+                Register
               </Button>
             </div>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-          </div>
         </Form>
       </CardContent>
     </Card>

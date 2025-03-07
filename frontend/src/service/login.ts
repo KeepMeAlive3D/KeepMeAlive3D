@@ -22,3 +22,10 @@ export function refreshToken(refreshToken: string) {
     }
   );
 }
+
+export function registerBasic(user: string, pass: string) {
+  return service.post<BasicAuthResponse>("/api/register/basic", {
+    username: user,
+    password: pass,
+  });
+}
