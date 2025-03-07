@@ -44,18 +44,18 @@ export function UploadModel() {
       setLoading(false);
       return;
     }
-    const success = await uploadFile(
+    const modelId = await uploadFile(
       modelName?.current?.value ?? "undefined",
       file
     ).then(
-      () => {
+      (response) => {
         toast({
           title: "File uploaded",
           description: `File ${modelName?.current?.value} was uploaded`,
         });
         setLoading(false);
         setOpen(false);
-        return true;
+        return Number(response.data);
       },
       () => {
         toast({
@@ -64,13 +64,13 @@ export function UploadModel() {
           description: `File ${modelName?.current?.value} could not be uploaded!`,
         });
         setLoading(false);
-        return false;
+        return -1;
       }
     );
 
-    if (success) {
-      dispatch(fetchAndSetModel({ modelId: null }));
-      dispatch(fetchAndSetModelSettings({modelId: null}))
+    if (modelId >= 0) {
+      dispatch(fetchAndSetModel({ modelId: modelId }));
+      dispatch(fetchAndSetModelSettings({modelId: modelId}))
     }
   };
 

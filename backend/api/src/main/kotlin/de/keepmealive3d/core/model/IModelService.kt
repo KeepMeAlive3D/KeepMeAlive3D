@@ -5,10 +5,8 @@ import de.keepmealive3d.adapters.data.ModelSettings
 import java.nio.file.Path
 
 interface IModelService {
-    fun createNewModel(userid: Int, model: String, filename: String, fileBytes: ByteArray)
+    fun createNewModel(userid: Int, model: String, filename: String, fileBytes: ByteArray): Int
     fun getAllModels(userid: Int): List<ModelInfo>
-    fun getLatestModel(userid: Int): ModelInfo?
-    fun getRequiredLastModel(userid: Int): ModelInfo
     fun getSettings(modelId: Int): ModelSettings?
     fun updateSettings(modelId: Int, settings: ModelSettings)
     fun getRequiredModelLocation(modelId: Int, userid: Int): Path

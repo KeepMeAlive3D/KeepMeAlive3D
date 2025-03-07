@@ -64,16 +64,6 @@ class ModelInfoController(application: Application) : KoinComponent {
 
                     call.respond(AvailableFiles(modelService.getAllModels(user.userId).toSet()))
                 }
-
-                get("/api/model/latest") {
-                    val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
-                    }
-
-                    call.respond(modelService.getRequiredLastModel(user.userId))
-                }
             }
         }
     }

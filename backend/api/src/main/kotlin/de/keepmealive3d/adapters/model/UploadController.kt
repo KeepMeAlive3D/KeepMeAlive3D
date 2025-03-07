@@ -31,6 +31,7 @@ class UploadController(application: Application) : KoinComponent {
                         return@post
                     }
                     val filePath = call.parameters["filepath"] ?: UUID.randomUUID().toString()
+                    var modelId : Int? = null
 
                     val multipartData = call.receiveMultipart(Long.MAX_VALUE)
 
@@ -43,7 +44,7 @@ class UploadController(application: Application) : KoinComponent {
                             is PartData.FileItem -> {
                                 fileName = part.originalFileName as String
                                 val fileBytes = part.provider().readRemaining().readByteArray()
-                                modelService.createNewModel(user.userId, filePath, fileName, fileBytes)
+                                modelId = modelService.createNewModel(user.userId, filePath, fileName, fileBytes)
                             }
 
                             else -> {}
@@ -51,7 +52,11 @@ class UploadController(application: Application) : KoinComponent {
                         part.dispose()
                     }
 
-                    call.respond(HttpStatusCode.Created, "File created!")
+                    modelId?.let {
+                        call.respond(HttpStatusCode.Created, it)
+                        return@post
+                    }
+                    call.respond(HttpStatusCode.BadRequest, "No model file provided!")
                 }
             }
         }

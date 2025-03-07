@@ -1,17 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
-import { getLastCreatedModel, getModelSettings, ModelSetting } from "@/service/upload.ts";
+import { getModelSettings, ModelSetting } from "@/service/upload.ts";
 
 export const fetchAndSetModelSettings = createAsyncThunk(
   "model/fetchAndSetSettings",
-  async ({ modelId }: { modelId: number | null }, thunkAPI) => {
+  async ({ modelId }: { modelId: number }, thunkAPI) => {
     try {
-      let innerModelId = modelId
-      if(innerModelId === null) {
-        const model = await getLastCreatedModel()
-        innerModelId = model.data.modelId
-      }
-      const response = await getModelSettings(innerModelId);
+      const response = await getModelSettings(modelId);
       const setting: ModelSetting = response.data
       return setting;
     } catch {

@@ -16,13 +16,8 @@ export function downloadModel(id: number) {
   );
 }
 
-
 export function getRemoteModelNames() {
   return service.get<AvailModels>(`/api/models`);
-}
-
-export function getLastCreatedModel() {
-  return service.get<ModelInfo>(`/api/model/latest`);
 }
 
 export function getModelSettings(modelId: number) {

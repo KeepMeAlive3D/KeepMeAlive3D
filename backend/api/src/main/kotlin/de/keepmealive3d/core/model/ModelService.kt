@@ -4,6 +4,7 @@ import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo
 import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
+import de.keepmealive3d.core.exceptions.PersistenceException
 import de.keepmealive3d.core.persistence.IModelDao
 import de.keepmealive3d.core.persistence.IModelRepository
 import org.koin.core.component.KoinComponent
@@ -14,10 +15,11 @@ class ModelService : IModelService, KoinComponent {
     private val modelRepository: IModelRepository by inject()
     private val modelDao: IModelDao by inject()
 
-    override fun createNewModel(userid: Int, model: String, filename: String, fileBytes: ByteArray) {
+    override fun createNewModel(userid: Int, model: String, filename: String, fileBytes: ByteArray): Int {
         val path = modelRepository.createUniqueFileLocation(userid, model, filename)
         path.toFile().writeBytes(fileBytes)
-        modelDao.create(userid, FileModelInfo(filename, model), ModelSettings(1.0, 1.0))
+        return modelDao.create(userid, FileModelInfo(filename, model), ModelSettings(1.0, 1.0))
+            ?: throw PersistenceException("Failed to create model database entry!")
     }
 
     override fun getAllModels(userid: Int): List<ModelInfo> {
@@ -32,14 +34,6 @@ class ModelService : IModelService, KoinComponent {
         }
 
         return models
-    }
-
-    override fun getLatestModel(userid: Int): ModelInfo? {
-        return getAllModels(userid).maxByOrNull { it.modelId }
-    }
-
-    override fun getRequiredLastModel(userid: Int): ModelInfo {
-        return getLatestModel(userid) ?: throw EntityNotFoundException("No model found for user: $userid.")
     }
 
     override fun getSettings(modelId: Int): ModelSettings? {

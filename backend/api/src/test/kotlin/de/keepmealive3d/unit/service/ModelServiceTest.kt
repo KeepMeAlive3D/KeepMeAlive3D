@@ -105,38 +105,4 @@ class ModelServiceTest : KoinTest {
         //check
         assertEquals(listOf(modelInfo), actual)
     }
-
-    @Test
-    fun getLastModelHappyPathReturnsModelInfo() {
-        //given
-        val modelRepoMock = declareMock<IModelRepository> { }
-        val modelDaoMock = declareMock<IModelDao> { }
-        val fileModelInfo = FileModelInfo("foo", "bar")
-        val modelInfo = ModelInfo(123, "foo", "bar")
-
-        every { modelRepoMock.getAllModelFileNames(123) } returns setOf(fileModelInfo)
-        every { modelDaoMock.getModelsOfUser(123) } returns listOf(modelInfo)
-
-        //execute
-        val sut = ModelService()
-        val actual = sut.getLatestModel(123)
-
-        //check
-        assertEquals(modelInfo, actual)
-    }
-
-    @Test
-    fun getRequiredLastModelModelFileNotExistThrowsNotFoundException() {
-        //given
-        val modelRepoMock = declareMock<IModelRepository> { }
-        val modelDaoMock = declareMock<IModelDao> { }
-        val modelInfo = ModelInfo(123, "foo", "bar")
-
-        every { modelRepoMock.getAllModelFileNames(123) } returns setOf()
-        every { modelDaoMock.getModelsOfUser(123) } returns listOf(modelInfo)
-
-        //execute
-        val sut = ModelService()
-        assertThrows<EntityNotFoundException> { sut.getRequiredLastModel(123) }
-    }
 }
