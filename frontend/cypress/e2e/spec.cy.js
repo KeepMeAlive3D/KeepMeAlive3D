@@ -43,6 +43,7 @@ describe("Login", () => {
 
   it("Logout", () => {
     cy.login("tester", "123");
+    cy.visit("http://localhost:5173/");
 
     // Logout
     cy.get("#user-menu-button").click();
@@ -62,6 +63,7 @@ describe("Login", () => {
 describe("Model", () => {
   it("Upload and Update model", () => {
     cy.login("tester", "123");
+    cy.visit("http://localhost:5173/");
 
     uploadModel("cube.glb");
 
