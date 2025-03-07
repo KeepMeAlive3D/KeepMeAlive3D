@@ -6,6 +6,7 @@ import de.keepmealive3d.adapters.auth.UserController
 import de.keepmealive3d.adapters.event.EventController
 import de.keepmealive3d.adapters.model.ModelDeleteController
 import de.keepmealive3d.adapters.model.ModelDownloadController
+import de.keepmealive3d.adapters.model.ModelInfoController
 import de.keepmealive3d.adapters.model.UploadController
 import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
@@ -64,6 +65,7 @@ fun Application.appModule() {
     AuthController(this)
     UserController(this)
     UploadController(this)
+    ModelInfoController(this)
     ModelDownloadController(this)
     ModelDeleteController(this)
     EventController(this)

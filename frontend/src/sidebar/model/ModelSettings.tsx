@@ -15,16 +15,24 @@ import { Slider } from "@/components/ui/slider.tsx";
 import { setLight, setScale } from "@/slices/SettingsSlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useRef } from "react";
+import { updateModelSettings } from "@/service/upload.ts";
 
 export function ModelSettings() {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
+  const model = useAppSelector((state) => state.model)
 
   const sliderLight = useRef<HTMLInputElement | null>(null);
 
+  const handleClose = async (open: boolean) => {
+    if(!open && model.modelId > 0) {
+      await updateModelSettings(model.modelId, settings.light, settings.scale)
+    }
+  };
+
   return (
     <SidebarMenuItem key="Settings">
-      <Sheet>
+      <Sheet onOpenChange={handleClose}>
         <SheetTrigger asChild>
           <SidebarMenuButton asChild>
             <div>

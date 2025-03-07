@@ -1,6 +1,6 @@
 package de.keepmealive3d.contract
 
-import de.keepmealive3d.adapters.model.ModelDownloadController
+import de.keepmealive3d.adapters.data.AvailableFiles
 import de.keepmealive3d.appModule
 import de.keepmealive3d.cleanupTestUser
 import de.keepmealive3d.setupTestUser
@@ -65,30 +65,30 @@ class UploadContract {
         val files = client.get("/api/models") {
             header(HttpHeaders.ContentType, "application/json")
             header(HttpHeaders.Authorization, "Bearer $token")
-        }.body<ModelDownloadController.AvailableFiles>()
+        }.body<AvailableFiles>()
 
-        assert(files.files.contains(ModelDownloadController.ModelInfo("testfile", "testmodel")))
+        val testFile = files.files.find { it.filename == "testfile" && it.model == "testmodel" }
+        assert(testFile != null)
+        testFile!!
 
         //download
-        val text = client.post("api/model/download") {
+        val text = client.get("api/model/${testFile.modelId}/download") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")
                 append(HttpHeaders.ContentType, "application/json")
             }
-            setBody(ModelDownloadController.ModelInfo("testfile", "testmodel"))
         }.bodyAsText()
 
         assertEquals(file.readText(), text)
 
         //delete file
-        client.post("/api/model/delete") {
+        client.delete("/api/model/${testFile.modelId}") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")
                 append(HttpHeaders.ContentType, "application/json")
             }
-            setBody(ModelDownloadController.ModelInfo("testfile", "testmodel"))
         }.apply {
-            assertEquals(HttpStatusCode.OK, status)
+            assertEquals(HttpStatusCode.OK, status, "Expected status OK for route: '/api/model/${testFile.modelId}'")
         }
     }
 

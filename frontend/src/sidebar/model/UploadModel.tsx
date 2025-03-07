@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast.ts";
 import { fetchAndSetModel } from "@/slices/ModelSlice.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
+import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
 
 export function UploadModel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,18 +44,18 @@ export function UploadModel() {
       setLoading(false);
       return;
     }
-    const success = await uploadFile(
+    const modelId = await uploadFile(
       modelName?.current?.value ?? "undefined",
       file
     ).then(
-      () => {
+      (response) => {
         toast({
           title: "File uploaded",
           description: `File ${modelName?.current?.value} was uploaded`,
         });
         setLoading(false);
         setOpen(false);
-        return true;
+        return Number(response.data);
       },
       () => {
         toast({
@@ -63,17 +64,13 @@ export function UploadModel() {
           description: `File ${modelName?.current?.value} could not be uploaded!`,
         });
         setLoading(false);
-        return false;
+        return -1;
       }
     );
 
-    if (success) {
-      dispatch(
-        fetchAndSetModel({
-          name: modelName?.current?.value ?? "undefined",
-          filename: file.name,
-        })
-      );
+    if (modelId >= 0) {
+      dispatch(fetchAndSetModel({ modelId: modelId }));
+      dispatch(fetchAndSetModelSettings({modelId: modelId}))
     }
   };
 

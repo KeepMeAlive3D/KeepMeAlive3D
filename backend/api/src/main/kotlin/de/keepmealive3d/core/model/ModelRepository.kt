@@ -1,7 +1,7 @@
 package de.keepmealive3d.core.model
 
-import de.keepmealive3d.adapters.model.ModelDownloadController
-import de.keepmealive3d.core.auth.JWT
+import de.keepmealive3d.adapters.data.FileModelInfo
+import de.keepmealive3d.core.persistence.IModelRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.Logger
@@ -12,14 +12,14 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.random.Random
 
-class ModelRepository : KoinComponent {
+class ModelRepository : KoinComponent, IModelRepository {
 
     private val log: Logger by inject()
 
     /**
      * reruns a path to a valid location to save a model to
      */
-    fun createUniqueFileLocation(userid: Int, path: String, name: String): Path {
+    override fun createUniqueFileLocation(userid: Int, path: String, name: String): Path {
         val userModelPath =
             Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString()).resolve(path)
         userModelPath.createDirectories()
@@ -35,7 +35,7 @@ class ModelRepository : KoinComponent {
      * checks if the model file exist
      * @return the path to the file or null if it does not exist
      */
-    fun getModelLocation(userid: Int, model: String, fileName: String): Path? {
+    override fun getModelLocation(userid: Int, model: String, fileName: String): Path? {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         if (userModelPath.resolve(model).resolve(fileName).exists()) {
             return userModelPath.resolve(model).resolve(fileName)
@@ -46,7 +46,7 @@ class ModelRepository : KoinComponent {
     /**
      * @return all uploaded files by a user
      */
-    fun getAllModelFileNames(userid: Int): Set<ModelDownloadController.ModelInfo> {
+    override fun getAllModelFileNames(userid: Int): Set<FileModelInfo> {
         val userModelPath = Path(System.getProperty("user.dir")).resolve("models").resolve(userid.toString())
         return userModelPath
             .toFile()
@@ -63,7 +63,7 @@ class ModelRepository : KoinComponent {
 
                 val (modelName, fileName) = split
 
-                return@map ModelDownloadController.ModelInfo(
+                return@map FileModelInfo(
                     fileName,
                     modelName,
                 )
@@ -76,7 +76,7 @@ class ModelRepository : KoinComponent {
      * deletes a file for a user
      * @return true if the file was deleted, false if no file was found or there where fs problems
      */
-    fun deleteFile(userid: Int, model: String, fileName: String): Boolean {
+    override fun deleteFile(userid: Int, model: String, fileName: String): Boolean {
         return getModelLocation(userid, model, fileName)?.toFile()?.delete() == true
     }
 }

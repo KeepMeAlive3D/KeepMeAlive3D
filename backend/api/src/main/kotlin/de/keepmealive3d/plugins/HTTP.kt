@@ -13,10 +13,10 @@ fun Application.configureHTTP(config: Config) {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
-        allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Post)
-        allowHeader("content-type")
-        allowHeader("Content-Type")
+        allowMethod(HttpMethod.Get)
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader(HttpHeaders.ContentType)
 
         if(config.allowedCORS.isNotEmpty()) {
             config.allowedCORS.forEach {
