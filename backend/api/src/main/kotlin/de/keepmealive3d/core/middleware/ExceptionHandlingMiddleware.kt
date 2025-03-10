@@ -23,31 +23,44 @@ private fun handleException(e: Throwable): RestErrorInfo {
             e.description,
             HttpStatusCode.BadRequest.value
         )
+
+        is EntityAlreadyExistsException -> RestErrorInfo(
+            "Entity already exists",
+            e.description,
+            HttpStatusCode.Conflict.value
+        )
+
         is EntityNotFoundException -> RestErrorInfo(
             "Entity not found",
             e.description,
             HttpStatusCode.NotFound.value
         )
+
         is InvalidAuthTokenException -> RestErrorInfo(
             "Invalid authentication token",
             e.description,
             HttpStatusCode.Unauthorized.value
         )
+
         is InvalidCredentialsException -> RestErrorInfo(
             "Invalid credentials provided",
             e.description,
             HttpStatusCode.Forbidden.value
         )
+
         is PersistenceException -> RestErrorInfo(
             "Persistence error",
             e.description,
             HttpStatusCode.InternalServerError.value
         )
 
-        else -> RestErrorInfo(
-            "Internal Server Error",
-            e.message ?: "",
-            HttpStatusCode.InternalServerError.value
-        )
+        else -> {
+            e.printStackTrace()
+            RestErrorInfo(
+                "Internal Server Error",
+                e.message ?: "",
+                HttpStatusCode.InternalServerError.value
+            )
+        }
     }
 }
