@@ -9,6 +9,12 @@ service.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
+      if (!localStorage.getItem("token")) {
+        // If not logged in the no reload is necessary as the user is already
+        // on the login page.
+        return Promise.reject(error);
+      }
+
       localStorage.removeItem("token");
       localStorage.removeItem("refresh");
       localStorage.removeItem("token_expire");
