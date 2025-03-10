@@ -115,9 +115,21 @@ describe("Model", () => {
 
     uploadModel("cube2.glb");
 
+    // Check if part ids are in list ni sidebar
     cy.get("#Component0").should("exist");
     cy.get("#Component0").children().should("have.length", 1);
     cy.get("#Component0").children().first().should("have.text", "Cube2");
+
+    // Delete first cube
+    cy.get("#OpenMenuBar").click();
+    cy.get("#action-cell-0").children().first().click();
+    // Second delete button should not exist as now only one cube is available
+    cy.get("#action-cell-1").should("not.exist");
+    // Delete second cube
+    cy.get("#action-cell-0").children().first().click();
+
+    // Check if model got unloaded (component list should not exist anymore)
+    cy.get("#Component0").should("not.exist");
   });
 
   function uploadModel(name) {
@@ -129,8 +141,6 @@ describe("Model", () => {
       force: true,
     });
     cy.get("#uploadButton").click();
-
-
   }
 });
 
