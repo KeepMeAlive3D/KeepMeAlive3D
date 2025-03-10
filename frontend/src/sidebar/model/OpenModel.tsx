@@ -2,7 +2,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
-import { File } from "lucide-react";
+import { File, FileOutput, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -112,23 +112,23 @@ export function OpenModel() {
                   <TableCell className="text-right" id={`action-cell-${index}`}>
                     <Button
                       type="button"
-                      id={`delete-${info.modelId}`}
-                      className="col-span-1 mr-4"
-                      variant="outline"
-                      disabled={loading}
-                      onClick={() => handleDelete(info.modelId)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      type="button"
                       id={`load-${info.modelId}`}
-                      className="col-span-1"
+                      className="col-span-1 mx-4"
                       variant="outline"
                       disabled={loading}
                       onClick={() => handleFileOpen(info.modelId)}
                     >
-                      Load
+                      <FileOutput/>
+                    </Button>
+                    <Button
+                      type="button"
+                      id={`delete-${info.modelId}`}
+                      className="col-span-1"
+                      variant="destructive"
+                      disabled={loading}
+                      onClick={() => handleDelete(info.modelId)}
+                    >
+                      <Trash/>
                     </Button>
                   </TableCell>
                 </TableRow>
