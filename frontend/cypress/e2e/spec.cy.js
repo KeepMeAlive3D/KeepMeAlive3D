@@ -30,6 +30,12 @@ describe("Register", () => {
     cy.visit("http://localhost:5173/");
     cy.intercept("POST", "/api/register/basic").as("registerRequest");
 
+    Cypress.on("uncaught:exception", (err, runnable) => {
+      // Logging in with incorrect data will cause a rejected promise in the
+      // service. Therefore, we have to say that this will not fail the test.
+      return false;
+    });
+
     cy.get("input[id=\"username\"]").type("tester");
     cy.get("input[id=\"password\"]").type("123");
     cy.get("button[name=\"register\"]").click();
