@@ -4,6 +4,9 @@ import de.keepmealive3d.adapters.auth.RegisterController.RegisterData
 import de.keepmealive3d.adapters.data.AvailableFiles
 import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.EntityNotFoundException
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.model.IModelService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -21,35 +24,23 @@ class ModelInfoController(application: Application) : KoinComponent {
         application.routing {
             authenticate("jwt") {
                 get("/api/model/{id}/setting") {
-                    val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
-                    }
-                    val id = call.parameters["id"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "Missing or malformed id!")
-                        return@get
-                    }
+                    call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val id = call.parameters["id"]?.toIntOrNull()
+                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
 
                     //we don't check if the model is owned by the userid
-                    val settings = modelService.getSettings(id) ?: run {
-                        call.respond(HttpStatusCode.NotFound, "The model does not exist!")
-                        return@get
-                    }
+                    val settings = modelService.getSettings(id)
+                        ?: throw EntityNotFoundException("Model with id '$id' not found!")
 
                     call.respond(settings)
                 }
 
                 put("/api/model/{id}/setting") {
-                    val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@put
-                    }
-                    val id = call.parameters["id"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "Missing or malformed id!")
-                        return@put
-                    }
+                    call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val id = call.parameters["id"]?.toIntOrNull()
+                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
                     val body = call.receive<ModelSettings>()
                     modelService.updateSettings(id, body)
                     call.respond(HttpStatusCode.OK)
@@ -57,10 +48,7 @@ class ModelInfoController(application: Application) : KoinComponent {
 
                 get("/api/models") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
-                    }
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
 
                     call.respond(AvailableFiles(modelService.getAllModels(user.userId).toSet()))
                 }

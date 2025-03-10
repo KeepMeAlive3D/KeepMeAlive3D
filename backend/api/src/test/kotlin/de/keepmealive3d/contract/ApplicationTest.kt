@@ -1,6 +1,6 @@
 package de.keepmealive3d.contract
 
-import de.keepmealive3d.plugins.*
+import de.keepmealive3d.core.middleware.configureRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

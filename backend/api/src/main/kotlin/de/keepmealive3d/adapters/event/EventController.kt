@@ -2,6 +2,8 @@ package de.keepmealive3d.adapters.event
 
 import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,23 +19,14 @@ class EventController(application: Application) : KoinComponent {
         application.routing {
             authenticate("jwt") {
                 get("/api/event/{source}/dataPoints/{topic}/limit/{limit}") {
-                    val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
-                    }
-                    val source = call.parameters["source"] ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "source could not be found!")
-                        return@get
-                    }
-                    val topic = call.parameters["topic"] ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "topic could not be found!")
-                        return@get
-                    }
-                    val limit = call.parameters["limit"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "limit could not be found!")
-                        return@get
-                    }
+                    call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val source = call.parameters["source"]
+                        ?: throw BadRequestData("Request parameter 'source' is required!")
+                    val topic = call.parameters["topic"]
+                        ?: throw BadRequestData("Request parameter 'topic' is required!")
+                    val limit = call.parameters["limit"]?.toIntOrNull()
+                        ?: throw BadRequestData("Request parameter 'limit' is required and has to be an integer!")
                     call.respond(eventDao.loadEvents(source, topic, limit))
                 }
             }

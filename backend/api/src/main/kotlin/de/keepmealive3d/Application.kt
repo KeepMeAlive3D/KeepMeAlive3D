@@ -14,7 +14,7 @@ import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
 import de.keepmealive3d.core.event.messages.GenericEventMessage
-import de.keepmealive3d.plugins.*
+import de.keepmealive3d.core.middleware.*
 import de.keepmealive3d.scriptingapi.Loader
 import de.keepmealive3d.scriptingapi.PluginConfig
 import de.keepmealive3d.scriptingapi.mqtt.MqttPlugin
@@ -51,6 +51,7 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
     configureSerialization()
     configureSockets()
     configureRouting()
+    configureExceptionHandlingMiddleware()
 
     install(Authentication) {
         OAuth(this)

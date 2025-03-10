@@ -2,6 +2,7 @@ package de.keepmealive3d.adapters.auth
 
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.encryption.EncryptionService
+import de.keepmealive3d.core.exceptions.BadRequestData
 import de.keepmealive3d.core.user.LoginType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -22,10 +23,7 @@ class RegisterController(application: Application): KoinComponent {
             post("/api/register/basic") {
                 val body = call.receive<RegisterData>()
                 val pw = encryptionService.hash(body.password)
-                if(pw == null) {
-                    call.respond(HttpStatusCode.BadRequest, "register.pw.invalid")
-                    return@post
-                }
+                    ?: throw BadRequestData("Password cannot be empty!")
                 kmaDatabase.insertUser(body.username, pw, LoginType.BASIC)
                 call.respond(HttpStatusCode.Created)
             }
