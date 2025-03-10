@@ -24,15 +24,16 @@ import {
 } from "@/components/ui/table.tsx";
 import { getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
-import { useAppDispatch } from "@/hooks/hooks.ts";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { fetchAndSetModel } from "@/slices/ModelSlice.ts";
-import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
+import { fetchAndSetModelSettings, setLight } from "@/slices/SettingsSlice.ts";
 
 export function OpenModel() {
   const [open, setOpen] = useState(false);
   const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => state.settings);
 
   useEffect(() => {
     getRemoteModelNames().then(
@@ -50,6 +51,11 @@ export function OpenModel() {
     dispatch(fetchAndSetModel({ modelId: modelId })).then(() => {
       setTimeout(() => {
         dispatch(fetchAndSetModelSettings({modelId: modelId}))
+
+        // Set light again to prevent dark bug
+        setTimeout(() => {
+          dispatch(setLight(settings.light + 0.00000001));
+        }, 10);
       }, 1000)
     });
 
