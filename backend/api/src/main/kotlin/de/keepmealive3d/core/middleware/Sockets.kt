@@ -1,4 +1,4 @@
-package de.keepmealive3d.plugins
+package de.keepmealive3d.core.middleware
 
 import io.ktor.server.application.*
 import io.ktor.server.websocket.*

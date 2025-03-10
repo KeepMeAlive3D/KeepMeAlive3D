@@ -46,47 +46,27 @@ export function LoginForm({
   }
 
   function register() {
-    registerBasic(username, password).then(
-      (response) => {
-        if (response.status === 201) {
-          toast({
-            variant: "default",
-            title: "Successfully Registered!",
-            description: "The account has been registered and logged in directly.",
-          });
-          //If successfully, then login directly
-          login();
-        }
-      },
-      (err) => {
+    registerBasic(username, password)
+      .then(() => {
         toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
+          variant: "default",
+          title: "Successfully Registered!",
+          description: "The account has been registered and logged in directly.",
         });
-        console.error(err);
-      },
-    );
+        //If successfully, then login directly
+        login();
+      })
   }
 
   function login() {
-    loginBasic(username, password).then(
-      (response) => {
+    loginBasic(username, password)
+      .then((response) => {
         updateToken(response.data.token);
         updateRefreshToken(response.data.refreshToken);
         updateExpiration(response.data.refreshToken.toString());
         setDefaultRequestToken(response.data.token);
         setAuth(true);
-      },
-      (err) => {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
-        });
-        console.error(err);
-      },
-    );
+      })
   }
 
   const formSchema = z.object({

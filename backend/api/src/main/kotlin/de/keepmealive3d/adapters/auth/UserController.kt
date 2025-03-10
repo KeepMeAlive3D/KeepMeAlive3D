@@ -2,6 +2,8 @@ package de.keepmealive3d.adapters.auth
 
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.EntityNotFoundException
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.user.LoginType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -23,34 +25,26 @@ class UserController(application: Application): KoinComponent {
         val loginType: LoginType,
     )
 
-    val database: KmaSqlDatabase by inject()
+    private val database: KmaSqlDatabase by inject()
 
     init {
         application.routing {
             authenticate("jwt") {
                 get("/api/user") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if(user == null) {
-                        call.respond(HttpStatusCode.Forbidden)
-                        return@get
-                    }
-                    val dbUser = database.getUser(user.userId)
-                    if(dbUser == null) {
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val dbUser = database.getUser(user.userId) ?: run {
                         application.log.error("User not found but token valid: ${user.userName} and ${user.userId}")
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
+                        throw EntityNotFoundException("User not found in database!")
                     }
                     call.respond(UserInfo(user.userName, dbUser.loginType))
                 }
 
                 delete("/api/user") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if(user == null) {
-                        call.respond(HttpStatusCode.Forbidden)
-                        return@delete
-                    }
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
                     if(database.deleteUser(user.userId) == 1) {
-                        call.respond(HttpStatusCode.OK)
+                        call.respond(HttpStatusCode.Accepted)
                     } else {
                         call.respond(HttpStatusCode.Conflict)
                     }

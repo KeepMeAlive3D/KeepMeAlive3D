@@ -1,6 +1,8 @@
 package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.model.IModelService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,14 +20,9 @@ class ModelDeleteController(application: Application) : KoinComponent {
             authenticate("jwt") {
                 delete("/api/model/{id}") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@delete
-                    }
-                    val id = call.parameters["id"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "Missing or malformed id!")
-                        return@delete
-                    }
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val id = call.parameters["id"]?.toIntOrNull()
+                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
                     modelService.deleteModel(id, user.userId)
                     call.respond(HttpStatusCode.OK)
                 }

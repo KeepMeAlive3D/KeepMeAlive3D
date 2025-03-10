@@ -38,7 +38,7 @@ suspend fun ApplicationTestBuilder.cleanupTestUser(token: String) {
     client.delete("/api/user") {
         header(HttpHeaders.Authorization, "Bearer $token")
     }.also {
-        assertEquals(HttpStatusCode.OK, it.status)
+        assertEquals(HttpStatusCode.Accepted, it.status)
     }
     client.close()
 }

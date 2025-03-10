@@ -1,4 +1,4 @@
-package de.keepmealive3d.plugins
+package de.keepmealive3d.core.middleware
 
 import de.keepmealive3d.adapters.influx.KmaInfluxDatabase
 import de.keepmealive3d.adapters.sql.EventDao

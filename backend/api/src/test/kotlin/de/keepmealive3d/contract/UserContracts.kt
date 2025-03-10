@@ -46,7 +46,7 @@ class UserContracts {
         client.delete("/api/user") {
             header(HttpHeaders.Authorization, "Bearer ${response.token}")
         }.apply {
-            assertEquals(HttpStatusCode.OK, status)
+            assertEquals(HttpStatusCode.Accepted, status)
         }
 
         client.close()

@@ -1,6 +1,8 @@
 package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.model.IModelService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,14 +20,9 @@ class ModelDownloadController(application: Application) : KoinComponent {
             authenticate("jwt") {
                 get("/api/model/{id}/download") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@get
-                    }
-                    val id = call.parameters["id"]?.toIntOrNull() ?: run {
-                        call.respond(HttpStatusCode.BadRequest, "Missing or malformed model id!")
-                        return@get
-                    }
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val id = call.parameters["id"]?.toIntOrNull()
+                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
 
                     val path = modelService.getRequiredModelLocation(id, user.userId)
                     call.respondFile(path.toFile())

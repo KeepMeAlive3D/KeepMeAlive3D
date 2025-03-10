@@ -1,6 +1,8 @@
 package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.model.IModelService
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -26,10 +28,7 @@ class UploadController(application: Application) : KoinComponent {
 
                 post("/api/model/upload/{filepath}") {
                     val user = call.principal<KmaUserPrincipal>()
-                    if (user == null) {
-                        call.respond(HttpStatusCode.Forbidden, "userid could not be found!")
-                        return@post
-                    }
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
                     val filePath = call.parameters["filepath"] ?: UUID.randomUUID().toString()
                     var modelId : Int? = null
 
@@ -56,7 +55,7 @@ class UploadController(application: Application) : KoinComponent {
                         call.respond(HttpStatusCode.Created, it)
                         return@post
                     }
-                    call.respond(HttpStatusCode.BadRequest, "No model file provided!")
+                    throw BadRequestData("No file provided!")
                 }
             }
         }
