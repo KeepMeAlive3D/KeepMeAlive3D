@@ -122,11 +122,11 @@ describe("Model", () => {
 
     // Delete first cube
     cy.get("#OpenMenuBar").click();
-    cy.get("#action-cell-0").children().first().click();
+    cy.get("#action-cell-0").children()[1].click();
     // Second delete button should not exist as now only one cube is available
     cy.get("#action-cell-1").should("not.exist");
     // Delete second cube
-    cy.get("#action-cell-0").children().first().click();
+    cy.get("#action-cell-0").children()[1].click();
 
     // Check if model got unloaded (component list should not exist anymore)
     cy.get("#Component0").should("not.exist");
