@@ -31,6 +31,12 @@ export function updateModelSettings(modelId: number, lightIntensity: number, sca
   });
 }
 
+export function deleteModel(id: number) {
+  return service.delete(
+    `/api/model/${id}`,
+  );
+}
+
 
 export type AvailModels = {
   files: ModelInfo[];
