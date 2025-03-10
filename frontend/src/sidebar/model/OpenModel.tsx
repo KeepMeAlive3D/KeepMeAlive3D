@@ -39,9 +39,6 @@ export function OpenModel() {
     getRemoteModelNames().then(
       (req) => {
         setFileNames(req.data.files);
-      },
-      (err) => {
-        console.error(err);
       }
     );
   }, [open]);
