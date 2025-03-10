@@ -31,7 +31,7 @@ private fun handleException(e: Throwable): RestErrorInfo {
         is InvalidAuthTokenException -> RestErrorInfo(
             "Invalid authentication token",
             e.description,
-            HttpStatusCode.Forbidden.value
+            HttpStatusCode.Unauthorized.value
         )
         is InvalidCredentialsException -> RestErrorInfo(
             "Invalid credentials provided",

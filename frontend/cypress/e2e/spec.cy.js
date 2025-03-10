@@ -72,7 +72,7 @@ describe("Login", () => {
     // Check status code
     cy.wait("@loginRequest").then((interception) => {
       if (interception.response) {
-        expect(interception.response.statusCode).to.equal(401);
+        expect(interception.response.statusCode).to.equal(403);
       }
 
     });
