@@ -38,7 +38,13 @@ export const modelSlice = createSlice({
   name: "model",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
-  reducers: {},
+  reducers: {
+    resetModel: (state) => {
+      state.url = "";
+      state.modelId = -1;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAndSetModel.fulfilled, (state, action) => {
@@ -50,6 +56,8 @@ export const modelSlice = createSlice({
       });
   },
 });
+
+export const { resetModel } = modelSlice.actions;
 
 export const selectModel = (state: RootState) => state.model;
 
