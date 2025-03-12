@@ -112,7 +112,7 @@ export function OpenModel() {
                   <TableCell className="text-right" id={`action-cell-${index}`}>
                     <Button
                       type="button"
-                      id={`load-${info.modelId}`}
+                      id={`load-${index}`}
                       className="col-span-1 mx-4"
                       variant="outline"
                       disabled={loading}
@@ -122,7 +122,7 @@ export function OpenModel() {
                     </Button>
                     <Button
                       type="button"
-                      id={`delete-${info.modelId}`}
+                      id={`delete-${index}`}
                       className="col-span-1"
                       variant="destructive"
                       disabled={loading}
