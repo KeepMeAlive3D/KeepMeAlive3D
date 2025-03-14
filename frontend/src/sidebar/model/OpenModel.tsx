@@ -25,12 +25,13 @@ import {
 import { deleteModel, getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { clearPartsList } from "@/slices/ModelPartSlice.ts";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export function OpenModel() {
   const [open, setOpen] = useState(false);
   const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   function getAndSetModels() {
     getRemoteModelNames().then(
@@ -52,6 +53,7 @@ export function OpenModel() {
       () => {
         getAndSetModels();
         dispatch(clearPartsList());
+        navigate("/");
       },
     );
   };
