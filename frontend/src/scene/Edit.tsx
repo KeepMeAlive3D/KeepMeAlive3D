@@ -1,22 +1,48 @@
 import DynamicModel from "@/scene/DynamicModel.tsx";
-import { useAppSelector } from "@/hooks/hooks.ts";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { downloadModel } from "@/service/upload.ts";
+import { useParams } from "react-router";
+import { useAppDispatch } from "@/hooks/hooks.ts";
+import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
+import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
 
 function Edit() {
-  const { url, error } = useAppSelector((state) => state.model);
+  const [modelUrl, setModelUrl] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { modelId } = useParams();
+  const dispatch = useAppDispatch();
 
-  return (
-    <div className="edit-content flex flex-col h-auto">
-      <div className="canvas-content flex-grow">
-        {url && (
-          <Suspense>
-            <DynamicModel objectUrl={url} />
-          </Suspense>
-        )}
-        <p>{error}</p>
+  useEffect(() => {
+    if (modelId !== undefined) {
+      setLoading(true);
+      downloadModel(Number(modelId)).then(response => {
+        setModelUrl(URL.createObjectURL(response.data));
+        dispatch(fetchAndSetModelSettings({modelId: Number(modelId)}))
+        setLoading(false);
+      });
+    }
+  }, [dispatch, modelId]);
+  if(loading) {
+    return (
+      <div className="flex flex-row items-center justify-center">
+        <div className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
+          <LoadingSpinner loading={true} className="mr-2"/> Loading...
+        </div>
       </div>
-    </div>
-  );
+    )
+  } else {
+    return (
+      <div className="edit-content flex flex-col h-auto">
+        <div className="canvas-content flex-grow">
+          {modelUrl && (
+            <Suspense>
+              <DynamicModel objectUrl={modelUrl} />
+            </Suspense>
+          )}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default Edit;

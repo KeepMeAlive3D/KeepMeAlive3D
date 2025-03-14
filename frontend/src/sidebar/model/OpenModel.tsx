@@ -23,18 +23,14 @@ import {
   TableRow,
 } from "@/components/ui/table.tsx";
 import { deleteModel, getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
-import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { fetchAndSetModel, resetModel } from "@/slices/ModelSlice.ts";
-import { fetchAndSetModelSettings, setLight } from "@/slices/SettingsSlice.ts";
+import { useAppDispatch } from "@/hooks/hooks.ts";
 import { clearPartsList } from "@/slices/ModelPartSlice.ts";
+import { Link } from "react-router";
 
 export function OpenModel() {
   const [open, setOpen] = useState(false);
   const [fileNames, setFileNames] = useState<ModelInfo[]>([]);
-  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const settings = useAppSelector((state) => state.settings);
 
   function getAndSetModels() {
     getRemoteModelNames().then(
@@ -51,28 +47,10 @@ export function OpenModel() {
     getAndSetModels();
   }, [open]);
 
-  const handleFileOpen = (modelId: number) => {
-    setLoading(true);
-    dispatch(fetchAndSetModel({ modelId: modelId })).then(() => {
-      setTimeout(() => {
-        dispatch(fetchAndSetModelSettings({modelId: modelId}))
-
-        // Set light again to prevent dark bug
-        setTimeout(() => {
-          dispatch(setLight(settings.light + 0.00000001));
-        }, 10);
-      }, 1000)
-    });
-
-    setLoading(false);
-    setOpen(false);
-  };
-
   const handleDelete = (modelId: number) => {
     deleteModel(modelId).then(
       () => {
         getAndSetModels();
-        dispatch(resetModel());
         dispatch(clearPartsList());
       },
     );
@@ -110,25 +88,25 @@ export function OpenModel() {
                   <TableCell>{info.model}</TableCell>
                   <TableCell>{info.filename}</TableCell>
                   <TableCell className="text-right" id={`action-cell-${index}`}>
-                    <Button
-                      type="button"
-                      id={`load-${index}`}
-                      className="col-span-1 mx-4"
-                      variant="outline"
-                      disabled={loading}
-                      onClick={() => handleFileOpen(info.modelId)}
-                    >
-                      <FileOutput/>
-                    </Button>
+                    <Link to={`/model/${info.modelId}`}>
+                      <Button
+                        type="button"
+                        id={`load-${index}`}
+                        className="col-span-1 mx-4"
+                        variant="outline"
+                        onClick={() => setOpen(false)}
+                      >
+                        <FileOutput />
+                      </Button>
+                    </Link>
                     <Button
                       type="button"
                       id={`delete-${index}`}
                       className="col-span-1"
                       variant="destructive"
-                      disabled={loading}
                       onClick={() => handleDelete(info.modelId)}
                     >
-                      <Trash/>
+                      <Trash />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -138,11 +116,9 @@ export function OpenModel() {
           <DialogFooter>
             <Button
               type="button"
-              disabled={loading}
               onClick={() => setOpen(false)}
             >
               Close
-              <LoadingSpinner className={"static"} loading={loading} />
             </Button>
           </DialogFooter>
         </DialogContent>

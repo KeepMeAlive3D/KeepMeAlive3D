@@ -10,7 +10,7 @@ const service = axios.create({
 service.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       if (localStorage.getItem("token")) {
         //only redirect & delete if the user was logged in
         localStorage.removeItem("token");
