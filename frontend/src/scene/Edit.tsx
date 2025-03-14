@@ -2,14 +2,15 @@ import DynamicModel from "@/scene/DynamicModel.tsx";
 import { Suspense, useEffect, useState } from "react";
 import { downloadModel } from "@/service/upload.ts";
 import { useParams } from "react-router";
-import { useAppDispatch } from "@/hooks/hooks.ts";
-import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
+import { fetchAndSetModelSettings, setLight, setScale } from "@/slices/SettingsSlice.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
 
 function Edit() {
   const [modelUrl, setModelUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const { modelId } = useParams();
+  const settings = useAppSelector((state) => state.settings);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -17,7 +18,15 @@ function Edit() {
       setLoading(true);
       downloadModel(Number(modelId)).then(response => {
         setModelUrl(URL.createObjectURL(response.data));
-        dispatch(fetchAndSetModelSettings({modelId: Number(modelId)}))
+        setTimeout(() => {
+          dispatch(fetchAndSetModelSettings({modelId: Number(modelId)}))
+
+          // Set light again to prevent dark bug
+          setTimeout(() => {
+            dispatch(setLight(settings.light + 0.00000001));
+            dispatch(setScale(settings.scale));
+          }, 10);
+        }, 1000)
         setLoading(false);
       });
     }
