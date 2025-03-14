@@ -2,15 +2,14 @@ import DynamicModel from "@/scene/DynamicModel.tsx";
 import { Suspense, useEffect, useState } from "react";
 import { downloadModel } from "@/service/upload.ts";
 import { useParams } from "react-router";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { fetchAndSetModelSettings, setLight, setScale } from "@/slices/SettingsSlice.ts";
+import { useAppDispatch } from "@/hooks/hooks.ts";
+import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
 
 function Edit() {
   const [modelUrl, setModelUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const { modelId } = useParams();
-  const settings = useAppSelector((state) => state.settings);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,17 +19,12 @@ function Edit() {
         setModelUrl(URL.createObjectURL(response.data));
         setTimeout(() => {
           dispatch(fetchAndSetModelSettings({modelId: Number(modelId)}))
-
-          // Set light again to prevent dark bug
-          setTimeout(() => {
-            dispatch(setLight(settings.light + 0.00000001));
-            dispatch(setScale(settings.scale));
-          }, 10);
         }, 1000)
         setLoading(false);
       });
     }
   }, [dispatch, modelId]);
+
   if(loading) {
     return (
       <div className="flex flex-row items-center justify-center">
