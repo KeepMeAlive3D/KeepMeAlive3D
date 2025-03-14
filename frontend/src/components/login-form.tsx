@@ -17,6 +17,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast.ts";
 import { setDefaultRequestToken } from "@/service/service.ts";
 import useLocalStorage from "@/hooks/localstorage.ts";
+import { RestErrorInfo } from "@/service/error.ts";
 
 export function LoginForm({
   setAuth,
@@ -46,47 +47,35 @@ export function LoginForm({
   }
 
   function register() {
-    registerBasic(username, password).then(
-      (response) => {
-        if (response.status === 201) {
-          toast({
-            variant: "default",
-            title: "Successfully Registered!",
-            description: "The account has been registered and logged in directly.",
-          });
-          //If successfully, then login directly
-          login();
-        }
-      },
-      (err) => {
+    registerBasic(username, password)
+      .then(() => {
         toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
+          variant: "default",
+          title: "Successfully Registered!",
+          description: "The account has been registered and logged in directly.",
         });
-        console.error(err);
-      },
-    );
+        //If successfully, then login directly
+        login();
+      })
   }
 
   function login() {
-    loginBasic(username, password).then(
-      (response) => {
+    loginBasic(username, password)
+      .then((response) => {
         updateToken(response.data.token);
         updateRefreshToken(response.data.refreshToken);
         updateExpiration(response.data.refreshToken.toString());
         setDefaultRequestToken(response.data.token);
         setAuth(true);
-      },
-      (err) => {
+      })
+      .catch(error  => {
+        const parsed = error.data as RestErrorInfo
         toast({
           variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
-        });
-        console.error(err);
-      },
-    );
+          title: parsed.name,
+          description: parsed.message,
+        })
+      })
   }
 
   const formSchema = z.object({
