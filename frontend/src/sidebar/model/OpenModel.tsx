@@ -2,7 +2,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
-import { File } from "lucide-react";
+import { File, FileOutput, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,11 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
-import { getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
+import { deleteModel, getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { fetchAndSetModel } from "@/slices/ModelSlice.ts";
+import { fetchAndSetModel, resetModel } from "@/slices/ModelSlice.ts";
 import { fetchAndSetModelSettings, setLight } from "@/slices/SettingsSlice.ts";
+import { clearPartsList } from "@/slices/ModelPartSlice.ts";
 
 export function OpenModel() {
   const [open, setOpen] = useState(false);
@@ -35,12 +36,19 @@ export function OpenModel() {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
 
-  useEffect(() => {
+  function getAndSetModels() {
     getRemoteModelNames().then(
       (req) => {
         setFileNames(req.data.files);
-      }
+      },
+      (err) => {
+        console.error(err);
+      },
     );
+  }
+
+  useEffect(() => {
+    getAndSetModels();
   }, [open]);
 
   const handleFileOpen = (modelId: number) => {
@@ -60,8 +68,18 @@ export function OpenModel() {
     setOpen(false);
   };
 
+  const handleDelete = (modelId: number) => {
+    deleteModel(modelId).then(
+      () => {
+        getAndSetModels();
+        dispatch(resetModel());
+        dispatch(clearPartsList());
+      },
+    );
+  };
+
   return (
-    <SidebarMenuItem key="Open">
+    <SidebarMenuItem key="Open" id="OpenMenuBar">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <SidebarMenuButton asChild>
@@ -87,20 +105,30 @@ export function OpenModel() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {fileNames.map((info) => (
+              {fileNames.map((info, index) => (
                 <TableRow key={info.modelId}>
                   <TableCell>{info.model}</TableCell>
                   <TableCell>{info.filename}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" id={`action-cell-${index}`}>
                     <Button
                       type="button"
-                      id={`load-${info.modelId}`}
-                      className="col-span-1"
+                      id={`load-${index}`}
+                      className="col-span-1 mx-4"
                       variant="outline"
                       disabled={loading}
                       onClick={() => handleFileOpen(info.modelId)}
                     >
-                      Load
+                      <FileOutput/>
+                    </Button>
+                    <Button
+                      type="button"
+                      id={`delete-${index}`}
+                      className="col-span-1"
+                      variant="destructive"
+                      disabled={loading}
+                      onClick={() => handleDelete(info.modelId)}
+                    >
+                      <Trash/>
                     </Button>
                   </TableCell>
                 </TableRow>
