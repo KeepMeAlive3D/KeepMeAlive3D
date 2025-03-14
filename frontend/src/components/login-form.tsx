@@ -17,6 +17,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast.ts";
 import { setDefaultRequestToken } from "@/service/service.ts";
 import useLocalStorage from "@/hooks/localstorage.ts";
+import { RestErrorInfo } from "@/service/error.ts";
 
 export function LoginForm({
   setAuth,
@@ -66,6 +67,14 @@ export function LoginForm({
         updateExpiration(response.data.refreshToken.toString());
         setDefaultRequestToken(response.data.token);
         setAuth(true);
+      })
+      .catch(error  => {
+        const parsed = error.data as RestErrorInfo
+        toast({
+          variant: "destructive",
+          title: parsed.name,
+          description: parsed.message,
+        })
       })
   }
 
