@@ -1,7 +1,7 @@
 import DynamicModel from "@/scene/DynamicModel.tsx";
 import { Suspense, useEffect, useState } from "react";
 import { downloadModel } from "@/service/upload.ts";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
@@ -11,6 +11,8 @@ function Edit() {
   const [loading, setLoading] = useState<boolean>(true);
   const { modelId } = useParams();
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const refresh = location.state?.refresh;
 
   useEffect(() => {
     if (modelId !== undefined) {
@@ -18,12 +20,12 @@ function Edit() {
       downloadModel(Number(modelId)).then(response => {
         setModelUrl(URL.createObjectURL(response.data));
         setTimeout(() => {
-          dispatch(fetchAndSetModelSettings({modelId: Number(modelId)}))
+          dispatch(fetchAndSetModelSettings({ modelId: Number(modelId) }));
         }, 1000)
         setLoading(false);
       });
     }
-  }, [dispatch, modelId]);
+  }, [dispatch, modelId, refresh]);
 
   if(loading) {
     return (

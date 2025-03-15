@@ -90,7 +90,7 @@ export function OpenModel() {
                   <TableCell>{info.model}</TableCell>
                   <TableCell>{info.filename}</TableCell>
                   <TableCell className="text-right" id={`action-cell-${index}`}>
-                    <Link to={`/model/${info.modelId}`}>
+                    <Link to={`/model/${info.modelId}`} state={{ refresh: Date.now() }}>
                       <Button
                         type="button"
                         id={`load-${index}`}
