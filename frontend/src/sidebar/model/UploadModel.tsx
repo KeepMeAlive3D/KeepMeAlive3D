@@ -18,10 +18,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { useRef, useState } from "react";
 import { uploadFile } from "@/service/upload.ts";
 import { useToast } from "@/hooks/use-toast.ts";
-import { fetchAndSetModel } from "@/slices/ModelSlice.ts";
-import { useAppDispatch } from "@/hooks/hooks.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
-import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
+import { useNavigate } from "react-router";
 
 export function UploadModel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +28,8 @@ export function UploadModel() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
 
   const updateFileName = () => {
     const name = fileInputRef?.current?.files?.item(0)?.name ?? "";
@@ -69,8 +68,7 @@ export function UploadModel() {
     );
 
     if (modelId >= 0) {
-      dispatch(fetchAndSetModel({ modelId: modelId }));
-      dispatch(fetchAndSetModelSettings({modelId: modelId}))
+      navigate(`/model/${modelId}`);
     }
   };
 

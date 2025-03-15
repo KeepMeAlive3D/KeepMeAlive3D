@@ -11,6 +11,7 @@ export const fetchAndSetModelSettings = createAsyncThunk(
       return setting;
     } catch {
       //unused, user can set this himself in case of an error
+      console.error(`Could not load settings`)
       return thunkAPI.rejectWithValue("Failed to get model setting");
     }
   }
