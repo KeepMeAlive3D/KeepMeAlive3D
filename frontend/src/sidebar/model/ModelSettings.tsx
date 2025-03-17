@@ -16,17 +16,17 @@ import { setLight, setScale } from "@/slices/SettingsSlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useRef } from "react";
 import { updateModelSettings } from "@/service/upload.ts";
+import { useParams } from "react-router";
 
 export function ModelSettings() {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
-  const model = useAppSelector((state) => state.model)
-
   const sliderLight = useRef<HTMLInputElement | null>(null);
+  const { modelId } = useParams();
 
   const handleClose = async (open: boolean) => {
-    if(!open && model.modelId > 0) {
-      await updateModelSettings(model.modelId, settings.light, settings.scale)
+    if(!open && modelId !== undefined && Number(modelId) > 0) {
+      await updateModelSettings(Number(modelId), settings.light, settings.scale)
     }
   };
 
