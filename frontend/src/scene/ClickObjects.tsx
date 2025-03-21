@@ -1,8 +1,11 @@
 import { RootState, useFrame, useThree } from "@react-three/fiber";
+// @ts-expect-error Source is javascript
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+// @ts-expect-error Source is javascript
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass";
 import { Object3D, Scene, Vector2 } from "three";
 import { useEffect, useRef } from "react";
+// @ts-expect-error Source is javascript
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 
 function ClickObjects() {
@@ -48,6 +51,8 @@ function OnClick(state: RootState, outlinePass: OutlinePass) {
   }
 }
 
+// Returns the root object which has custom annotations or otherwise the object
+// the initial object.
 function getRootObject(object: Object3D): Object3D {
   let obj = object;
   while (obj.parent && !(obj.parent instanceof Scene)) {
