@@ -63,7 +63,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.17")
     implementation("io.ktor:ktor-server-auth-jwt")
 
-    implementation("com.charleskorn.kaml:kaml:0.72.0")
+    implementation("com.charleskorn.kaml:kaml:0.73.0")
     implementation(group = "org.eclipse.paho", "org.eclipse.paho.client.mqttv3", "1.2.5")
 
     //db
