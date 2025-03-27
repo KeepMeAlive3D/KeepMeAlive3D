@@ -16,6 +16,7 @@ import org.ktorm.dsl.insert
 import org.ktorm.entity.filter
 import org.ktorm.entity.map
 import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.sortedByDescending
 import org.ktorm.entity.take
 import java.time.Instant
 
@@ -74,6 +75,7 @@ class EventDao : KoinComponent {
             .database
             .sequenceOf(DBEventTable)
             .filter { (it.source eq source) and (it.topic eq topic) }
+            .sortedByDescending { it.timestamp }
             .take(limit)
             .map {
                 when (it.type) {

@@ -24,6 +24,7 @@ fun main() {
 
     val moveTopic = "move.querausleger"
     val rotationTopic = "rot.drehkranz_oben001"
+    val psuTemp = "info.psu.temp"
     val connectionOptions = MqttConnectOptions()
 
     connectionOptions.userName = config.databases.mqtt.clientId
@@ -38,6 +39,12 @@ fun main() {
         launch {
             while (true) {
                 for (i in 1..100) {
+                    client.publish(
+                        psuTemp,
+                        MqttMessage(
+                            "${Random.nextLong(0, 100)}".toByteArray(),
+                        )
+                    )
                     val z = -0.15872880816459656 + (i / 1000.0)
                     client.publish(
                         moveTopic,

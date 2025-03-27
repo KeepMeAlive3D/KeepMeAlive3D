@@ -6,9 +6,11 @@ function GraphView() {
 
   return (
     <div className="grid grid-cols-2 gap-5 p-5">
-      {modelParts.map((item) => (
-        <MqttGraph key={item.topic} topic={item.topic} />
-      ))}
+      {modelParts
+        .filter(it => !it.topic.startsWith("move") && !it.topic.startsWith("rot"))
+        .map((item) => (
+          <MqttGraph key={item.topic} topic={item.topic} />
+        ))}
     </div>
   );
 }
