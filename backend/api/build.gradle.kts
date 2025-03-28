@@ -75,7 +75,7 @@ dependencies {
     // SLF4J Logger
     implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
-    implementation("io.insert-koin:koin-core:4.0.2")
+    implementation("io.insert-koin:koin-core:4.0.3")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-test
     testImplementation("io.insert-koin:koin-test:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-test-junit5
