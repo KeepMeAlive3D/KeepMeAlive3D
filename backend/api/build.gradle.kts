@@ -77,9 +77,9 @@ dependencies {
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
     implementation("io.insert-koin:koin-core:4.0.3")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-test
-    testImplementation("io.insert-koin:koin-test:4.0.2")
+    testImplementation("io.insert-koin:koin-test:4.0.3")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-test-junit5
-    testImplementation("io.insert-koin:koin-test-junit5:4.0.2")
+    testImplementation("io.insert-koin:koin-test-junit5:4.0.3")
 
     // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
     implementation("io.insert-koin:koin-ktor:4.0.3")
