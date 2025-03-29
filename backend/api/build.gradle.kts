@@ -71,7 +71,7 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:9.2.0")
 
     // Koin for Ktor
-    implementation("io.insert-koin:koin-ktor:4.0.2")
+    implementation("io.insert-koin:koin-ktor:4.0.3")
     // SLF4J Logger
     implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
@@ -82,7 +82,7 @@ dependencies {
     testImplementation("io.insert-koin:koin-test-junit5:4.0.2")
 
     // https://mvnrepository.com/artifact/io.insert-koin/koin-ktor
-    implementation("io.insert-koin:koin-ktor:4.0.2")
+    implementation("io.insert-koin:koin-ktor:4.0.3")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-logger-slf4j
     implementation("io.insert-koin:koin-logger-slf4j:4.0.2")
 
