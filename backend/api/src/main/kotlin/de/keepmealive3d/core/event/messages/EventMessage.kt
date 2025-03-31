@@ -17,6 +17,15 @@ fun wsCreatePositionMessageEvent(
     PositionMessageData(topic, dataSource, Vector(position.first, position.second, position.third))
 )
 
+fun wsCreateRelativePositionMessageEvent(
+    topic: String,
+    dataSource: String,
+    percentage: Double
+) = RelativePositionEventMessage(
+    Manifest(1, MessageType.ANIMATION_RELATIVE, Instant.now()),
+    RelativePositionMessageData(topic, dataSource, percentage)
+)
+
 fun wsCreateErrorEventMessage(errorType: String, description: String) = EventError(
     Manifest(1, MessageType.ERROR, Instant.now()),
     EventErrorData(errorType, description)

@@ -55,16 +55,11 @@ class MqttPlugin : Plugin() {
                         if (topic == null)
                             return@launch
                         if (topic.startsWith("move.") || topic.startsWith("rot.")) {
-                            val (x, y, z) = data.split(",")
                             rcv(
-                                wsCreatePositionMessageEvent(
+                                wsCreateRelativePositionMessageEvent(
                                     topic,
                                     "MQTT",
-                                    Triple(
-                                        x.toDoubleOrNull() ?: 0.0,
-                                        y.toDoubleOrNull() ?: 0.0,
-                                        z.toDoubleOrNull() ?: 0.0
-                                    )
+                                    data.toDoubleOrNull() ?: 0.0
                                 )
                             )
                             return@launch

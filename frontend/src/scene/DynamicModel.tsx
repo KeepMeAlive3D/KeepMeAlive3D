@@ -9,6 +9,7 @@ import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
+import { parseLimits } from "@/util/LimitUtils.ts";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const gltf = useGLTF(objectUrl, undefined, true);
@@ -25,17 +26,33 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         lights.push(node);
       }
 
+      if (node.name.startsWith("limit_")) {
+        node.parent?.updateMatrixWorld(true);
+
+        const worldPosition = new Vector3();
+        node.parent?.getWorldPosition(worldPosition);
+        console.debug(worldPosition);
+
+        const pos = new Vector3();
+        node.getWorldPosition(pos);
+        console.debug(node.name + ": x:" + pos.x + " y:" + pos.y + " z:" + pos.z);
+      }
+
       if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
         console.debug(
           `Custom properties found for ${node.name}:`,
           node.userData,
         );
+
+        const limits = parseLimits(node);
+
         dispatch(
           addPart({
             id: node.id,
             name: node.name,
             isSelected: false,
             topic: node.userData["topic"],
+            limits: limits,
           }),
         );
       }

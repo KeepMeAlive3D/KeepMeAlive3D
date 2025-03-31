@@ -1,9 +1,11 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { MessageType, PositionEventMessage } from "@/service/wsTypes.ts";
+import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts";
 import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
+import { getStepByLimits, mergeVectors, vectorFromStateVector } from "@/util/LimitUtils.ts";
+import { LimitType } from "@/slices/ModelPartSlice.ts";
 
 
 function Animator() {
@@ -52,17 +54,33 @@ function Animator() {
     });
   });
 
-  const animationCallback = useCallback((msg: PositionEventMessage) => {
+  const animationCallback = useCallback((msg: RelativePositionEventMessage) => {
     const name = msg.message.topic.split(".").reverse()[0];
     const selectedObject = state.scene.getObjectByName(name);
+    const limits = modelParts.find(x => x.name === name)?.limits;
+
+    if (!limits) {
+      console.warn("Relative position event received for an object without limits");
+      return;
+    }
+
+    const upper = limits.find(x => x.limitType == LimitType.UPPER);
+    const lower = limits.find(x => x.limitType == LimitType.LOWER);
+
+    if (!upper || !lower) {
+      console.warn("Object " + name + " does not have an upper or lower limit");
+      return;
+    }
+
+    const step = getStepByLimits(upper, lower, msg.message.percentage);
+
 
     if (selectedObject) {
-      const targetPosition = new Vector3(
-        msg.message.position.x,
-        msg.message.position.y,
-        msg.message.position.z,
-      );
-
+      console.debug(selectedObject.position);
+      console.debug(vectorFromStateVector(lower.limit));
+      console.debug(step);
+      const targetPosition = mergeVectors(selectedObject.position, vectorFromStateVector(lower.limit)).add(step);
+      console.debug(targetPosition);
       animationsRef.current.set(selectedObject, { vector: targetPosition, topic: msg.message.topic });
 
     } else {
@@ -76,7 +94,7 @@ function Animator() {
   }), [modelParts]);
 
 
-  useFilteredWebsocket(topics, MessageType.ANIMATION_POSITION, animationCallback);
+  useFilteredWebsocket(topics, MessageType.ANIMATION_RELATIVE, animationCallback);
 
 
   return null;

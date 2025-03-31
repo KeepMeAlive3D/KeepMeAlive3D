@@ -6,7 +6,24 @@ export type ComponentInformation = {
   name: string;
   isSelected: boolean;
   topic: string;
+  limits?: Array<ComponentLimit>;
 };
+// TODO: refactor and use Vector here
+export type ComponentLimit = {
+  limit: Vector3State;
+  limitType: LimitType;
+}
+
+export interface Vector3State {
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+export enum LimitType {
+  LOWER = 1,
+  UPPER = 2,
+}
 
 // Define a type for the slice state
 interface ModelPartState {

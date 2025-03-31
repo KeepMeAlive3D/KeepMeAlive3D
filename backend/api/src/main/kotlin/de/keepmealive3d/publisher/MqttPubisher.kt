@@ -39,36 +39,37 @@ fun main() {
         launch {
             while (true) {
                 for (i in 1..100) {
-                    client.publish(
+                    /*client.publish(
                         psuTemp,
                         MqttMessage(
                             "${Random.nextLong(0, 100)}".toByteArray(),
                         )
-                    )
-                    val z = -0.15872880816459656 + (i / 1000.0)
+                    )*/
                     client.publish(
                         moveTopic,
                         MqttMessage(
-                            "-0.025958789512515068,0.3047788739204407,${z}".toByteArray(),
+                            "$i".toByteArray(),
                         )
                     )
+                    println("Published $i")
                     delay(Random.nextLong(100, 1000))
                 }
             }
         }
 
+        /*
         launch {
             while (true) {
-                for (i in 1..100) {
+                for (i in 1..360) {
                     client.publish(
                         rotationTopic,
                         MqttMessage(
-                            "0,${i / 25.0},0".toByteArray(),
+                            "$i".toByteArray(),
                         )
                     )
                     delay(Random.nextLong(100, 2000))
                 }
             }
-        }
+        }*/
     }
 }
