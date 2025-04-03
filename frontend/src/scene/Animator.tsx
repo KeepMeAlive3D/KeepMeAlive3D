@@ -4,7 +4,7 @@ import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts"
 import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
-import { getLocalStep } from "@/util/LimitUtils.ts";
+import { getLocalPositionBetweenLimits } from "@/util/LimitUtils.ts";
 
 
 function Animator() {
@@ -71,7 +71,7 @@ function Animator() {
 
 
     if (selectedObject) {
-      const targetLocal = getLocalStep(selectedObject, limits, msg.message.percentage);
+      const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
 
       if (targetLocal) {
 

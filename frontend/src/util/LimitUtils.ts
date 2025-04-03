@@ -2,7 +2,7 @@ import { ComponentLimit } from "@/slices/ModelPartSlice.ts";
 import { Object3D, Vector3, Vector3Like } from "three";
 
 
-export function getLocalStep(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
+export function getLocalPositionBetweenLimits(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
 
   const { lowerWorldPosition, upperWorldPosition } = getLowerAndUpperLimit(limits);
 
@@ -36,8 +36,10 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
   return targetLocalPosition;
 }
 
-export function getLowerAndUpperLimit(limits: ComponentLimit[]) {
-
+/**
+ * Selects from the given limit the lower and upper limit. It is determined by the length of the vector.
+ */
+function getLowerAndUpperLimit(limits: ComponentLimit[]) {
   const vector1 = vector3FromVector3Like(limits[0].defaultWorldPosition);
   const vector2 = vector3FromVector3Like(limits[1].defaultWorldPosition);
 
@@ -64,10 +66,24 @@ export function parseLimits(object: Object3D): ComponentLimit[] {
   return limitObjects.map(x => parseLimit(x)).filter(x => x != null);
 }
 
+function parseLimit(object: Object3D): ComponentLimit | undefined {
+  const worldPosition = new Vector3();
+  object.getWorldPosition(worldPosition);
+
+  return {
+    name: object.name,
+    defaultWorldPosition: {
+      x: worldPosition.x,
+      y: worldPosition.y,
+      z: worldPosition.z,
+    },
+  };
+}
+
 /**
  * Converts and Vector3Like to an actual Vector3
  */
-export function vector3FromVector3Like(vector: Vector3Like): Vector3 {
+function vector3FromVector3Like(vector: Vector3Like): Vector3 {
   return new Vector3(vector.x, vector.y, vector.z);
 }
 
@@ -83,19 +99,4 @@ function roundVector(vector: Vector3) {
 function roundToDecimal(num: number, decimals: number): number {
   const factor = Math.pow(10, decimals);
   return Math.round(num * factor) / factor;
-}
-
-function parseLimit(object: Object3D): ComponentLimit | undefined {
-
-  const worldPosition = new Vector3();
-  object.getWorldPosition(worldPosition);
-
-  return {
-    name: object.name,
-    defaultWorldPosition: {
-      x: worldPosition.x,
-      y: worldPosition.y,
-      z: worldPosition.z,
-    },
-  }
 }
