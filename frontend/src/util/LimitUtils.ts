@@ -3,37 +3,21 @@ import { Object3D, Vector3, Vector3Like } from "three";
 
 
 export function getLocalStep(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
-  const worldPosition = new Vector3();
-  object.getWorldPosition(worldPosition);
 
-  const sortedLimits = getLowerAndUpperLimit(limits);
-  const sortedLimitsPositions = {
-    lower: object.children.find(x => x.name === sortedLimits.lower.name),
-    upper: object.children.find(x => x.name === sortedLimits.upper.name),
-  };
-
-  if (!sortedLimitsPositions.lower || !sortedLimitsPositions.upper) {
-    console.error("Limits not found in world");
-    return undefined;
-  }
-
-  const lowerWorldPosition = vector3FromVector3Like(sortedLimits.lower.defaultWorldPosition);
-  const upperWorldPosition = vector3FromVector3Like(sortedLimits.upper.defaultWorldPosition);
-
-  const objWorld = new Vector3();
-  object.getWorldPosition(objWorld);
-
+  const { lowerWorldPosition, upperWorldPosition } = getLowerAndUpperLimit(limits);
 
   console.debug("Vecs:");
   console.debug(upperWorldPosition);
   console.debug(lowerWorldPosition);
 
   const step = upperWorldPosition.sub(lowerWorldPosition).multiplyScalar(percentage / 100.0);
-  roundVector(step); // TODO: improve: set all unnecessary components to 0 instead. Maybe no rounding neccessary
-
   console.debug("Step:");
   console.debug(step);
+  roundVector(step); // TODO: improve: set all unnecessary components to 0 instead. Maybe no rounding neccessary
 
+
+  const objWorld = new Vector3();
+  object.getWorldPosition(objWorld);
   console.debug("Current world position:");
   console.debug(objWorld);
 
@@ -58,16 +42,20 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
 }
 
 export function getLowerAndUpperLimit(limits: ComponentLimit[]) {
-  if (limits[0].standardBasisVector.x == -1 || limits[0].standardBasisVector.y || limits[0].standardBasisVector.z == -1) {
+
+  const vector1 = vector3FromVector3Like(limits[0].defaultWorldPosition);
+  const vector2 = vector3FromVector3Like(limits[1].defaultWorldPosition);
+
+  if (vector1.length() > vector2.length()) {
     return {
-      lower: limits[0],
-      upper: limits[1],
-    };
+      lowerWorldPosition: vector2,
+      upperWorldPosition: vector1,
+    }
   } else {
     return {
-      lower: limits[1],
-      upper: limits[0],
-    };
+      lowerWorldPosition: vector1,
+      upperWorldPosition: vector2,
+    }
   }
 }
 
