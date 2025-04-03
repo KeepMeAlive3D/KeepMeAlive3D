@@ -34,38 +34,13 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
           lights.push(node);
         }
 
-        if (node.name.startsWith("limit_")) {
-          node.parent?.updateMatrixWorld(true);
-
-          const worldPosition = new Vector3();
-          node.parent?.getWorldPosition(worldPosition);
-          console.debug(worldPosition);
-
-          const pos = new Vector3();
-          node.getWorldPosition(pos);
-          console.debug(node.name + ": x:" + pos.x + " y:" + pos.y + " z:" + pos.z);
-        }
-
-        // TODO: remove debug constraint
-        if (Object.keys(node.userData).length > 0 && node.userData["topic"] && node.name === "querausleger") {
+        if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
           console.debug(
             `Custom properties found for ${node.name}:`,
             node.userData,
           );
 
-          if (node.name === "querausleger") {
-            const objWorld = new Vector3();
-            node.getWorldPosition(objWorld);
-
-            console.debug("On parsing world position:");
-            console.debug(objWorld);
-          }
-
-
           const limits = parseLimits(node);
-
-          console.debug("Default world position:");
-          console.debug(limits[0].defaultWorldPosition);
 
           dispatch(
             addPart({
