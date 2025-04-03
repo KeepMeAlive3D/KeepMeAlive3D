@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
@@ -16,49 +16,75 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
 
+  const hasRun = useRef(false);
+
+  // RUn after model fully loaded and all transformations are done
+  const handleUpdate = () => {
+    if (!hasRun.current) {
+      console.debug("Handle update");
+      hasRun.current = true;
+      const lights: Array<Object3D> = [];
+
+      dispatch(clearPartsList());
+
+      gltf.scene.traverse((node) => {
+        if (node instanceof Light) {
+          lights.push(node);
+        }
+
+        if (node.name.startsWith("limit_")) {
+          node.parent?.updateMatrixWorld(true);
+
+          const worldPosition = new Vector3();
+          node.parent?.getWorldPosition(worldPosition);
+          console.debug(worldPosition);
+
+          const pos = new Vector3();
+          node.getWorldPosition(pos);
+          console.debug(node.name + ": x:" + pos.x + " y:" + pos.y + " z:" + pos.z);
+        }
+
+        // TODO: remove debug constraint
+        if (Object.keys(node.userData).length > 0 && node.userData["topic"] && node.name === "querausleger") {
+          console.debug(
+            `Custom properties found for ${node.name}:`,
+            node.userData,
+          );
+
+          if (node.name === "querausleger") {
+            const objWorld = new Vector3();
+            node.getWorldPosition(objWorld);
+
+            console.debug("On parsing world position:");
+            console.debug(objWorld);
+          }
+
+
+          const limits = parseLimits(node);
+
+          console.debug("Default world position:");
+          console.debug(limits[0].defaultWorldPosition);
+
+          dispatch(
+            addPart({
+              id: node.id,
+              name: node.name,
+              isSelected: false,
+              topic: node.userData["topic"],
+              limits: limits,
+            }),
+          );
+        }
+      });
+      // Remove lights. later custom lights will be spawned instead
+      lights.forEach((x) => x.removeFromParent());
+
+
+    }
+  };
+
   useEffect(() => {
-    const lights: Array<Object3D> = [];
 
-    dispatch(clearPartsList());
-
-    gltf.scene.traverse((node) => {
-      if (node instanceof Light) {
-        lights.push(node);
-      }
-
-      if (node.name.startsWith("limit_")) {
-        node.parent?.updateMatrixWorld(true);
-
-        const worldPosition = new Vector3();
-        node.parent?.getWorldPosition(worldPosition);
-        console.debug(worldPosition);
-
-        const pos = new Vector3();
-        node.getWorldPosition(pos);
-        console.debug(node.name + ": x:" + pos.x + " y:" + pos.y + " z:" + pos.z);
-      }
-
-      if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
-        console.debug(
-          `Custom properties found for ${node.name}:`,
-          node.userData,
-        );
-
-        const limits = parseLimits(node);
-
-        dispatch(
-          addPart({
-            id: node.id,
-            name: node.name,
-            isSelected: false,
-            topic: node.userData["topic"],
-            limits: limits,
-          }),
-        );
-      }
-    });
-    // Remove lights. later custom lights will be spawned instead
-    lights.forEach((x) => x.removeFromParent());
   }, [objectUrl]);
 
   // Fix the dark bug on window resizing
@@ -72,6 +98,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         <primitive
           scale={[settings.scale, settings.scale, settings.scale]}
           object={gltf.scene}
+          onUpdate={handleUpdate}
         />
         <spotLight
           position={[10000, 10000, 10000]}

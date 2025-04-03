@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
+import { Vector3Like } from "three";
 
 export type ComponentInformation = {
   id: number;
@@ -8,21 +9,18 @@ export type ComponentInformation = {
   topic: string;
   limits?: Array<ComponentLimit>;
 };
-// TODO: refactor and use Vector here
+// TODO: refactor -> put types in own file
 export type ComponentLimit = {
-  limit: Vector3State;
-  limitType: LimitType;
+  name: string;
+  standardBasisVector: Vector3State;
+  defaultWorldPosition: Vector3Like;
 }
 
+// TODO: use Vector3Like
 export interface Vector3State {
   x?: number;
   y?: number;
   z?: number;
-}
-
-export enum LimitType {
-  LOWER = 1,
-  UPPER = 2,
 }
 
 // Define a type for the slice state

@@ -1,18 +1,48 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts";
-import { useCallback, useMemo, useRef } from "react";
+import { MessageType, RelativePositionEventMessage, RelativePositionMessageData } from "@/service/wsTypes.ts";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
-import { getStepByLimits, mergeVectors, vectorFromStateVector } from "@/util/LimitUtils.ts";
-import { LimitType } from "@/slices/ModelPartSlice.ts";
+import { getLocalStep } from "@/util/LimitUtils.ts";
 
 
 function Animator() {
   const state = useThree();
+
   const modelParts = useAppSelector((state) => state.modelParts.partIds);
 
   const animationsRef = useRef<Map<Object3D, { vector: Vector3; topic: string }>>(new Map());
+
+  // DEBUG ONLY
+  useEffect(() => {
+
+    async function run() {
+      if (modelParts.length === 0) {
+        // Model not ready. Wait until modelParts are ready.
+        return;
+      }
+
+      for (let i = 1; i < 100; i++) {
+        const ev = {
+          message: {
+            topic: "move.querausleger",
+            dataSource: "",
+            percentage: i,
+          } as RelativePositionMessageData,
+        } as RelativePositionEventMessage;
+
+        animationCallback(ev);
+
+        await new Promise(f => setTimeout(f, 100));
+      }
+
+
+    }
+
+    run();
+
+  }, [modelParts]);
 
   useFrame((_rootState, delta) => {
     const damping = 1;
@@ -64,29 +94,23 @@ function Animator() {
       return;
     }
 
-    const upper = limits.find(x => x.limitType == LimitType.UPPER);
-    const lower = limits.find(x => x.limitType == LimitType.LOWER);
-
-    if (!upper || !lower) {
-      console.warn("Object " + name + " does not have an upper or lower limit");
+    if (limits.length != 2) {
+      console.warn("Object " + name + " does not have an upper and lower limit");
       return;
     }
 
-    const step = getStepByLimits(upper, lower, msg.message.percentage);
-
 
     if (selectedObject) {
-      console.debug(selectedObject.position);
-      console.debug(vectorFromStateVector(lower.limit));
-      console.debug(step);
-      const targetPosition = mergeVectors(selectedObject.position, vectorFromStateVector(lower.limit)).add(step);
-      console.debug(targetPosition);
-      animationsRef.current.set(selectedObject, { vector: targetPosition, topic: msg.message.topic });
+      const targetLocal = getLocalStep(selectedObject, limits, msg.message.percentage);
 
+      if (targetLocal) {
+
+        animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
+      }
     } else {
       console.warn("Received position event for an unknown object " + msg.message.topic);
     }
-  }, [state.scene]);
+  }, [state.scene, modelParts]);
 
 
   const topics = useMemo(() => modelParts.map(modelPart => {

@@ -31,8 +31,8 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
   const step = upperWorldPosition.sub(lowerWorldPosition).multiplyScalar(percentage / 100.0);
   roundVector(step); // TODO: improve: set all unnecessary components to 0 instead. Maybe no rounding neccessary
 
-  //console.debug("Step:");
-  //console.debug(step);
+  console.debug("Step:");
+  console.debug(step);
 
   console.debug("Current world position:");
   console.debug(objWorld);
@@ -50,7 +50,7 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
   //console.debug("Distance:");
   //console.debug(distance);
 
-  const targetLocalPosition = object.worldToLocal(newPosition);
+  const targetLocalPosition = object.parent?.worldToLocal(newPosition);
   console.debug("New local position:");
   console.debug(targetLocalPosition);
 
