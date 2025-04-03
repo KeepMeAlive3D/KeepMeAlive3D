@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useRef } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
@@ -16,13 +16,15 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
 
-  const hasRun = useRef(false);
+  const initialised = useRef(false);
 
-  // RUn after model fully loaded and all transformations are done
+  // Ran after model fully loaded and all transformations are done
+  // useEffect is here not sufficient as threejs applies some transformations between the first useEffect call and the
+  // rendering of the model
   const handleUpdate = () => {
-    if (!hasRun.current) {
+    if (!initialised.current) {
       console.debug("Handle update");
-      hasRun.current = true;
+      initialised.current = true;
       const lights: Array<Object3D> = [];
 
       dispatch(clearPartsList());
@@ -78,14 +80,8 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
       });
       // Remove lights. later custom lights will be spawned instead
       lights.forEach((x) => x.removeFromParent());
-
-
     }
   };
-
-  useEffect(() => {
-
-  }, [objectUrl]);
 
   // Fix the dark bug on window resizing
   window.addEventListener("resize", () => {
