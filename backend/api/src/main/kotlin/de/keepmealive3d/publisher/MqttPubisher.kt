@@ -39,12 +39,12 @@ fun main() {
         launch {
             while (true) {
                 for (i in 1..100) {
-                    /*client.publish(
+                    client.publish(
                         psuTemp,
                         MqttMessage(
                             "${Random.nextLong(0, 100)}".toByteArray(),
                         )
-                    )*/
+                    )
                     client.publish(
                         moveTopic,
                         MqttMessage(
@@ -57,7 +57,7 @@ fun main() {
             }
         }
 
-        /*
+
         launch {
             while (true) {
                 for (i in 1..360) {
@@ -70,6 +70,6 @@ fun main() {
                     delay(Random.nextLong(100, 2000))
                 }
             }
-        }*/
+        }
     }
 }
