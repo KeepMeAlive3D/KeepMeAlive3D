@@ -1,4 +1,4 @@
-import { ComponentLimit, Vector3State } from "@/slices/ModelPartSlice.ts";
+import { ComponentLimit } from "@/slices/ModelPartSlice.ts";
 import { Object3D, Vector3, Vector3Like } from "three";
 
 
@@ -57,7 +57,6 @@ export function getLowerAndUpperLimit(limits: ComponentLimit[]) {
 /**
  * Searches the passed object for children which represent a limit for this object. The positions are parsed and stored
  * in a ComponentLimit object. The notation of limit objects is noted in the documentation.
- * @param object
  */
 export function parseLimits(object: Object3D): ComponentLimit[] {
   const limitObjects = object.children.filter(x => x.name.startsWith("limit_"));
@@ -65,10 +64,16 @@ export function parseLimits(object: Object3D): ComponentLimit[] {
   return limitObjects.map(x => parseLimit(x)).filter(x => x != null);
 }
 
+/**
+ * Converts and Vector3Like to an actual Vector3
+ */
 export function vector3FromVector3Like(vector: Vector3Like): Vector3 {
   return new Vector3(vector.x, vector.y, vector.z);
 }
 
+/**
+ * Rounds a vector to the 5th digit
+ */
 function roundVector(vector: Vector3) {
   vector.setX(roundToDecimal(vector.x, 5));
   vector.setY(roundToDecimal(vector.y, 5));
@@ -81,21 +86,12 @@ function roundToDecimal(num: number, decimals: number): number {
 }
 
 function parseLimit(object: Object3D): ComponentLimit | undefined {
-  const limitsMap: Record<string, Vector3State> = {
-    limit_x_up: { x: 1, y: 0, z: 0 },
-    limit_x_down: { x: -1, y: 0, z: 0 },
-    limit_y_up: { x: 0, y: 1, z: 0 },
-    limit_y_down: { x: 0, y: -1, z: 0 },
-    limit_z_up: { x: 0, y: 0, z: 1 },
-    limit_z_down: { x: 0, y: 0, z: -1 },
-  };
 
   const worldPosition = new Vector3();
   object.getWorldPosition(worldPosition);
 
   return {
     name: object.name,
-    standardBasisVector: limitsMap[object.name],
     defaultWorldPosition: {
       x: worldPosition.x,
       y: worldPosition.y,
