@@ -8,15 +8,6 @@ fun wsCreateDataPointEventMessage(topic: String, dataSource: String, point: Doub
     DataPointMessageData(topic, dataSource, point)
 )
 
-fun wsCreatePositionMessageEvent(
-    topic: String,
-    dataSource: String,
-    position: Triple<Double, Double, Double>
-) = PositionEventMessage(
-    Manifest(1, MessageType.ANIMATION_POSITION, Instant.now()),
-    PositionMessageData(topic, dataSource, Vector(position.first, position.second, position.third))
-)
-
 fun wsCreateRelativePositionMessageEvent(
     topic: String,
     dataSource: String,
