@@ -4,13 +4,13 @@ import { Object3D, Vector3, Vector3Like } from "three";
 
 export function getLocalPositionBetweenLimits(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
 
-  const { lowerWorldPosition, upperWorldPosition } = getLowerAndUpperLimit(limits);
+  const { defaultLowerWorldPosition, defaultUpperWorldPosition } = getLowerAndUpperLimitDefaultWorldPosition(limits);
 
   console.debug("Vecs:");
-  console.debug(upperWorldPosition);
-  console.debug(lowerWorldPosition);
+  console.debug(defaultUpperWorldPosition);
+  console.debug(defaultLowerWorldPosition);
 
-  const step = upperWorldPosition.sub(lowerWorldPosition).multiplyScalar(percentage / 100.0);
+  const step = defaultUpperWorldPosition.sub(defaultLowerWorldPosition).multiplyScalar(percentage / 100.0);
   console.debug("Step:");
   console.debug(step);
   roundVector(step);
@@ -24,7 +24,7 @@ export function getLocalPositionBetweenLimits(object: Object3D, limits: Componen
   console.debug(object.position);
 
 
-  const newPosition = lowerWorldPosition.add(step);
+  const newPosition = defaultLowerWorldPosition.add(step);
 
   console.debug("New world position:");
   console.debug(newPosition);
@@ -39,19 +39,19 @@ export function getLocalPositionBetweenLimits(object: Object3D, limits: Componen
 /**
  * Selects from the given limit the lower and upper limit. It is determined by the length of the vector.
  */
-function getLowerAndUpperLimit(limits: ComponentLimit[]) {
+function getLowerAndUpperLimitDefaultWorldPosition(limits: ComponentLimit[]) {
   const vector1 = vector3FromVector3Like(limits[0].defaultWorldPosition);
   const vector2 = vector3FromVector3Like(limits[1].defaultWorldPosition);
 
   if (vector1.length() > vector2.length()) {
     return {
-      lowerWorldPosition: vector2,
-      upperWorldPosition: vector1,
+      defaultLowerWorldPosition: vector2,
+      defaultUpperWorldPosition: vector1,
     }
   } else {
     return {
-      lowerWorldPosition: vector1,
-      upperWorldPosition: vector2,
+      defaultLowerWorldPosition: vector1,
+      defaultUpperWorldPosition: vector2,
     }
   }
 }
