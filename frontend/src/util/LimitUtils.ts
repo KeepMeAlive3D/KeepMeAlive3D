@@ -13,8 +13,7 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
   const step = upperWorldPosition.sub(lowerWorldPosition).multiplyScalar(percentage / 100.0);
   console.debug("Step:");
   console.debug(step);
-  roundVector(step); // TODO: improve: set all unnecessary components to 0 instead. Maybe no rounding neccessary
-
+  roundVector(step);
 
   const objWorld = new Vector3();
   object.getWorldPosition(objWorld);
@@ -29,10 +28,6 @@ export function getLocalStep(object: Object3D, limits: ComponentLimit[], percent
 
   console.debug("New world position:");
   console.debug(newPosition);
-
-  //const distance = objWorld.distanceTo(newPosition);
-  //console.debug("Distance:");
-  //console.debug(distance);
 
   const targetLocalPosition = object.parent?.worldToLocal(newPosition);
   console.debug("New local position:");
@@ -57,14 +52,6 @@ export function getLowerAndUpperLimit(limits: ComponentLimit[]) {
       upperWorldPosition: vector2,
     }
   }
-}
-
-export function mergeVectors(primary: Vector3, secondary: Vector3): Vector3 {
-  return new Vector3(
-    secondary.x !== 0 ? secondary.x : primary.x,
-    secondary.y !== 0 ? secondary.y : primary.y,
-    secondary.z !== 0 ? secondary.z : primary.z,
-  );
 }
 
 /**
