@@ -1,19 +1,74 @@
-import { ComponentLimit, LimitType, Vector3State } from "@/slices/ModelPartSlice.ts";
-import { Object3D, Vector3 } from "three";
+import { ComponentLimit, Vector3State } from "@/slices/ModelPartSlice.ts";
+import { Object3D, Vector3, Vector3Like } from "three";
 
 
-export function getStepByLimits(upper: ComponentLimit, lower: ComponentLimit, percentage: number): Vector3 {
-  return vectorFromStateVector(upper.limit).sub(vectorFromStateVector(lower.limit)).multiplyScalar(percentage / 100.0);
+export function getLocalStep(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
+  const worldPosition = new Vector3();
+  object.getWorldPosition(worldPosition);
+
+  const sortedLimits = getLowerAndUpperLimit(limits);
+  const sortedLimitsPositions = {
+    lower: object.children.find(x => x.name === sortedLimits.lower.name),
+    upper: object.children.find(x => x.name === sortedLimits.upper.name),
+  };
+
+  if (!sortedLimitsPositions.lower || !sortedLimitsPositions.upper) {
+    console.error("Limits not found in world");
+    return undefined;
+  }
+
+  const lowerWorldPosition = vector3FromVector3Like(sortedLimits.lower.defaultWorldPosition);
+  const upperWorldPosition = vector3FromVector3Like(sortedLimits.upper.defaultWorldPosition);
+
+  const objWorld = new Vector3();
+  object.getWorldPosition(objWorld);
+
+
+  console.debug("Vecs:");
+  console.debug(upperWorldPosition);
+  console.debug(lowerWorldPosition);
+
+  const step = upperWorldPosition.sub(lowerWorldPosition).multiplyScalar(percentage / 100.0);
+  roundVector(step); // TODO: improve: set all unnecessary components to 0 instead. Maybe no rounding neccessary
+
+  //console.debug("Step:");
+  //console.debug(step);
+
+  console.debug("Current world position:");
+  console.debug(objWorld);
+
+  console.debug("Current local position:");
+  console.debug(object.position);
+
+
+  const newPosition = lowerWorldPosition.add(step);
+
+  console.debug("New world position:");
+  console.debug(newPosition);
+
+  //const distance = objWorld.distanceTo(newPosition);
+  //console.debug("Distance:");
+  //console.debug(distance);
+
+  const targetLocalPosition = object.worldToLocal(newPosition);
+  console.debug("New local position:");
+  console.debug(targetLocalPosition);
+
+  return targetLocalPosition;
 }
 
-export function parseLimits(object: Object3D): ComponentLimit[] {
-  const limits = Object.keys(object.userData).filter(x => x.startsWith("limit_"));
-
-  return limits.map(x => parseLimit(x, object.userData[x])).filter(x => x != null);
-}
-
-export function vectorFromStateVector(vector: Vector3State): Vector3 {
-  return new Vector3(vector.x, vector.y, vector.z);
+export function getLowerAndUpperLimit(limits: ComponentLimit[]) {
+  if (limits[0].standardBasisVector.x == -1 || limits[0].standardBasisVector.y || limits[0].standardBasisVector.z == -1) {
+    return {
+      lower: limits[0],
+      upper: limits[1],
+    };
+  } else {
+    return {
+      lower: limits[1],
+      upper: limits[0],
+    };
+  }
 }
 
 export function mergeVectors(primary: Vector3, secondary: Vector3): Vector3 {
@@ -24,28 +79,52 @@ export function mergeVectors(primary: Vector3, secondary: Vector3): Vector3 {
   );
 }
 
-function parseLimit(limitName: string, content: string): ComponentLimit | undefined {
-  switch (limitName) {
-    case "limit_y_up":
-      return {
-        limitType: LimitType.UPPER,
-        limit: { x: 0, y: parseFloat(content), z: 0 },
-      } as ComponentLimit;
+/**
+ * Searches the passed object for children which represent a limit for this object. The positions are parsed and stored
+ * in a ComponentLimit object. The notation of limit objects is noted in the documentation.
+ * @param object
+ */
+export function parseLimits(object: Object3D): ComponentLimit[] {
+  const limitObjects = object.children.filter(x => x.name.startsWith("limit_"));
 
-    case "limit_y_down":
-      return {
-        limitType: LimitType.LOWER,
-        limit: { x: 0, y: parseFloat(content), z: 0 },
-      } as ComponentLimit;
-    case "limit_z_up":
-      return {
-        limitType: LimitType.UPPER,
-        limit: { x: 0, y: 0, z: parseFloat(content) },
-      } as ComponentLimit;
-    case "limit_z_down":
-      return {
-        limitType: LimitType.LOWER,
-        limit: { x: 0, y: 0, z: parseFloat(content) },
-      } as ComponentLimit;
+  return limitObjects.map(x => parseLimit(x)).filter(x => x != null);
+}
+
+export function vector3FromVector3Like(vector: Vector3Like): Vector3 {
+  return new Vector3(vector.x, vector.y, vector.z);
+}
+
+function roundVector(vector: Vector3) {
+  vector.setX(roundToDecimal(vector.x, 5));
+  vector.setY(roundToDecimal(vector.y, 5));
+  vector.setZ(roundToDecimal(vector.z, 5));
+}
+
+function roundToDecimal(num: number, decimals: number): number {
+  const factor = Math.pow(10, decimals);
+  return Math.round(num * factor) / factor;
+}
+
+function parseLimit(object: Object3D): ComponentLimit | undefined {
+  const limitsMap: Record<string, Vector3State> = {
+    limit_x_up: { x: 1, y: 0, z: 0 },
+    limit_x_down: { x: -1, y: 0, z: 0 },
+    limit_y_up: { x: 0, y: 1, z: 0 },
+    limit_y_down: { x: 0, y: -1, z: 0 },
+    limit_z_up: { x: 0, y: 0, z: 1 },
+    limit_z_down: { x: 0, y: 0, z: -1 },
+  };
+
+  const worldPosition = new Vector3();
+  object.getWorldPosition(worldPosition);
+
+  return {
+    name: object.name,
+    standardBasisVector: limitsMap[object.name],
+    defaultWorldPosition: {
+      x: worldPosition.x,
+      y: worldPosition.y,
+      z: worldPosition.z,
+    },
   }
 }
