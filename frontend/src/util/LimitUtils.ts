@@ -3,37 +3,20 @@ import { Object3D, Vector3, Vector3Like } from "three";
 
 
 export function getLocalPositionBetweenLimits(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
-
   const { defaultLowerWorldPosition, defaultUpperWorldPosition } = getLowerAndUpperLimitDefaultWorldPosition(limits);
-
-  console.debug("Vecs:");
-  console.debug(defaultUpperWorldPosition);
-  console.debug(defaultLowerWorldPosition);
-
   const step = defaultUpperWorldPosition.sub(defaultLowerWorldPosition).multiplyScalar(percentage / 100.0);
-  console.debug("Step:");
-  console.debug(step);
+
+  // Rounding the vector is needed as there is a small different between the coordinates which is not there in blender
   roundVector(step);
 
   const objWorld = new Vector3();
   object.getWorldPosition(objWorld);
-  console.debug("Current world position:");
-  console.debug(objWorld);
 
-  console.debug("Current local position:");
-  console.debug(object.position);
-
-
+  // Adding the step on the lower limit of the animation results in the new position
   const newPosition = defaultLowerWorldPosition.add(step);
 
-  console.debug("New world position:");
-  console.debug(newPosition);
-
-  const targetLocalPosition = object.parent?.worldToLocal(newPosition);
-  console.debug("New local position:");
-  console.debug(targetLocalPosition);
-
-  return targetLocalPosition;
+  // The position is returned in the local coordinates space of the parent
+  return object.parent?.worldToLocal(newPosition);
 }
 
 /**
