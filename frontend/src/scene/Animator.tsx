@@ -1,11 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts";
-import { useCallback, useMemo, useRef } from "react";
+import { MessageType, RelativePositionEventMessage, RelativePositionMessageData } from "@/service/wsTypes.ts";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
-import { getLocalPositionBetweenLimits } from "@/util/LimitUtils.ts";
-
+import { getLocalPositionBetweenLimits, getRotationByLimits } from "@/util/LimitUtils.ts";
 
 function Animator() {
   const state = useThree();
@@ -13,6 +12,34 @@ function Animator() {
   const modelParts = useAppSelector((state) => state.modelParts.partIds);
 
   const animationsRef = useRef<Map<Object3D, { vector: Vector3; topic: string }>>(new Map());
+
+  // DEBUG ONLY
+
+  useEffect(() => {
+    async function run() {
+      if (modelParts.length === 0) {
+        // Model not ready. Wait until modelParts are ready.
+        return;
+      }
+      for (let i = 1; i < 100; i++) {
+        const ev = {
+          message: {
+            topic: "rot.drehkranz_oben001",
+            dataSource: "",
+            percentage: i,
+          } as RelativePositionMessageData,
+        } as RelativePositionEventMessage;
+
+        animationCallback(ev);
+
+        await new Promise(f => setTimeout(f, 100));
+      }
+
+
+    }
+
+    run();
+  }, [modelParts]);
 
   useFrame((_rootState, delta) => {
     const damping = 1;
@@ -56,6 +83,7 @@ function Animator() {
 
   const animationCallback = useCallback((msg: RelativePositionEventMessage) => {
     const name = msg.message.topic.split(".").reverse()[0];
+    const rotation = msg.message.topic.split(".")[0] == "rot";
     const selectedObject = state.scene.getObjectByName(name);
     const limits = modelParts.find(x => x.name === name)?.limits;
 
@@ -64,18 +92,18 @@ function Animator() {
       return;
     }
 
-    if (limits.length != 2) {
-      console.warn("Object " + name + " does not have an upper and lower limit");
-      return;
-    }
-
-
     if (selectedObject) {
-      const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
+      if (rotation) {
+        const rot = getRotationByLimits(selectedObject, limits, msg.message.percentage)!;
+        selectedObject.quaternion.copy(rot);
+      } else {
+        // TODO: fix to use new notion
+        //const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
 
-      if (targetLocal) {
+        //if (targetLocal) {
 
-        animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
+        //animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
+        //}
       }
     } else {
       console.warn("Received position event for an unknown object " + msg.message.topic);

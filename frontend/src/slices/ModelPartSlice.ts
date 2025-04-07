@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
 import { Vector3Like } from "three";
+import { LimitTuple } from "@/util/LimitUtils.ts";
 
 /**
  * Contains all additional meta information about a component
@@ -10,7 +11,7 @@ export type ComponentInformation = {
   name: string;
   isSelected: boolean;
   topic: string;
-  limits?: Array<ComponentLimit>;
+  limits?: LimitTuple;
 };
 
 /**
@@ -20,6 +21,15 @@ export type ComponentInformation = {
 export type ComponentLimit = {
   name: string;
   defaultWorldPosition: Vector3Like;
+  defaultWorldRotation: QuaternionLike;
+  isUpperLimit: boolean;
+}
+
+export type QuaternionLike = {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
 }
 
 interface ModelPartState {
