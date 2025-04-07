@@ -38,10 +38,10 @@ export function getLocalPositionBetweenLimits(object: Object3D, limits: LimitTup
 }
 
 /**
- * Searches the passed object for children which represent a limit for this object. The positions are parsed and stored
- * in a ComponentLimit object. The notation of limit objects is noted in the documentation.
+ * Searches the passed object for children which represent a limit for this object. The positions and rotations are
+ * parsed and stored in a ComponentLimit object. The notation of limit objects is noted in the documentation.
  */
-export function parseLimits(object: Object3D): LimitTuple {
+export function parseLimits(object: Object3D): LimitTuple | undefined {
   const limitObjects = object.children.filter(x => x.name.startsWith("limit_"));
 
   const limits = limitObjects.map(x => parseLimit(x)).filter(x => x != null);
@@ -49,7 +49,12 @@ export function parseLimits(object: Object3D): LimitTuple {
   const upper = limits.find(x => x.isUpperLimit);
   const lower = limits.find(x => !x.isUpperLimit);
 
-  // TODO: some object do not have limits
+  if (limits.length == 0) {
+    return;
+  } else if (!upper || !lower) {
+    console.error("Found limits for object " + object.name + " but could not identify lower and upper limit.");
+    return;
+  }
 
   return {
     upper: upper,
