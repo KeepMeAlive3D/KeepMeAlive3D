@@ -21,41 +21,20 @@ export function getRotationByLimits(object: Object3D, limits: LimitTuple, percen
   return target.multiply(worldTransformationMatrix);
 }
 
-export function getLocalPositionBetweenLimits(object: Object3D, limits: ComponentLimit[], percentage: number): Vector3 | undefined {
-  const { defaultLowerWorldPosition, defaultUpperWorldPosition } = getLowerAndUpperLimitDefaultWorldPosition(limits);
-  const step = defaultUpperWorldPosition.sub(defaultLowerWorldPosition).multiplyScalar(percentage / 100.0);
+export function getLocalPositionBetweenLimits(object: Object3D, limits: LimitTuple, percentage: number): Vector3 | undefined {
+  const defaultLowerWorldPosition = vector3FromVector3Like(limits.lower.defaultWorldPosition);
+  const defaultUpperWorldPosition = vector3FromVector3Like(limits.upper.defaultWorldPosition);
+
+  const targetLocation = defaultLowerWorldPosition.lerp(defaultUpperWorldPosition, percentage / 100.0);
 
   // Rounding the vector is needed as there is a small different between the coordinates which is not there in blender
-  roundVector(step);
+  roundVector(targetLocation);
 
   const objWorld = new Vector3();
   object.getWorldPosition(objWorld);
 
-  // Adding the step on the lower limit of the animation results in the new position
-  const newPosition = defaultLowerWorldPosition.add(step);
-
   // The position is returned in the local coordinates space of the parent
-  return object.parent?.worldToLocal(newPosition);
-}
-
-/**
- * Selects from the given limit the lower and upper limit. It is determined by the length of the vector.
- */
-function getLowerAndUpperLimitDefaultWorldPosition(limits: ComponentLimit[]) {
-  const vector1 = vector3FromVector3Like(limits[0].defaultWorldPosition);
-  const vector2 = vector3FromVector3Like(limits[1].defaultWorldPosition);
-
-  if (vector1.length() > vector2.length()) {
-    return {
-      defaultLowerWorldPosition: vector2,
-      defaultUpperWorldPosition: vector1,
-    }
-  } else {
-    return {
-      defaultLowerWorldPosition: vector1,
-      defaultUpperWorldPosition: vector2,
-    }
-  }
+  return object.parent?.worldToLocal(targetLocation);
 }
 
 /**

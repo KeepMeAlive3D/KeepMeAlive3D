@@ -24,7 +24,7 @@ function Animator() {
       for (let i = 1; i < 100; i++) {
         const ev = {
           message: {
-            topic: "rot.drehkranz_oben001",
+            topic: "move.querausleger",
             dataSource: "",
             percentage: i,
           } as RelativePositionMessageData,
@@ -97,13 +97,11 @@ function Animator() {
         const rot = getRotationByLimits(selectedObject, limits, msg.message.percentage)!;
         selectedObject.quaternion.copy(rot);
       } else {
-        // TODO: fix to use new notion
-        //const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
+        const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
 
-        //if (targetLocal) {
-
-        //animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
-        //}
+        if (targetLocal) {
+          animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
+        }
       }
     } else {
       console.warn("Received position event for an unknown object " + msg.message.topic);
