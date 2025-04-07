@@ -50,6 +50,7 @@ export function parseLimits(object: Object3D): LimitTuple | undefined {
   const lower = limits.find(x => !x.isUpperLimit);
 
   if (limits.length == 0) {
+    // Not every object with custom properties must have limits
     return;
   } else if (!upper || !lower) {
     console.error("Found limits for object " + object.name + " but could not identify lower and upper limit.");
