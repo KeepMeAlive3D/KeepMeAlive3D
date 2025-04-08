@@ -48,7 +48,7 @@ fun main() {
                     client.publish(
                         moveTopic,
                         MqttMessage(
-                            "$i".toByteArray(),
+                            "${i / 100.0}".toByteArray(),
                         )
                     )
                     delay(Random.nextLong(100, 1000))
@@ -63,7 +63,7 @@ fun main() {
                     client.publish(
                         rotationTopic,
                         MqttMessage(
-                            "$i".toByteArray(),
+                            "${i / 100.0}".toByteArray(),
                         )
                     )
                     delay(Random.nextLong(100, 2000))

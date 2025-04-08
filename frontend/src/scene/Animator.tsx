@@ -26,7 +26,7 @@ function Animator() {
           message: {
             topic: "move.querausleger",
             dataSource: "",
-            percentage: i,
+            percentage: i / 100.0,
           } as RelativePositionMessageData,
         } as RelativePositionEventMessage;
 

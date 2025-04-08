@@ -7,7 +7,7 @@ export function getRotationByLimits(object: Object3D, limits: LimitTuple, percen
   const upper = getQuaternion(limits.upper.defaultWorldRotation);
 
 
-  const step = lower.clone().slerp(upper, percentage / 100.0);
+  const step = lower.clone().slerp(upper, percentage);
   const target = lower.clone().multiply(step);
 
   const worldTransformationMatrix = new Quaternion();
@@ -20,7 +20,7 @@ export function getLocalPositionBetweenLimits(object: Object3D, limits: LimitTup
   const defaultLowerWorldPosition = vector3FromVector3Like(limits.lower.defaultWorldPosition);
   const defaultUpperWorldPosition = vector3FromVector3Like(limits.upper.defaultWorldPosition);
 
-  const targetLocation = defaultLowerWorldPosition.lerp(defaultUpperWorldPosition, percentage / 100.0);
+  const targetLocation = defaultLowerWorldPosition.lerp(defaultUpperWorldPosition, percentage);
 
   // Rounding the vector is needed as there is a small different between the coordinates which is not there in blender
   roundVector(targetLocation);
