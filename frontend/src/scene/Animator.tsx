@@ -94,8 +94,8 @@ function Animator() {
 
     if (selectedObject) {
       if (rotation) {
-        const rot = getRotationByLimits(selectedObject, limits, msg.message.percentage)!;
-        selectedObject.quaternion.copy(rot);
+        const localTargetRotation = getRotationByLimits(selectedObject, limits, msg.message.percentage);
+        selectedObject.quaternion.copy(localTargetRotation);
       } else {
         const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
 

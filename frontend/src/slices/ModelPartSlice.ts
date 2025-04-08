@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store.ts";
 import { Vector3Like } from "three";
-import { LimitTuple } from "@/util/LimitUtils.ts";
 
 /**
  * Contains all additional meta information about a component
@@ -13,6 +12,14 @@ export type ComponentInformation = {
   topic: string;
   limits?: LimitTuple;
 };
+
+/**
+ * A tuple which contains two ComponentLimits, the lower and upper.
+ */
+export type LimitTuple = {
+  upper: ComponentLimit;
+  lower: ComponentLimit;
+}
 
 /**
  * Represents a limit of an animation of an object. The defaultWorldPosition is the world position of the corresponding

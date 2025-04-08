@@ -1,11 +1,6 @@
-import { ComponentLimit } from "@/slices/ModelPartSlice.ts";
+import { ComponentLimit, LimitTuple } from "@/slices/ModelPartSlice.ts";
 import { Object3D, Quaternion, QuaternionLike, Vector3, Vector3Like } from "three";
 
-
-export type LimitTuple = {
-  upper: ComponentLimit;
-  lower: ComponentLimit;
-}
 
 export function getRotationByLimits(object: Object3D, limits: LimitTuple, percentage: number): Quaternion {
   const lower = getQuaternion(limits.lower.defaultWorldRotation);
@@ -69,8 +64,6 @@ function parseLimit(object: Object3D): ComponentLimit | undefined {
 
   const worldRotation = new Quaternion();
   object.getWorldQuaternion(worldRotation);
-
-  console.debug("Parsing name: " + object.name);
 
   return {
     name: object.name,
