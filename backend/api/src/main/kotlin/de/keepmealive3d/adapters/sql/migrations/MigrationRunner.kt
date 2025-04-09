@@ -16,7 +16,8 @@ class MigrationRunner : KoinComponent {
     private val config: Config by inject()
 
     private val allMigrations = mapOf<Int, Migration>(
-        1 to Migration001()
+        1 to Migration001(),
+        2 to Migration002(),
     )
 
     fun executeUp() {
