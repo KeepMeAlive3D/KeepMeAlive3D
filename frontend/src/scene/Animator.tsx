@@ -55,7 +55,7 @@ function Animator() {
 
   const animationCallback = useCallback((msg: RelativePositionEventMessage) => {
     const name = msg.message.topic.split(".").reverse()[0];
-    const rotation = msg.message.topic.split(".")[0] == "rot";
+    const rotation = msg.message.topic.startsWith("rot.");
     const selectedObject = state.scene.getObjectByName(name);
     const limits = modelParts.find(x => x.name === name)?.limits;
 
