@@ -11,4 +11,5 @@ data class Manifest(
     @Serializable(with = UnixTimeSerializer::class)
     val timestamp: Instant? = Instant.now(),
     val bearerToken: String? = null,
+    val uuid: String? = "",
 )

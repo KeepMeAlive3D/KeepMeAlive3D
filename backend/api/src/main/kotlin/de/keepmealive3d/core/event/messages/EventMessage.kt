@@ -1,5 +1,6 @@
 package de.keepmealive3d.core.event.messages
 
+import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -44,6 +45,21 @@ data class EventSubscribe(
 data class EventMessageSubscribe(
     val topic: String
 )
+
+@Serializable
+data class ReplayStart(
+    val manifest: Manifest,
+    @Serializable(with = UnixTimeSerializer::class)
+    val start: Instant,
+    @Serializable(with = UnixTimeSerializer::class)
+    val stop: Instant
+)
+
+@Serializable
+data class ReplayStop(
+    val manifest: Manifest,
+)
+
 
 @Serializable
 data class EventError(

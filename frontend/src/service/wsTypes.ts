@@ -51,6 +51,16 @@ export interface RelativePositionMessageData extends GenericMessageData {
   percentage: number;
 }
 
+export interface ReplayStart {
+  manifest: Manifest;
+  start?: number | undefined;
+  stop?: number | undefined;
+}
+
+export interface ReplayStop {
+  manifest: Manifest;
+}
+
 export interface Manifest {
   version: number;
   messageType: MessageType;
@@ -63,4 +73,6 @@ export enum MessageType {
   ANIMATION_RELATIVE = "ANIMATION_RELATIVE",
   ERROR = "ERROR",
   SUBSCRIBE_TOPIC = "SUBSCRIBE_TOPIC",
+  REPLAY_START = "REPLAY_START",
+  REPLAY_STOP = "REPLAY_STOP",
 }
