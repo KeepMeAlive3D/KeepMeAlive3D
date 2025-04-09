@@ -4,5 +4,7 @@ enum class MessageType {
     TOPIC_DATAPOINT,
     ANIMATION_POSITION,
     ERROR,
-    SUBSCRIBE_TOPIC
+    SUBSCRIBE_TOPIC,
+    REPLAY_START,
+    REPLAY_STOP,
 }
