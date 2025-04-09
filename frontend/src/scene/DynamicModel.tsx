@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect } from "react";
+import { Suspense, useRef } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
@@ -9,40 +9,53 @@ import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
+import { parseLimits } from "@/util/LimitUtils.ts";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const gltf = useGLTF(objectUrl, undefined, true);
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
 
-  useEffect(() => {
-    const lights: Array<Object3D> = [];
+  const initialised = useRef(false);
 
-    dispatch(clearPartsList());
+  // Ran after model fully loaded and all transformations are done
+  // useEffect is here not sufficient as threejs applies some transformations between the first useEffect call and the
+  // rendering of the model
+  const handleUpdate = () => {
+    if (!initialised.current) {
+      initialised.current = true;
+      const lights: Array<Object3D> = [];
 
-    gltf.scene.traverse((node) => {
-      if (node instanceof Light) {
-        lights.push(node);
-      }
+      dispatch(clearPartsList());
 
-      if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
-        console.debug(
-          `Custom properties found for ${node.name}:`,
-          node.userData,
-        );
-        dispatch(
-          addPart({
-            id: node.id,
-            name: node.name,
-            isSelected: false,
-            topic: node.userData["topic"],
-          }),
-        );
-      }
-    });
-    // Remove lights. later custom lights will be spawned instead
-    lights.forEach((x) => x.removeFromParent());
-  }, [objectUrl]);
+      gltf.scene.traverse((node) => {
+        if (node instanceof Light) {
+          lights.push(node);
+        }
+
+        if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
+          console.debug(
+            `Custom properties found for ${node.name}:`,
+            node.userData,
+          );
+
+          const limits = parseLimits(node);
+
+          dispatch(
+            addPart({
+              id: node.id,
+              name: node.name,
+              isSelected: false,
+              topic: node.userData["topic"],
+              limits: limits,
+            }),
+          );
+        }
+      });
+      // Remove lights. later custom lights will be spawned instead
+      lights.forEach((x) => x.removeFromParent());
+    }
+  };
 
   // Fix the dark bug on window resizing
   window.addEventListener("resize", () => {
@@ -55,6 +68,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         <primitive
           scale={[settings.scale, settings.scale, settings.scale]}
           object={gltf.scene}
+          onUpdate={handleUpdate}
         />
         <spotLight
           position={[10000, 10000, 10000]}

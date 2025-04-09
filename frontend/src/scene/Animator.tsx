@@ -1,13 +1,14 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { MessageType, PositionEventMessage } from "@/service/wsTypes.ts";
+import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts";
 import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
-
+import { getLocalPositionBetweenLimits, getRotationByLimits } from "@/util/LimitUtils.ts";
 
 function Animator() {
   const state = useThree();
+
   const modelParts = useAppSelector((state) => state.modelParts.partIds);
 
   const animationsRef = useRef<Map<Object3D, { vector: Vector3; topic: string }>>(new Map());
@@ -52,23 +53,32 @@ function Animator() {
     });
   });
 
-  const animationCallback = useCallback((msg: PositionEventMessage) => {
+  const animationCallback = useCallback((msg: RelativePositionEventMessage) => {
     const name = msg.message.topic.split(".").reverse()[0];
+    const rotation = msg.message.topic.startsWith("rot.");
     const selectedObject = state.scene.getObjectByName(name);
+    const limits = modelParts.find(x => x.name === name)?.limits;
+
+    if (!limits) {
+      console.warn("Relative position event received for an object without limits");
+      return;
+    }
 
     if (selectedObject) {
-      const targetPosition = new Vector3(
-        msg.message.position.x,
-        msg.message.position.y,
-        msg.message.position.z,
-      );
+      if (rotation) {
+        const localTargetRotation = getRotationByLimits(selectedObject, limits, msg.message.percentage);
+        selectedObject.quaternion.copy(localTargetRotation);
+      } else {
+        const targetLocal = getLocalPositionBetweenLimits(selectedObject, limits, msg.message.percentage);
 
-      animationsRef.current.set(selectedObject, { vector: targetPosition, topic: msg.message.topic });
-
+        if (targetLocal) {
+          animationsRef.current.set(selectedObject, { vector: targetLocal, topic: msg.message.topic });
+        }
+      }
     } else {
       console.warn("Received position event for an unknown object " + msg.message.topic);
     }
-  }, [state.scene]);
+  }, [state.scene, modelParts]);
 
 
   const topics = useMemo(() => modelParts.map(modelPart => {
@@ -76,7 +86,7 @@ function Animator() {
   }), [modelParts]);
 
 
-  useFilteredWebsocket(topics, MessageType.ANIMATION_POSITION, animationCallback);
+  useFilteredWebsocket(topics, MessageType.ANIMATION_RELATIVE, animationCallback);
 
 
   return null;

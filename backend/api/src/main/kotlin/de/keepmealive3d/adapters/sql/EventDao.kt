@@ -35,11 +35,11 @@ class EventDao : KoinComponent {
                         (event as DataPointEventMessage).message.point.toString(),
                         event.manifest.timestamp
                     )
-                    MessageType.ANIMATION_POSITION -> saveDbEvent(
+                    MessageType.ANIMATION_RELATIVE -> saveDbEvent(
                         event.manifest.messageType,
                         event.message.dataSource,
                         event.message.topic,
-                        Json.encodeToString((event as PositionEventMessage).message.position),
+                        (event as RelativePositionEventMessage).message.percentage.toString(),
                         event.manifest.timestamp
                     )
                     else -> {}
@@ -83,9 +83,9 @@ class EventDao : KoinComponent {
                         Manifest(1, MessageType.TOPIC_DATAPOINT, it.timestamp, null),
                         DataPointMessageData(it.topic, it.source, it.data.toDouble())
                     )
-                    MessageType.ANIMATION_POSITION -> PositionEventMessage(
-                        Manifest(1, MessageType.ANIMATION_POSITION, it.timestamp, null),
-                        PositionMessageData(it.topic, it.source, Json.decodeFromString(it.data))
+                    MessageType.ANIMATION_RELATIVE -> RelativePositionEventMessage(
+                        Manifest(1, MessageType.ANIMATION_RELATIVE, it.timestamp, null),
+                        RelativePositionMessageData(it.topic, it.source, it.data.toDouble())
                     )
                     else -> EventError(
                         Manifest(1, MessageType.ERROR, it.timestamp, null),

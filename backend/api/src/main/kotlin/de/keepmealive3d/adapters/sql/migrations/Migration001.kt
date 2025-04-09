@@ -16,7 +16,7 @@ class Migration001: Migration {
             val createEventsTable = """
                 CREATE TABLE IF NOT EXISTS kma.events(
                     id        INT PRIMARY KEY auto_increment,
-                    type      ENUM ('TOPIC_DATAPOINT','ANIMATION_POSITION','ERROR','SUBSCRIBE_TOPIC') NOT NULL,
+                    type      ENUM ('TOPIC_DATAPOINT','ANIMATION_RELATIVE','ERROR','SUBSCRIBE_TOPIC') NOT NULL,
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     source    VARCHAR(255)                                                            NOT NULL,
                     topic     VARCHAR(255)                                                            NOT NULL,

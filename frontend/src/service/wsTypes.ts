@@ -40,21 +40,15 @@ export interface DataPointMessageData extends GenericMessageData {
   point: number;
 }
 
-export interface PositionEventMessage extends GenericEventMessage {
+export interface RelativePositionEventMessage extends GenericEventMessage {
   manifest: Manifest;
-  message: PositionMessageData;
+  message: RelativePositionMessageData;
 }
 
-export interface PositionMessageData extends GenericMessageData {
+export interface RelativePositionMessageData extends GenericMessageData {
   topic: string;
   dataSource: string;
-  position: Vector;
-}
-
-export interface Vector {
-  x: number;
-  y: number;
-  z: number;
+  percentage: number;
 }
 
 export interface Manifest {
@@ -66,7 +60,7 @@ export interface Manifest {
 
 export enum MessageType {
   TOPIC_DATAPOINT = "TOPIC_DATAPOINT",
-  ANIMATION_POSITION = "ANIMATION_POSITION",
+  ANIMATION_RELATIVE = "ANIMATION_RELATIVE",
   ERROR = "ERROR",
   SUBSCRIBE_TOPIC = "SUBSCRIBE_TOPIC",
 }
