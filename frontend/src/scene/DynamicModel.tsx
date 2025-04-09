@@ -23,7 +23,6 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
   // rendering of the model
   const handleUpdate = () => {
     if (!initialised.current) {
-      console.debug("Handle update");
       initialised.current = true;
       const lights: Array<Object3D> = [];
 
