@@ -75,8 +75,8 @@ function parseLimit(object: Object3D): ComponentLimit | undefined {
     },
     defaultWorldRotation: {
       x: worldRotation.x,
-      y: worldRotation.y,
-      z: worldRotation.z,
+      y: worldRotation.z, // Axis are exchange between Blender and ThreeJs
+      z: worldRotation.y,
       w: worldRotation.w,
     },
   };
