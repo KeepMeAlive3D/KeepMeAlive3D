@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { MessageType, RelativePositionEventMessage, RelativePositionMessageData } from "@/service/wsTypes.ts";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { MessageType, RelativePositionEventMessage } from "@/service/wsTypes.ts";
+import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Euler, Object3D, Vector3 } from "three";
 import { getLocalPositionBetweenLimits, getRotationByLimits } from "@/util/LimitUtils.ts";
@@ -12,34 +12,6 @@ function Animator() {
   const modelParts = useAppSelector((state) => state.modelParts.partIds);
 
   const animationsRef = useRef<Map<Object3D, { vector: Vector3; topic: string }>>(new Map());
-
-  // DEBUG ONLY
-
-  useEffect(() => {
-    async function run() {
-      if (modelParts.length === 0) {
-        // Model not ready. Wait until modelParts are ready.
-        return;
-      }
-      for (let i = 1; i < 100; i++) {
-        const ev = {
-          message: {
-            topic: "move.querausleger",
-            dataSource: "",
-            percentage: i / 100.0,
-          } as RelativePositionMessageData,
-        } as RelativePositionEventMessage;
-
-        animationCallback(ev);
-
-        await new Promise(f => setTimeout(f, 100));
-      }
-
-
-    }
-
-    run();
-  }, [modelParts]);
 
   useFrame((_rootState, delta) => {
     const damping = 1;
