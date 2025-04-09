@@ -7,5 +7,5 @@ export function getEventDataPointsOfTopic(topic: string) {
 
 export function getFormattedTime(unixSeconds: number): string {
   const date = new Date(unixSeconds * 1000)
-  return `${date.getFullYear()}.${date.getMonth()}.${date.getDay()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
