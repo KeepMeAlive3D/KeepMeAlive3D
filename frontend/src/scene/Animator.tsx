@@ -5,7 +5,6 @@ import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { Object3D, Quaternion, Vector3 } from "three";
 import { getAnimation } from "@/util/LimitUtils.ts";
-import Publisher from "@/debug/Publisher.tsx";
 
 function Animator() {
   const state = useThree();
@@ -67,7 +66,7 @@ function Animator() {
   useFilteredWebsocket(topics, MessageType.ANIMATION_RELATIVE, animationCallback);
 
 
-  return Publisher(animationCallback);
+  return null;
 }
 
 export default Animator;
