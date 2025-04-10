@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { Pause, Play } from "lucide-react";
 import { getFormattedTime } from "@/service/model_datapoint.ts";
 import { useState } from "react";
+import { createWebsocket } from "@/service/wsService.ts";
+import { MessageType, ReplayEnd, ReplayStart } from "@/service/wsTypes.ts";
 
 export default function ReplayIndicator() {
   const time = 1744204698;
@@ -12,6 +14,38 @@ export default function ReplayIndicator() {
   function onRunToggle() {
     console.debug("run toggle")
     setRunning(!isRunning)
+
+    const replayStart: ReplayStart = {
+      manifest: {
+        version: 1,
+        messageType: MessageType.REPLAY_START,
+        uuid: "50e50fd7-5aaf-436e-a2e3-1261bf9fbe9e",
+        timestamp: new Date().valueOf(),
+        bearerToken: localStorage.getItem("token") ?? "null",
+      },
+      start: 1744290108000,
+      end: 1744290134000
+    }
+    const replayEnd: ReplayEnd = {
+      manifest: {
+        version: 1,
+        messageType: MessageType.REPLAY_START,
+        uuid: "50e50fd7-5aaf-436e-a2e3-1261bf9fbe9e",
+        timestamp: new Date().valueOf(),
+        bearerToken: localStorage.getItem("token") ?? "null",
+      },
+    }
+
+    createWebsocket().then(it => {
+      if(!isRunning) {
+        it.send(JSON.stringify(replayStart))
+      } else {
+        it.send(JSON.stringify(replayEnd))
+      }
+      it.onmessage = (it) => {
+        console.debug(it.data)
+      }
+    })
     //todo
   }
 

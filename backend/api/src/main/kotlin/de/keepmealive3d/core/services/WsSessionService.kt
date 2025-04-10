@@ -11,7 +11,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.qualifier.qualifier
 import java.util.*
 
 interface IWsSessionService {
@@ -26,7 +25,6 @@ interface IWsSessionService {
 }
 
 class WsSessionService : IWsSessionService, KoinComponent {
-    private val eventChannel: Channel<GenericMessageEvent> by inject(qualifier("events"))
     private val replayService: IReplayService by inject()
     private val sessions = mutableListOf<WsSessionData>()
     private val mainConnectionTopic = "connection.main"

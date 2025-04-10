@@ -115,12 +115,13 @@ class EventDao : KoinComponent {
             }
 
     fun loadEvents(topics: List<String>, from: Instant, to: Instant): Query {
+        println("FROM: $from (${from.epochSecond}), TO: $to (${to.epochSecond})")
         return kmaDatabase
             .database
             .from(DBEventTable)
             .select()
             .where {
-                (DBEventTable.topic inList topics) and ((DBEventTable.timestamp greaterEq from) and (DBEventTable.timestamp lessEq to))
+                (DBEventTable.topic inList topics.distinct()) and ((DBEventTable.timestamp greaterEq from) and (DBEventTable.timestamp lessEq to))
             }
             .orderBy(DBEventTable.timestamp.asc())
     }
