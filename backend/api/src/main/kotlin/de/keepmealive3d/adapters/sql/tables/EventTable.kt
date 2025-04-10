@@ -1,6 +1,6 @@
 package de.keepmealive3d.adapters.sql.tables
 
-import de.keepmealive3d.core.event.messages.MessageType
+import de.keepmealive3d.core.model.messages.MessageType
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 import java.time.Instant

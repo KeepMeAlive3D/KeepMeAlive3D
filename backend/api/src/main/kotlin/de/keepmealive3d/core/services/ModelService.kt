@@ -1,15 +1,24 @@
-package de.keepmealive3d.core.model
+package de.keepmealive3d.core.services
 
 import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo
 import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
 import de.keepmealive3d.core.exceptions.PersistenceException
-import de.keepmealive3d.core.persistence.IModelDao
-import de.keepmealive3d.core.persistence.IModelRepository
+import de.keepmealive3d.core.repositories.IModelDao
+import de.keepmealive3d.core.repositories.IModelRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.file.Path
+
+interface IModelService {
+    fun createNewModel(userid: Int, model: String, filename: String, fileBytes: ByteArray): Int
+    fun getAllModels(userid: Int): List<ModelInfo>
+    fun getSettings(modelId: Int): ModelSettings?
+    fun updateSettings(modelId: Int, settings: ModelSettings)
+    fun getRequiredModelLocation(modelId: Int, userid: Int): Path
+    fun deleteModel(modelId: Int, userid: Int)
+}
 
 class ModelService : IModelService, KoinComponent {
     private val modelRepository: IModelRepository by inject()
@@ -60,5 +69,4 @@ class ModelService : IModelService, KoinComponent {
             throw EntityNotFoundException("Model file with id '$modelId' not found + $model.")
         }
     }
-
 }

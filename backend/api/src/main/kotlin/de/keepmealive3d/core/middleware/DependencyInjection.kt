@@ -5,11 +5,15 @@ import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.adapters.sql.ModelDao
 import de.keepmealive3d.core.encryption.EncryptionService
-import de.keepmealive3d.core.model.IModelService
-import de.keepmealive3d.core.model.ModelRepository
-import de.keepmealive3d.core.model.ModelService
-import de.keepmealive3d.core.persistence.IModelDao
-import de.keepmealive3d.core.persistence.IModelRepository
+import de.keepmealive3d.core.repositories.IModelRepository
+import de.keepmealive3d.core.services.IModelService
+import de.keepmealive3d.core.repositories.ModelRepository
+import de.keepmealive3d.core.services.ModelService
+import de.keepmealive3d.core.repositories.IModelDao
+import de.keepmealive3d.core.services.IReplayService
+import de.keepmealive3d.core.services.IWsSessionService
+import de.keepmealive3d.core.services.ReplayService
+import de.keepmealive3d.core.services.WsSessionService
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -29,6 +33,8 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IModelRepository> { ModelRepository() }
                 single<IModelDao> { ModelDao() }
                 single<IModelService> { ModelService() }
+                single<IReplayService> { ReplayService() }
+                single<IWsSessionService> { WsSessionService() }
             })
     }
 }

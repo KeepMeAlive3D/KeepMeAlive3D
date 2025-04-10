@@ -1,4 +1,4 @@
-package de.keepmealive3d.core.event.messages
+package de.keepmealive3d.core.model.messages
 
 enum class MessageType {
     TOPIC_DATAPOINT,
@@ -7,4 +7,5 @@ enum class MessageType {
     SUBSCRIBE_TOPIC,
     REPLAY_START,
     REPLAY_STOP,
+    REPLAY_END,
 }

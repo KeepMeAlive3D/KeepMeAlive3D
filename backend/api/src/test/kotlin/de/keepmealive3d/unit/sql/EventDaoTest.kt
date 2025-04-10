@@ -2,8 +2,8 @@ package de.keepmealive3d.unit.sql
 
 import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
-import de.keepmealive3d.core.event.messages.GenericEventMessage
-import de.keepmealive3d.core.event.messages.wsCreateRelativePositionMessageEvent
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
+import de.keepmealive3d.core.model.messages.wsCreateRelativePositionMessageEvent
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -31,7 +31,7 @@ class EventDaoTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    single(qualifier = qualifier("events")) { Channel<GenericEventMessage>() }
+                    single(qualifier = qualifier("events")) { Channel<GenericMessageEvent>() }
                 }
             )
         }
@@ -46,7 +46,7 @@ class EventDaoTest : KoinTest {
     @Test
     fun saveEventDbIsInsertIsCalled() {
         val msg = wsCreateRelativePositionMessageEvent("foo", "bar", 1.0)
-        val eventChannel = get<Channel<GenericEventMessage>>(qualifier = qualifier("events"))
+        val eventChannel = get<Channel<GenericMessageEvent>>(qualifier = qualifier("events"))
 
         val kmaDbMock = declareMock<KmaSqlDatabase> {}
         val dbMock = declareMock<Database> {}

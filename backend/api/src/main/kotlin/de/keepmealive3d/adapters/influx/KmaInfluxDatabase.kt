@@ -6,7 +6,7 @@ import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
 import com.influxdb.client.write.Point
 import com.influxdb.query.FluxRecord
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.event.messages.GenericEventMessage
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -25,7 +25,7 @@ class KmaInfluxDatabase : KoinComponent {
         config.databases.influx.bucket
     )
 
-    private val channel: Channel<GenericEventMessage> by inject(qualifier = qualifier("events"))
+    private val channel: Channel<GenericMessageEvent> by inject(qualifier = qualifier("events"))
 
     suspend fun receiveEvents() = coroutineScope {
         launch {

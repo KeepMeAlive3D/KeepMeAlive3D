@@ -1,12 +1,12 @@
-package de.keepmealive3d.core.event.messages
+package de.keepmealive3d.core.model.messages
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DataPointEventMessage(
+data class DataPointMessageEvent(
     override val manifest: Manifest,
     override val message: DataPointMessageData,
-): GenericEventMessage
+): GenericMessageEvent
 
 @Serializable
 data class DataPointMessageData(

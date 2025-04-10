@@ -1,10 +1,10 @@
-package de.keepmealive3d.core.event.messages
+package de.keepmealive3d.core.model.messages
 
 import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
-fun wsCreateDataPointEventMessage(topic: String, dataSource: String, point: Double) = DataPointEventMessage(
+fun wsCreateDataPointEventMessage(topic: String, dataSource: String, point: Double) = DataPointMessageEvent(
     Manifest(1, MessageType.TOPIC_DATAPOINT, Instant.now()),
     DataPointMessageData(topic, dataSource, point)
 )
@@ -13,18 +13,18 @@ fun wsCreateRelativePositionMessageEvent(
     topic: String,
     dataSource: String,
     percentage: Double
-) = RelativePositionEventMessage(
+) = RelativePositionMessageEvent(
     Manifest(1, MessageType.ANIMATION_RELATIVE, Instant.now()),
     RelativePositionMessageData(topic, dataSource, percentage)
 )
 
-fun wsCreateErrorEventMessage(errorType: String, description: String) = EventError(
+fun wsCreateErrorEventMessage(errorType: String, description: String) = ErrorEvent(
     Manifest(1, MessageType.ERROR, Instant.now()),
     EventErrorData(errorType, description)
 )
 
 @Serializable
-sealed interface GenericEventMessage {
+sealed interface GenericMessageEvent {
     val manifest: Manifest
     val message: GenericMessageData
 }
@@ -36,36 +36,48 @@ sealed interface GenericMessageData {
 }
 
 @Serializable
-data class EventSubscribe(
+data class SubscribeEvent(
     val manifest: Manifest,
-    val message: EventMessageSubscribe
+    val message: MessageSubscribeEventData
 )
 
 @Serializable
-data class EventMessageSubscribe(
+data class UnknownTypeEvent(
+    val manifest: Manifest
+)
+
+@Serializable
+data class MessageSubscribeEventData(
     val topic: String
 )
 
 @Serializable
-data class ReplayStart(
+data class ReplayStartEvent(
     val manifest: Manifest,
     @Serializable(with = UnixTimeSerializer::class)
     val start: Instant,
+    @Serializable(with = UnixTimeSerializer::class)
+    val end: Instant
+)
+
+@Serializable
+data class ReplayStopEvent(
+    val manifest: Manifest,
     @Serializable(with = UnixTimeSerializer::class)
     val stop: Instant
 )
 
 @Serializable
-data class ReplayStop(
-    val manifest: Manifest,
+data class ReplayEndEvent(
+    val manifest: Manifest
 )
 
 
 @Serializable
-data class EventError(
+data class ErrorEvent(
     override val manifest: Manifest,
     override val message: EventErrorData
-) : GenericEventMessage
+) : GenericMessageEvent
 
 @Serializable
 data class EventErrorData(

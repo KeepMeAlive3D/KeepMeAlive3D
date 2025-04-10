@@ -3,9 +3,9 @@ package de.keepmealive3d.unit.service
 import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
-import de.keepmealive3d.core.model.ModelService
-import de.keepmealive3d.core.persistence.IModelDao
-import de.keepmealive3d.core.persistence.IModelRepository
+import de.keepmealive3d.core.repositories.IModelRepository
+import de.keepmealive3d.core.services.ModelService
+import de.keepmealive3d.core.repositories.IModelDao
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.jupiter.api.assertThrows

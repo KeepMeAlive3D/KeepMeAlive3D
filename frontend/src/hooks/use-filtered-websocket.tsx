@@ -27,6 +27,7 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
             manifest: {
               version: 1,
               messageType: MessageType.SUBSCRIBE_TOPIC,
+              uuid: "50e50fd7-5aaf-436e-a2e3-1261bf9fbe9e",
               timestamp: new Date().valueOf(),
               bearerToken: localStorage.getItem("token") ?? "null",
             },
