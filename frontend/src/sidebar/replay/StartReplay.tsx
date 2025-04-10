@@ -11,12 +11,29 @@ import { Play } from "lucide-react";
 import { DateTimePicker24h } from "@/components/custom/date-time-picker-24h.tsx";
 import { useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
+import { useWebSocket } from "@/service/webSocketProvider.tsx";
+import { Manifest, MessageType, ReplayStart } from "@/service/wsTypes.ts";
 
 
 export function StartReplay() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const { socket } = useWebSocket();
 
+  function onStart() {
+    const message = {
+      manifest: {
+        version: 1,
+        messageType: MessageType.REPLAY_START,
+        timestamp: new Date().valueOf(),
+        bearerToken: localStorage.getItem("token") ?? "null",
+      } as Manifest,
+      start: startDate?.getMilliseconds(),
+      end: endDate?.getMilliseconds(),
+    } as ReplayStart;
+
+    socket?.send(JSON.stringify(message));
+  }
 
   return (
     <SidebarMenuItem key="Replay">
@@ -42,7 +59,7 @@ export function StartReplay() {
             <p className="m-4">Stop</p>
             <DateTimePicker24h date={endDate} setDate={setEndDate} />
           </div>
-          <Button>Launch</Button>
+          <Button onClick={onStart}>Launch</Button>
         </SheetContent>
       </Sheet>
     </SidebarMenuItem>
