@@ -5,6 +5,7 @@ import { useLocation, useParams } from "react-router";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { fetchAndSetModelSettings } from "@/slices/SettingsSlice.ts";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
+import ReplayIndicator from "@/components/custom/replay-indicator.tsx";
 
 function Edit() {
   const [modelUrl, setModelUrl] = useState<string | undefined>(undefined);
@@ -41,6 +42,7 @@ function Edit() {
         <div className="canvas-content flex-grow">
           {modelUrl && (
             <Suspense>
+              <ReplayIndicator></ReplayIndicator>
               <DynamicModel objectUrl={modelUrl} />
             </Suspense>
           )}
