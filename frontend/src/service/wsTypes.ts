@@ -54,7 +54,7 @@ export interface RelativePositionMessageData extends GenericMessageData {
 export interface ReplayStart {
   manifest: Manifest;
   start?: number | undefined;
-  stop?: number | undefined;
+  end?: number | undefined;
 }
 
 export interface ReplayStop {

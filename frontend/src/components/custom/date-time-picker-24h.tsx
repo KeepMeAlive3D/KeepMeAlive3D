@@ -13,8 +13,12 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { CalendarIcon } from "lucide-react";
 
-export function DateTimePicker24h() {
-  const [date, setDate] = React.useState<Date>();
+interface DateTimePicker24hProps {
+  date: Date | undefined;
+  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+}
+
+export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -40,7 +44,7 @@ export function DateTimePicker24h() {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
