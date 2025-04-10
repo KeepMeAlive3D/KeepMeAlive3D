@@ -8,15 +8,16 @@ export default function Publisher(animationCallback: (msg: RelativePositionEvent
 
 
   useEffect(() => {
-    async function run() {
+    async function run(topic: string) {
       if (modelParts.length === 0) {
         // Model not ready. Wait until modelParts are ready.
         return;
       }
+
       for (let i = 1; i < 100; i++) {
         const ev = {
           message: {
-            topic: "rot.drehkranz_oben001",
+            topic: topic,
             dataSource: "",
             percentage: i / 100.0,
           } as RelativePositionMessageData,
@@ -26,10 +27,12 @@ export default function Publisher(animationCallback: (msg: RelativePositionEvent
 
         await new Promise(f => setTimeout(f, 100));
       }
-
-
     }
 
-    run();
+    run("rot.drehkranz_oben001");
+    run("move.querausleger");
+
   }, [modelParts]);
+
+  return null;
 }
