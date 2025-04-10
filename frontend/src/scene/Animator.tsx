@@ -42,6 +42,7 @@ function Animator() {
     const name = msg.message.topic.split(".").reverse()[0];
 
     if (modelParts.length == 0) {
+      // Not initialized yet
       return;
     }
 
