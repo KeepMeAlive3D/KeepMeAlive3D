@@ -1,6 +1,11 @@
 import { Object3D, Quaternion, Scene, Vector3 } from "three";
 
-
+/**
+ * Sets the parents of the empty limit objects of currentObject to the parent
+ * of currentObject (effectively pulls them up to the same level).
+ *
+ * Also sets the userData 'target' key to the currentObject uuid.
+ */
 export function pullLimitsUp(currentObject: Object3D, scene: Scene) {
   const limits = currentObject.children.filter(x => x.name.startsWith("limit_move_") || x.name.startsWith("limit_rot_"));
   limits.forEach(limit => pullLimitUp(currentObject, limit, scene));
@@ -23,14 +28,27 @@ function pullLimitUp(currentObject: Object3D, limit: Object3D, scene: Scene) {
   return;
 }
 
-export function getRotationByLimits(object: Object3D, scene: Scene, percentage: number): Quaternion {
+/**
+ * Returns the animation of the object between its limits. The distance of the
+ * new position will be #percentage between lower and upper limit.
+ * Either returns a Vector3 for movement of Quaternion for rotation events.
+ */
+export function getAnimation(object: Object3D, scene: Scene, percentage: number): Vector3 | Quaternion {
   const { upper, lower } = getUpperAndLowerLimit(object, scene);
 
+  if (upper.name.endsWith("_max") && lower.name.endsWith("_min")) {
+    return getRotationByLimits(object, scene, upper, lower, percentage);
+  } else {
+    return getPositionByLimits(object, scene, upper, lower, percentage);
+  }
+}
+
+function getRotationByLimits(object: Object3D, scene: Scene, upperLimit: Object3D, lowerLimit: Object3D, percentage: number): Quaternion {
   const upperWorldRotation = new Quaternion();
   const lowerWorldRotation = new Quaternion();
 
-  upper.getWorldQuaternion(upperWorldRotation);
-  lower.getWorldQuaternion(lowerWorldRotation);
+  upperLimit.getWorldQuaternion(upperWorldRotation);
+  lowerLimit.getWorldQuaternion(lowerWorldRotation);
 
 
   const step = lowerWorldRotation.clone().slerp(upperWorldRotation, percentage);
@@ -41,14 +59,13 @@ export function getRotationByLimits(object: Object3D, scene: Scene, percentage: 
   return step.multiply(worldTransformationMatrix);
 }
 
-export function getLocalPositionBetweenLimits(object: Object3D, scene: Scene, percentage: number): Vector3 {
-  const { upper, lower } = getUpperAndLowerLimit(object, scene);
+function getPositionByLimits(object: Object3D, scene: Scene, upperLimit: Object3D, lowerLimit: Object3D, percentage: number): Vector3 {
 
   const currentLowerWorldPosition = new Vector3();
   const currentUpperWorldPosition = new Vector3();
 
-  upper.getWorldPosition(currentUpperWorldPosition);
-  lower.getWorldPosition(currentLowerWorldPosition);
+  upperLimit.getWorldPosition(currentUpperWorldPosition);
+  lowerLimit.getWorldPosition(currentLowerWorldPosition);
 
   const targetLocation = currentLowerWorldPosition.lerp(currentUpperWorldPosition, percentage);
 
