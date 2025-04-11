@@ -21,7 +21,11 @@ function ClickObjects() {
     const renderPass = new RenderPass(state.scene, state.camera);
     composer.addPass(renderPass);
 
-    const outlinePass = new OutlinePass(new Vector2(state.size.width, state.size.height), state.scene, state.camera);
+    const outlinePass = new OutlinePass(
+      new Vector2(state.size.width, state.size.height),
+      state.scene,
+      state.camera
+    );
     composer.addPass(outlinePass);
     outlinePassRef.current = outlinePass;
 
@@ -33,8 +37,6 @@ function ClickObjects() {
       composerRef.current.render();
     }
   }, 1);
-
-
 
   return null;
 }
@@ -65,6 +67,5 @@ function getRootObject(object: Object3D): Object3D {
 
   return object;
 }
-
 
 export default ClickObjects;

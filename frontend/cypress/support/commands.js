@@ -19,7 +19,7 @@ Cypress.Commands.add("login", (username, password) => {
           expect(token).to.not.be.empty;
         });
       },
-    },
+    }
   );
 });
 
@@ -38,16 +38,16 @@ Cypress.Commands.add("deleteCurrentUser", () => {
       url: "http://localhost:8080/api/user",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `bearer ${token}`,
+        Authorization: `bearer ${token}`,
       },
     };
 
     axios
       .request(options)
-      .then(function(response) {
+      .then(function (response) {
         console.log("Deleted current user");
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.error(error);
       });
   });

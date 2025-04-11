@@ -1,7 +1,9 @@
 package de.keepmealive3d.scriptingapi.mqtt
 
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.event.messages.*
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
+import de.keepmealive3d.core.model.messages.wsCreateDataPointEventMessage
+import de.keepmealive3d.core.model.messages.wsCreateRelativePositionMessageEvent
 import de.keepmealive3d.scriptingapi.Plugin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +38,7 @@ class MqttPlugin : Plugin() {
     }
 
     override suspend fun registerLiveDataAdapter(
-        rcv: suspend (msg: GenericEventMessage) -> Unit,
+        rcv: suspend (msg: GenericMessageEvent) -> Unit,
         interruptCallback: () -> Boolean
     ) {
         //sanity check

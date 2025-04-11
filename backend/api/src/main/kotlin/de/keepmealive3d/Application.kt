@@ -13,8 +13,10 @@ import de.keepmealive3d.adapters.ws.WebsocketConnectionController
 import de.keepmealive3d.config.Config
 import de.keepmealive3d.core.auth.JWT
 import de.keepmealive3d.core.auth.OAuth
-import de.keepmealive3d.core.event.messages.GenericEventMessage
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
 import de.keepmealive3d.core.middleware.*
+import de.keepmealive3d.core.services.IWsSessionService
+import de.keepmealive3d.core.services.WsSessionService
 import de.keepmealive3d.scriptingapi.Loader
 import de.keepmealive3d.scriptingapi.PluginConfig
 import de.keepmealive3d.scriptingapi.mqtt.MqttPlugin
@@ -34,7 +36,7 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
         single { config }
         single { jwt }
         single { log }
-        single(qualifier = qualifier("events")) { Channel<GenericEventMessage>() }
+        single(qualifier = qualifier("events")) { Channel<GenericMessageEvent>() }
     }
 
     configureDependencyInjection(iniModule)

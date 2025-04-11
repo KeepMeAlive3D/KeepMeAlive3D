@@ -18,7 +18,7 @@ fun Application.configureExceptionHandlingMiddleware() {
 
 private fun handleException(e: Throwable): RestErrorInfo {
     return when (e) {
-        is BadRequestData -> RestErrorInfo(
+        is BadRequestDataException -> RestErrorInfo(
             "Invalid data provided",
             e.description,
             HttpStatusCode.BadRequest.value

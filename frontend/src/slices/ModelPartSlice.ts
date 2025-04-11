@@ -31,7 +31,7 @@ export const modelPartSlice = createSlice({
     },
     toggleIsSelected: (state, action: PayloadAction<ComponentInformation>) => {
       const index = state.partIds.findIndex(
-        (part) => part.id === action.payload.id,
+        (part) => part.id === action.payload.id
       );
       if (index !== -1) {
         state.partIds[index].isSelected = !state.partIds[index].isSelected;
@@ -40,7 +40,8 @@ export const modelPartSlice = createSlice({
   },
 });
 
-export const { addPart, clearPartsList, toggleIsSelected } = modelPartSlice.actions;
+export const { addPart, clearPartsList, toggleIsSelected } =
+  modelPartSlice.actions;
 
 export const selectModelParts = (state: RootState) => state.modelParts;
 

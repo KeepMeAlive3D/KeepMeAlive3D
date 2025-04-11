@@ -18,24 +18,24 @@ function Edit() {
   useEffect(() => {
     if (modelId !== undefined) {
       setLoading(true);
-      downloadModel(Number(modelId)).then(response => {
+      downloadModel(Number(modelId)).then((response) => {
         setModelUrl(URL.createObjectURL(response.data));
         setTimeout(() => {
           dispatch(fetchAndSetModelSettings({ modelId: Number(modelId) }));
-        }, 1000)
+        }, 1000);
         setLoading(false);
       });
     }
   }, [dispatch, modelId, refresh]);
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="flex flex-row items-center justify-center">
         <div className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-          <LoadingSpinner loading={true} className="mr-2"/> Loading...
+          <LoadingSpinner loading={true} className="mr-2" /> Loading...
         </div>
       </div>
-    )
+    );
   } else {
     return (
       <div className="edit-content flex flex-col h-auto">

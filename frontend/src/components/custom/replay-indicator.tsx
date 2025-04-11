@@ -14,7 +14,7 @@ export default function ReplayIndicator() {
   // Used to force re-render every second
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTick(prev => prev + 1);
+      setTick((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -27,13 +27,15 @@ export default function ReplayIndicator() {
   if (replay.start && replay.end && replay.startedOn) {
     return (
       <header className="absolute flex right-0">
-        <div
-          className="aspect-video rounded-xl bg-red-600/15 z-20 m-2 p-2 flex flex-col justify-between items-center border border-red-600">
+        <div className="aspect-video rounded-xl bg-red-600/15 z-20 m-2 p-2 flex flex-col justify-between items-center border border-red-600">
           <header>
             Replay: <i>{replay.running ? "Running" : "Stopped"}</i>
           </header>
           <main>
-            Time: <i>{getFormattedTime(replay.start + Date.now() - replay.startedOn)}</i>
+            Time:{" "}
+            <i>
+              {getFormattedTime(replay.start + Date.now() - replay.startedOn)}
+            </i>
           </main>
           <footer>
             <Button variant="secondary" onClick={onRunToggle}>

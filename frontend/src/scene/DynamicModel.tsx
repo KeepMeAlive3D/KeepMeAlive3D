@@ -36,7 +36,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         if (Object.keys(node.userData).length > 0 && node.userData["topic"]) {
           console.debug(
             `Custom properties found for ${node.name}:`,
-            node.userData,
+            node.userData
           );
 
           pullLimitsUp(node, gltf.scene as unknown as Scene);
@@ -47,7 +47,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
               name: node.name,
               isSelected: false,
               topic: node.userData["topic"],
-            }),
+            })
           );
         }
       });

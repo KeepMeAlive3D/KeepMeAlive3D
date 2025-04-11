@@ -25,14 +25,10 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate);
-      setIsOpen(false);
     }
   };
 
-  const handleTimeChange = (
-    type: "hour" | "minute",
-    value: string
-  ) => {
+  const handleTimeChange = (type: "hour" | "minute", value: string) => {
     if (date) {
       const newDate = new Date(date);
       if (type === "hour") {
@@ -56,9 +52,9 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? (
-            format(date, "MM/dd/yyyy hh:mm")
+            format(date, "dd/MM/yyyy HH:mm")
           ) : (
-            <span>MM/DD/YYYY hh:mm</span>
+            <span>DD/MM/YYYY HH:mm</span>
           )}
         </Button>
       </PopoverTrigger>
@@ -73,11 +69,13 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
               <div className="flex sm:flex-col p-2">
-                {hours.reverse().map((hour) => (
+                {hours.map((hour) => (
                   <Button
                     key={hour}
                     size="icon"
-                    variant={date && date.getHours() === hour ? "default" : "ghost"}
+                    variant={
+                      date && date.getHours() === hour ? "default" : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() => handleTimeChange("hour", hour.toString())}
                   >
@@ -93,11 +91,15 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
                   <Button
                     key={minute}
                     size="icon"
-                    variant={date && date.getMinutes() === minute ? "default" : "ghost"}
+                    variant={
+                      date && date.getMinutes() === minute ? "default" : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("minute", minute.toString())}
+                    onClick={() =>
+                      handleTimeChange("minute", minute.toString())
+                    }
                   >
-                    {minute.toString().padStart(2, '0')}
+                    {minute.toString().padStart(2, "0")}
                   </Button>
                 ))}
               </div>

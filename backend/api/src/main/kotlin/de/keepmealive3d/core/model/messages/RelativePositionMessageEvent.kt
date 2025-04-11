@@ -1,12 +1,12 @@
-package de.keepmealive3d.core.event.messages
+package de.keepmealive3d.core.model.messages
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RelativePositionEventMessage(
+data class RelativePositionMessageEvent(
     override val manifest: Manifest,
     override val message: RelativePositionMessageData,
-): GenericEventMessage
+): GenericMessageEvent
 
 @Serializable
 data class RelativePositionMessageData(

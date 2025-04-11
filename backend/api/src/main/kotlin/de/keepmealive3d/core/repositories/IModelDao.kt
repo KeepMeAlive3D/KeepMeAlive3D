@@ -1,4 +1,4 @@
-package de.keepmealive3d.core.persistence
+package de.keepmealive3d.core.repositories
 
 import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo

@@ -1,9 +1,9 @@
 package de.keepmealive3d.adapters.model
 
 import de.keepmealive3d.core.auth.KmaUserPrincipal
-import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.BadRequestDataException
 import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
-import de.keepmealive3d.core.model.IModelService
+import de.keepmealive3d.core.services.IModelService
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -55,7 +55,7 @@ class UploadController(application: Application) : KoinComponent {
                         call.respond(HttpStatusCode.Created, it)
                         return@post
                     }
-                    throw BadRequestData("No file provided!")
+                    throw BadRequestDataException("No file provided!")
                 }
             }
         }

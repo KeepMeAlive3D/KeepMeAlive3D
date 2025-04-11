@@ -22,7 +22,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
-import { deleteModel, getRemoteModelNames, ModelInfo } from "@/service/upload.ts";
+import {
+  deleteModel,
+  getRemoteModelNames,
+  ModelInfo,
+} from "@/service/upload.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { Link, useNavigate } from "react-router";
@@ -40,7 +44,7 @@ export function OpenModel() {
       },
       (err) => {
         console.error(err);
-      },
+      }
     );
   }
 
@@ -49,13 +53,11 @@ export function OpenModel() {
   }, [open]);
 
   const handleDelete = (modelId: number) => {
-    deleteModel(modelId).then(
-      () => {
-        getAndSetModels();
-        dispatch(clearPartsList());
-        navigate("/");
-      },
-    );
+    deleteModel(modelId).then(() => {
+      getAndSetModels();
+      dispatch(clearPartsList());
+      navigate("/");
+    });
   };
 
   return (
@@ -90,7 +92,10 @@ export function OpenModel() {
                   <TableCell>{info.model}</TableCell>
                   <TableCell>{info.filename}</TableCell>
                   <TableCell className="text-right" id={`action-cell-${index}`}>
-                    <Link to={`/model/${info.modelId}`} state={{ refresh: Date.now() }}>
+                    <Link
+                      to={`/model/${info.modelId}`}
+                      state={{ refresh: Date.now() }}
+                    >
                       <Button
                         type="button"
                         id={`load-${index}`}
@@ -116,10 +121,7 @@ export function OpenModel() {
             </TableBody>
           </Table>
           <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => setOpen(false)}
-            >
+            <Button type="button" onClick={() => setOpen(false)}>
               Close
             </Button>
           </DialogFooter>

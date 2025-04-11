@@ -9,7 +9,8 @@
     "build-prod": "tsc -b --noCheck && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "prettier": "npx prettier . --write"
   },
   "overrides": {
     "@radix-ui/react-focus-scope": "1.1.1"

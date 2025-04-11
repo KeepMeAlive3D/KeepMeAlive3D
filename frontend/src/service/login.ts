@@ -9,7 +9,7 @@ export type BasicAuthResponse = {
 export type User = {
   username: string;
   loginType: string;
-}
+};
 
 export function loginBasic(user: string, pass: string) {
   return service.post<BasicAuthResponse>("/api/login/basic", {

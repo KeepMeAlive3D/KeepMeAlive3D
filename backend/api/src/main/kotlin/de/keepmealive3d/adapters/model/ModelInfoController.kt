@@ -1,13 +1,12 @@
 package de.keepmealive3d.adapters.model
 
-import de.keepmealive3d.adapters.auth.RegisterController.RegisterData
 import de.keepmealive3d.adapters.data.AvailableFiles
 import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.core.auth.KmaUserPrincipal
-import de.keepmealive3d.core.exceptions.BadRequestData
+import de.keepmealive3d.core.exceptions.BadRequestDataException
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
 import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
-import de.keepmealive3d.core.model.IModelService
+import de.keepmealive3d.core.services.IModelService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -27,7 +26,7 @@ class ModelInfoController(application: Application) : KoinComponent {
                     call.principal<KmaUserPrincipal>()
                         ?: throw InvalidAuthTokenException("Could not authenticate")
                     val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
+                        ?: throw BadRequestDataException("Request parameter 'id' is required and has to be an integer!")
 
                     //we don't check if the model is owned by the userid
                     val settings = modelService.getSettings(id)
@@ -40,7 +39,7 @@ class ModelInfoController(application: Application) : KoinComponent {
                     call.principal<KmaUserPrincipal>()
                         ?: throw InvalidAuthTokenException("Could not authenticate")
                     val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestData("Request parameter 'id' is required and has to be an integer!")
+                        ?: throw BadRequestDataException("Request parameter 'id' is required and has to be an integer!")
                     val body = call.receive<ModelSettings>()
                     modelService.updateSettings(id, body)
                     call.respond(HttpStatusCode.OK)

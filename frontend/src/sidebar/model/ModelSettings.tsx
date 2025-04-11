@@ -25,8 +25,12 @@ export function ModelSettings() {
   const { modelId } = useParams();
 
   const handleClose = async (open: boolean) => {
-    if(!open && modelId !== undefined && Number(modelId) > 0) {
-      await updateModelSettings(Number(modelId), settings.light, settings.scale)
+    if (!open && modelId !== undefined && Number(modelId) > 0) {
+      await updateModelSettings(
+        Number(modelId),
+        settings.light,
+        settings.scale
+      );
     }
   };
 

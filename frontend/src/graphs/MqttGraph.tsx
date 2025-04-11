@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import {
-  DataPointEventMessage,
-  MessageType,
-} from "@/service/wsTypes.ts";
+import { DataPointEventMessage, MessageType } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { getEventDataPointsOfTopic, getFormattedServerTime } from "@/service/model_datapoint.ts";
+import {
+  getEventDataPointsOfTopic,
+  getFormattedServerTime,
+} from "@/service/model_datapoint.ts";
 
 const chartConfig = {
   desktop: {
@@ -24,31 +24,47 @@ function MqttGraph({ topic }: { topic: string }) {
 
   const dataCallback = useCallback((msg: DataPointEventMessage) => {
     setData((d) => {
-      const current = [...d, msg]
-      const currTime = new Date();
-      const twoMinAgo = currTime.getTime() - (2 * 60 * 1000)
-      return current.filter(it => (it.manifest.timestamp ?? 0) * 1000 > twoMinAgo)
+      let current = [...d, msg];
+      const prefTimeStamp = d[d.length - 1].manifest.timestamp;
+      if (
+        msg.manifest.timestamp &&
+        prefTimeStamp &&
+        msg.manifest.timestamp < prefTimeStamp
+      ) {
+        current = [msg];
+      }
+
+      const lastMsgTime = current[current.length - 1].manifest.timestamp;
+      let currTime = new Date();
+      if (lastMsgTime) {
+        currTime = new Date(lastMsgTime * 1000);
+      }
+
+      const twoMinAgo = currTime.getTime() - 2 * 60 * 1000;
+      return current.filter(
+        (it) => (it.manifest.timestamp ?? 0) * 1000 > twoMinAgo
+      );
     });
   }, []);
 
-  useFilteredWebsocket<DataPointEventMessage>([topic], MessageType.TOPIC_DATAPOINT, dataCallback);
+  useFilteredWebsocket<DataPointEventMessage>(
+    [topic],
+    MessageType.TOPIC_DATAPOINT,
+    dataCallback
+  );
 
   useEffect(() => {
-    getEventDataPointsOfTopic(topic).then(it => {
-      setData(it.data)
-    })
+    getEventDataPointsOfTopic(topic).then((it) => {
+      setData(it.data);
+    });
   }, [topic]);
 
   return (
     <div>
       <h3 className="m-auto">{topic}</h3>
       <ChartContainer config={chartConfig} className={""}>
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-        >
-          <CartesianGrid strokeDasharray="3 3"/>
+        <LineChart width={500} height={300} data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             tickFormatter={(v) => getFormattedServerTime(v)}
             dataKey={(v) => v.manifest.timestamp}

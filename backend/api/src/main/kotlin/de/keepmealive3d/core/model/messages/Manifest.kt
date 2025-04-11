@@ -1,4 +1,4 @@
-package de.keepmealive3d.core.event.messages
+package de.keepmealive3d.core.model.messages
 
 import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import kotlinx.serialization.Serializable

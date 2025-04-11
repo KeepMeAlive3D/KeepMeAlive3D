@@ -4,7 +4,7 @@ import de.keepmealive3d.adapters.data.FileModelInfo
 import de.keepmealive3d.adapters.data.ModelInfo
 import de.keepmealive3d.adapters.data.ModelSettings
 import de.keepmealive3d.adapters.sql.tables.DBModelTable
-import de.keepmealive3d.core.persistence.IModelDao
+import de.keepmealive3d.core.repositories.IModelDao
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.dsl.*

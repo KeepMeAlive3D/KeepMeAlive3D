@@ -1,7 +1,6 @@
-package de.keepmealive3d.core.model
+package de.keepmealive3d.core.repositories
 
 import de.keepmealive3d.adapters.data.FileModelInfo
-import de.keepmealive3d.core.persistence.IModelRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.Logger
@@ -11,6 +10,16 @@ import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.random.Random
+
+interface IModelRepository {
+    fun createUniqueFileLocation(userid: Int, path: String, name: String): Path
+
+    fun getModelLocation(userid: Int, model: String, fileName: String): Path?
+
+    fun getAllModelFileNames(userid: Int): Set<FileModelInfo>
+
+    fun deleteFile(userid: Int, model: String, fileName: String): Boolean
+}
 
 class ModelRepository : KoinComponent, IModelRepository {
 

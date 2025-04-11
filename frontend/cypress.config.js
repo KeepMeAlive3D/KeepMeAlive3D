@@ -15,10 +15,10 @@ export default defineConfig({
 
         axios
           .request(options)
-          .then(function(response) {
+          .then(function (response) {
             console.log(response.data);
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.error(error);
           });
       });

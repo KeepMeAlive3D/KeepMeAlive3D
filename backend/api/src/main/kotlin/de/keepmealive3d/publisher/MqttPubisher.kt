@@ -33,8 +33,6 @@ fun main() {
 
     client.connect(connectionOptions)
 
-
-
     runBlocking {
         launch {
             while (true) {

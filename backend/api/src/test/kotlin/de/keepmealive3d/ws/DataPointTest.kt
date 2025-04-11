@@ -3,8 +3,8 @@ package de.keepmealive3d.ws
 import de.keepmealive3d.SetupMqttTestClient
 import de.keepmealive3d.appModule
 import de.keepmealive3d.cleanupTestUser
-import de.keepmealive3d.core.event.messages.DataPointEventMessage
-import de.keepmealive3d.core.event.messages.GenericEventMessage
+import de.keepmealive3d.core.model.messages.DataPointMessageEvent
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
 import de.keepmealive3d.setupTestUser
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -60,10 +60,10 @@ class DataPointTest {
             assertEquals(HttpStatusCode.OK, status)
         }
 
-        val events = req.body<List<GenericEventMessage>>()
+        val events = req.body<List<GenericMessageEvent>>()
         assert(events.all { it.message.topic == "data.point.test.foo" })
         assert(events.all { it.message.dataSource == "MQTT" })
-        events.map { it as DataPointEventMessage }.first { it.message.point == 0.3 }
+        events.map { it as DataPointMessageEvent }.first { it.message.point == 0.3 }
     }
 
     @AfterTest

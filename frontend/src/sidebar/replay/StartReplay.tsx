@@ -1,4 +1,7 @@
-import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar.tsx";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar.tsx";
 import {
   Sheet,
   SheetContent,
@@ -16,7 +19,6 @@ import { Manifest, MessageType, ReplayStart } from "@/service/wsTypes.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { updateReplay } from "@/slices/ReplaySlice.ts";
 import { toast } from "@/hooks/use-toast.ts";
-
 
 export function StartReplay() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -58,12 +60,14 @@ export function StartReplay() {
 
     socket?.send(JSON.stringify(message));
 
-    dispatch(updateReplay({
-      running: true,
-      startedOn: Date.now(),
-      start: startDate?.getTime(),
-      end: endDate?.getTime(),
-    }));
+    dispatch(
+      updateReplay({
+        running: true,
+        startedOn: Date.now(),
+        start: startDate?.getTime(),
+        end: endDate?.getTime(),
+      })
+    );
 
     setIsOpen(false);
   }

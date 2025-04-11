@@ -4,7 +4,8 @@ import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.config.Config
-import de.keepmealive3d.core.event.messages.GenericEventMessage
+import de.keepmealive3d.core.model.messages.GenericMessageEvent
+import de.keepmealive3d.core.services.IWsSessionService
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,8 @@ import kotlin.reflect.full.createInstance
 
 class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private val yamlParser = createYamlParser()
-    private val eventChannel: Channel<GenericEventMessage> by inject(qualifier = qualifier("events"))
+    private val eventChannel: Channel<GenericMessageEvent> by inject(qualifier = qualifier("events"))
+    private val sessionService: IWsSessionService by inject()
     private val eventDao: EventDao by inject()
 
     val plugins: MutableList<Pair<Plugin, PluginConfig>> by lazy {
@@ -79,7 +81,8 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
         return Yaml(Yaml.default.serializersModule, yamlConfig)
     }
 
-    private fun receive(msg: GenericEventMessage) {
+    private suspend fun receive(msg: GenericMessageEvent) {
+        sessionService.distributeLiveEvent(msg)
         eventChannel.trySend(msg)
     }
 }
