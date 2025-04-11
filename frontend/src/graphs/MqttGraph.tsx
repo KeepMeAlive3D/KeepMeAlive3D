@@ -5,6 +5,8 @@ import { DataPointEventMessage, MessageType } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 import { getEventDataPointsOfTopic } from "@/service/model_datapoint.ts";
 import { format } from "date-fns";
+import { useAppSelector } from "@/hooks/hooks.ts";
+import { selectReplay } from "@/slices/ReplaySlice.ts";
 
 const chartConfig = {
   desktop: {
@@ -19,18 +21,16 @@ const chartConfig = {
 
 function MqttGraph({ topic }: { topic: string }) {
   const [data, setData] = useState<Array<DataPointEventMessage>>([]);
+  const replay = useAppSelector(selectReplay);
+
+  useEffect(() => {
+    setData([]);
+  }, [replay]);
+
 
   const dataCallback = useCallback((msg: DataPointEventMessage) => {
     setData((d) => {
-      let current = [...d, msg];
-      const prefTimeStamp = d[d.length - 1].manifest.timestamp;
-      if (
-        msg.manifest.timestamp &&
-        prefTimeStamp &&
-        msg.manifest.timestamp < prefTimeStamp
-      ) {
-        current = [msg];
-      }
+      const current = [...d, msg];
 
       const lastMsgTime = current[current.length - 1].manifest.timestamp;
       let currTime = new Date();
