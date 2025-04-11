@@ -3,10 +3,22 @@ import { Pause, Play } from "lucide-react";
 import { getFormattedTime } from "@/service/model_datapoint.ts";
 import { selectReplay, setReplayRunning } from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
+import { useEffect, useState } from "react";
 
 export default function ReplayIndicator() {
   const replay = useAppSelector(selectReplay);
   const dispatch = useAppDispatch();
+
+  const [, setTick] = useState<number>(0);
+
+  // Used to force re-render every second
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTick(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   function onRunToggle() {
     dispatch(setReplayRunning(!replay.running));
