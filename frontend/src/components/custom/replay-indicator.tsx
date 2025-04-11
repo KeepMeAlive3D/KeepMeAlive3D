@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Pause, Play } from "lucide-react";
-import { selectReplay, setReplayRunning } from "@/slices/ReplaySlice.ts";
+import { getFormattedTime } from "@/service/model_datapoint.ts";
+import { selectReplay, setReplayRunning, updateReplay } from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -9,7 +10,7 @@ export default function ReplayIndicator() {
   const replay = useAppSelector(selectReplay);
   const dispatch = useAppDispatch();
 
-  const [, setTick] = useState<number>(0);
+  const [tick, setTick] = useState<number>(0);
 
   // Used to force re-render every second
   useEffect(() => {
@@ -19,6 +20,25 @@ export default function ReplayIndicator() {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    if (!replay.start || !replay.startedOn || !replay.end) {
+      return;
+    }
+
+    const currentReplayTime = replay.start + Date.now() - replay.startedOn;
+
+    if (currentReplayTime > replay.end) {
+      // Replay done
+
+      dispatch(updateReplay({
+        running: false,
+        start: undefined,
+        end: undefined,
+        startedOn: undefined,
+      }));
+    }
+  }, [dispatch, replay, tick]);
 
   function onRunToggle() {
     dispatch(setReplayRunning(!replay.running));

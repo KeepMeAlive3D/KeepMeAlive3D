@@ -55,6 +55,22 @@ export function StartReplay() {
       return;
     }
 
+    if (startDate.getTime() > Date.now()) {
+      toast({
+        variant: "destructive",
+        title: "Start must be in the past",
+        description: "Please enter a start date in the past.",
+      });
+      return;
+    }
+
+    let actualEndDate = endDate.getTime();
+    if (actualEndDate > Date.now()) {
+      // Replay ends in the future -> set to current time.
+      setEndDate(new Date());
+      actualEndDate = new Date().getTime();
+    }
+
     const message = {
       manifest: {
         version: 1,
@@ -64,7 +80,7 @@ export function StartReplay() {
         uuid: localStorage.getItem("uuid"),
       } as Manifest,
       start: startDate?.getTime(),
-      end: endDate?.getTime(),
+      end: actualEndDate,
     } as ReplayStart;
 
     socket?.send(JSON.stringify(message));
@@ -74,7 +90,7 @@ export function StartReplay() {
         running: true,
         startedOn: Date.now(),
         start: startDate?.getTime(),
-        end: endDate?.getTime(),
+        end: actualEndDate,
       })
     );
 
