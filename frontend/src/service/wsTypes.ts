@@ -59,6 +59,18 @@ export interface ReplayStart {
 
 export interface ReplayStop {
   manifest: Manifest;
+  /**
+   * the time the user clicked stop, so the server can start on this time again
+   */
+  stop: number;
+}
+
+export interface ReplayEnd {
+  manifest: Manifest;
+}
+
+export interface NewSession {
+  manifest: Manifest;
 }
 
 export interface Manifest {
@@ -66,6 +78,7 @@ export interface Manifest {
   messageType: MessageType;
   timestamp?: number | undefined;
   bearerToken?: string | undefined;
+  uuid?: string | undefined;
 }
 
 export enum MessageType {
@@ -75,4 +88,5 @@ export enum MessageType {
   SUBSCRIBE_TOPIC = "SUBSCRIBE_TOPIC",
   REPLAY_START = "REPLAY_START",
   REPLAY_STOP = "REPLAY_STOP",
+  REPLAY_END = "REPLAY_END",
 }

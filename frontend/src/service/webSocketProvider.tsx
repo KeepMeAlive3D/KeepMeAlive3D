@@ -20,12 +20,10 @@ export function WebSocketProvider({ url, children }: WebSocketProviderProps) {
     ws.onopen = () => {
     };
 
-    ws.onclose = (ev) => {
-      console.debug(ev.code);
+    ws.onclose = () => {
     };
 
-    ws.onerror = (ev) => {
-      console.debug(ev);
+    ws.onerror = () => {
     };
 
     setSocket(ws);

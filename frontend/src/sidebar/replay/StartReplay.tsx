@@ -13,26 +13,47 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { useWebSocket } from "@/service/webSocketProvider.tsx";
 import { Manifest, MessageType, ReplayStart } from "@/service/wsTypes.ts";
+import { useAppDispatch } from "@/hooks/hooks.ts";
+import { updateReplay } from "@/slices/ReplaySlice.ts";
+import { toast } from "@/hooks/use-toast.ts";
 
 
 export function StartReplay() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const { socket } = useWebSocket();
+  const dispatch = useAppDispatch();
 
   function onStart() {
+    if (!startDate || !endDate) {
+      toast({
+        variant: "destructive",
+        title: "Start and End required",
+        description: "Please enter start and date.",
+      });
+      return;
+    }
+
     const message = {
       manifest: {
         version: 1,
         messageType: MessageType.REPLAY_START,
         timestamp: new Date().valueOf(),
         bearerToken: localStorage.getItem("token") ?? "null",
+        uuid: localStorage.getItem("uuid"),
       } as Manifest,
-      start: startDate?.getMilliseconds(),
-      end: endDate?.getMilliseconds(),
+      start: startDate?.getTime(),
+      end: endDate?.getTime(),
     } as ReplayStart;
 
     socket?.send(JSON.stringify(message));
+
+    dispatch(updateReplay({
+      running: true,
+      startedOn: Date.now(),
+      start: startDate?.getTime(),
+      end: endDate?.getTime(),
+    }));
   }
 
   return (
