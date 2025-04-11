@@ -20,14 +20,16 @@ export function WebSocketProvider({ url, children }: WebSocketProviderProps) {
     ws.onopen = () => {
     };
 
-    ws.onclose = () => {
+    ws.onclose = (ev) => {
+      console.debug(ev.code);
+    };
+
+    ws.onerror = (ev) => {
+      console.debug(ev);
     };
 
     setSocket(ws);
 
-    return () => {
-      ws.close();
-    };
   }, [url]);
 
   return (
