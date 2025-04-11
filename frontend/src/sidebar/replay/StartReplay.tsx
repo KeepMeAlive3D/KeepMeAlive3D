@@ -23,6 +23,7 @@ export function StartReplay() {
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const { socket } = useWebSocket();
   const dispatch = useAppDispatch();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   function onStart() {
     if (!startDate || !endDate) {
@@ -54,11 +55,13 @@ export function StartReplay() {
       start: startDate?.getTime(),
       end: endDate?.getTime(),
     }));
+
+    setIsOpen(false);
   }
 
   return (
     <SidebarMenuItem key="Replay">
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <SheetTrigger asChild>
           <SidebarMenuButton asChild>
             <div>
