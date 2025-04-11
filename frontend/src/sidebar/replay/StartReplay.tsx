@@ -27,6 +27,15 @@ export function StartReplay() {
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  function setToLast5Minutes() {
+    setStartDate(new Date(Date.now() - 1000 * 60 * 5));
+    setEndDate(new Date());
+  }
+  function setToLast30Seconds() {
+    setStartDate(new Date(Date.now() - 1000 * 30));
+    setEndDate(new Date());
+  }
+
   function onStart() {
     if (!startDate || !endDate) {
       toast({
@@ -95,6 +104,21 @@ export function StartReplay() {
             <DateTimePicker24h date={startDate} setDate={setStartDate} />
             <p className="m-4">Stop</p>
             <DateTimePicker24h date={endDate} setDate={setEndDate} />
+            <p className="m-4">Presets</p>
+            <Button
+              onClick={setToLast30Seconds}
+              variant="outline"
+              className="w-full"
+            >
+              Select last 30 seconds
+            </Button>
+            <Button
+              onClick={setToLast5Minutes}
+              variant="outline"
+              className="w-full mt-2"
+            >
+              Select last 5 minutes
+            </Button>
           </div>
           <Button onClick={onStart}>Launch</Button>
         </SheetContent>

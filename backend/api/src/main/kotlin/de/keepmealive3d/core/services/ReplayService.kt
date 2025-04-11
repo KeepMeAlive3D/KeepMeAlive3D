@@ -61,5 +61,10 @@ class ReplayService: IReplayService, KoinComponent {
                 delay(wait)
             } catch (_: Exception) { }
         }
+
+        sessionData.replayState = ReplayState.NOT_IN_REPLAY
+        sessionData.replayStart = null
+        sessionData.replayEnd = null
+        sessionData.replayJob = null    //this job is about to end so this should be fine
     }
 }

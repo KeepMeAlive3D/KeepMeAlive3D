@@ -3,10 +3,8 @@ import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { DataPointEventMessage, MessageType } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import {
-  getEventDataPointsOfTopic,
-  getFormattedServerTime,
-} from "@/service/model_datapoint.ts";
+import { getEventDataPointsOfTopic } from "@/service/model_datapoint.ts";
+import { format } from "date-fns";
 
 const chartConfig = {
   desktop: {
@@ -66,7 +64,9 @@ function MqttGraph({ topic }: { topic: string }) {
         <LineChart width={500} height={300} data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            tickFormatter={(v) => getFormattedServerTime(v)}
+            tickFormatter={(v) =>
+              format(new Date(v * 1000), "dd/MM/yyyy HH:mm")
+            }
             dataKey={(v) => v.manifest.timestamp}
           />
           <YAxis dataKey={(v) => v.message.point} />
