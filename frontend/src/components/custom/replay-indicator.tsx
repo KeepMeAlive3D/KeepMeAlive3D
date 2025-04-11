@@ -29,7 +29,7 @@ export default function ReplayIndicator() {
     const replayEnd: ReplayEnd = {
       manifest: {
         version: 1,
-        messageType: MessageType.REPLAY_START,
+        messageType: MessageType.REPLAY_END,
         uuid: "50e50fd7-5aaf-436e-a2e3-1261bf9fbe9e",
         timestamp: new Date().valueOf(),
         bearerToken: localStorage.getItem("token") ?? "null",

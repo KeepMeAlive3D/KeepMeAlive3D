@@ -41,6 +41,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                         val text = frame.readText()
                         try {
                             val msg = jsonParser.decodeFromString<UnknownTypeEvent>(text)
+                            session = msg.manifest.uuid
                             when (msg.manifest.messageType) {
                                 MessageType.SUBSCRIBE_TOPIC -> {
                                     sessionService.topicSubscribe(jsonParser.decodeFromString<SubscribeEvent>(text))
@@ -82,13 +83,8 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                             outgoing.send(Frame.Text(jsonParser.encodeToString(msg)))
                         }
                     }
-                    if (frame is Frame.Close) {
-                        if (session == null) {
-                            throw Exception("WebSocket connection closed for null session")
-                        }
-                        sessionService.closeSession(session)
-                    }
                 }
+                sessionService.closeSession(session)
             }
         }
     }

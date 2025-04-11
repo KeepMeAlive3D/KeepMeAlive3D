@@ -24,10 +24,20 @@ function MqttGraph({ topic }: { topic: string }) {
 
   const dataCallback = useCallback((msg: DataPointEventMessage) => {
     setData((d) => {
-      const current = [...d, msg]
-      const currTime = new Date();
-      const twoMinAgo = currTime.getTime() - (2 * 60 * 1000)
-      return current.filter(it => (it.manifest.timestamp ?? 0) * 1000 > twoMinAgo)
+      let current = [...d, msg];
+      const prefTimeStamp = d[d.length - 1].manifest.timestamp
+      if(msg.manifest.timestamp && prefTimeStamp && msg.manifest.timestamp < prefTimeStamp) {
+        current = [msg];
+      }
+
+      const lastMsgTime = current[current.length - 1].manifest.timestamp;
+      let currTime = new Date();
+      if (lastMsgTime) {
+        currTime = new Date(lastMsgTime * 1000);
+      }
+
+      const twoMinAgo = currTime.getTime() - (2 * 60 * 1000);
+      return current.filter(it => (it.manifest.timestamp ?? 0) * 1000 > twoMinAgo);
     });
   }, []);
 
@@ -35,8 +45,8 @@ function MqttGraph({ topic }: { topic: string }) {
 
   useEffect(() => {
     getEventDataPointsOfTopic(topic).then(it => {
-      setData(it.data)
-    })
+      setData(it.data);
+    });
   }, [topic]);
 
   return (
@@ -48,9 +58,9 @@ function MqttGraph({ topic }: { topic: string }) {
           height={300}
           data={data}
         >
-          <CartesianGrid strokeDasharray="3 3"/>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            tickFormatter={(v) => getFormattedTime(v) }
+            tickFormatter={(v) => getFormattedTime(v)}
             dataKey={(v) => v.manifest.timestamp}
           />
           <YAxis dataKey={(v) => v.message.point} />
