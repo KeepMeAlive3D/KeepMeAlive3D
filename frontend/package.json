@@ -9,7 +9,8 @@
     "build-prod": "tsc -b --noCheck && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "prettier": "npx prettier . --write"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
