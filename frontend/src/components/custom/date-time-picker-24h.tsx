@@ -25,6 +25,7 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate);
+      setIsOpen(false);
     }
   };
 
