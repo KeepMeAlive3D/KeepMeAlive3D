@@ -65,12 +65,10 @@ class WsSessionService : IWsSessionService, KoinComponent {
         val wsSession = sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
             return@coroutineScope Result.failure(it)
         }
-        if(wsSession.replayJob?.isActive == true) {
-            return@coroutineScope Result.failure(BadRequestDataException("A replay is already running"))
-        }
         wsSession.replayStart = info.start
         wsSession.replayEnd = info.end
         wsSession.replayState = ReplayState.RUNNING
+        wsSession.replayJob?.cancel()   //cancel old replay
 
         wsSession.replayJob = launch {
             replayService.startReplay(wsSession, info.start, info.end)

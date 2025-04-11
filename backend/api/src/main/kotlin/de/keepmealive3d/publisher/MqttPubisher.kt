@@ -54,18 +54,15 @@ fun main() {
             }
         }
 
-
-        launch {
-            while (true) {
-                for (i in 1..360) {
-                    client.publish(
-                        rotationTopic,
-                        MqttMessage(
-                            "${i / 100.0}".toByteArray(),
-                        )
-                    )
-                    delay(Random.nextLong(100, 2000))
-                }
+        while (true) {
+            for (i in 1..100) {
+                val msg = "${i / 100.0}"
+                println("Sending $msg on $rotationTopic")
+                client.publish(
+                    rotationTopic,
+                    MqttMessage(msg.toByteArray())
+                )
+                delay(Random.nextLong(100, 2000))
             }
         }
     }

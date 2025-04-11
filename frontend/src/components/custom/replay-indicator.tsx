@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Pause, Play } from "lucide-react";
-import { getFormattedTime } from "@/service/model_datapoint.ts";
 import { selectReplay, setReplayRunning } from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
 
 export default function ReplayIndicator() {
   const replay = useAppSelector(selectReplay);
@@ -34,7 +34,7 @@ export default function ReplayIndicator() {
           <main>
             Time:{" "}
             <i>
-              {getFormattedTime(replay.start + Date.now() - replay.startedOn)}
+              {format(new Date(replay.start + Date.now() - replay.startedOn), "dd/MM/yyyy HH:mm")}
             </i>
           </main>
           <footer>
