@@ -37,7 +37,7 @@ service.interceptors.response.use(
     console.error(`Middleware error detail for: ${error.message}`);
     console.error(error);
     return Promise.reject(error);
-  },
+  }
 );
 
 export function setDefaultRequestToken(token: string) {

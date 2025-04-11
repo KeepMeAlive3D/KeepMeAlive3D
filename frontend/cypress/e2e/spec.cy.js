@@ -12,16 +12,14 @@ describe("Register", () => {
     cy.visit("http://localhost:5173/");
     cy.intercept("POST", "/api/register/basic").as("registerRequest");
 
-    cy.get("input[id=\"username\"]").type("tttt");
-    cy.get("input[id=\"password\"]").type("123");
-    cy.get("button[name=\"register\"]").click();
+    cy.get('input[id="username"]').type("tttt");
+    cy.get('input[id="password"]').type("123");
+    cy.get('button[name="register"]').click();
 
     cy.wait("@registerRequest");
 
     cy.get("#username").should("not.exist");
-    cy.window()
-      .its("localStorage.token")
-      .should("not.be.null");
+    cy.window().its("localStorage.token").should("not.be.null");
 
     cy.deleteCurrentUser();
   });
@@ -36,9 +34,9 @@ describe("Register", () => {
       return false;
     });
 
-    cy.get("input[id=\"username\"]").type("tester");
-    cy.get("input[id=\"password\"]").type("123");
-    cy.get("button[name=\"register\"]").click();
+    cy.get('input[id="username"]').type("tester");
+    cy.get('input[id="password"]').type("123");
+    cy.get('button[name="register"]').click();
 
     cy.wait("@registerRequest");
 
@@ -51,9 +49,9 @@ describe("Login", () => {
     cy.visit("http://localhost:5173/");
     cy.intercept("POST", "/api/login/basic").as("loginRequest");
 
-    cy.get("input[id=\"username\"]").type("tester");
-    cy.get("input[id=\"password\"]").type("123");
-    cy.get("button[type=\"submit\"]").click();
+    cy.get('input[id="username"]').type("tester");
+    cy.get('input[id="password"]').type("123");
+    cy.get('button[type="submit"]').click();
 
     cy.wait("@loginRequest");
 
@@ -71,16 +69,15 @@ describe("Login", () => {
       return false;
     });
 
-    cy.get("input[id=\"username\"]").type("tester");
-    cy.get("input[id=\"password\"]").type("1235678");
-    cy.get("button[type=\"submit\"]").click();
+    cy.get('input[id="username"]').type("tester");
+    cy.get('input[id="password"]').type("1235678");
+    cy.get('button[type="submit"]').click();
 
     // Check status code
     cy.wait("@loginRequest").then((interception) => {
       if (interception.response) {
         expect(interception.response.statusCode).to.equal(403);
       }
-
     });
 
     // Login still visible
@@ -149,5 +146,3 @@ describe("Model", () => {
     cy.get("#uploadButton").click();
   }
 });
-
-

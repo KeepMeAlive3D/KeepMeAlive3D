@@ -7,16 +7,15 @@ export const fetchAndSetModelSettings = createAsyncThunk(
   async ({ modelId }: { modelId: number }, thunkAPI) => {
     try {
       const response = await getModelSettings(modelId);
-      const setting: ModelSetting = response.data
+      const setting: ModelSetting = response.data;
       return setting;
     } catch {
       //unused, user can set this himself in case of an error
-      console.error(`Could not load settings`)
+      console.error(`Could not load settings`);
       return thunkAPI.rejectWithValue("Failed to get model setting");
     }
   }
 );
-
 
 // Define a type for the slice state
 interface SettingsState {
@@ -43,11 +42,10 @@ export const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchAndSetModelSettings.fulfilled, (state, action) => {
-        state.light = action.payload.lightIntensity;
-        state.scale = action.payload.scale;
-      })
+    builder.addCase(fetchAndSetModelSettings.fulfilled, (state, action) => {
+      state.light = action.payload.lightIntensity;
+      state.scale = action.payload.scale;
+    });
   },
 });
 

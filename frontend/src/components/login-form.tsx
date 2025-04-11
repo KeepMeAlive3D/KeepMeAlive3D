@@ -35,7 +35,9 @@ export function LoginForm({
   function handleBasicLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const action = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("name");
+    const action = (event.nativeEvent as SubmitEvent).submitter?.getAttribute(
+      "name"
+    );
 
     if (action === "login") {
       login();
@@ -47,16 +49,15 @@ export function LoginForm({
   }
 
   function register() {
-    registerBasic(username, password)
-      .then(() => {
-        toast({
-          variant: "default",
-          title: "Successfully Registered!",
-          description: "The account has been registered and logged in directly.",
-        });
-        //If successfully, then login directly
-        login();
-      })
+    registerBasic(username, password).then(() => {
+      toast({
+        variant: "default",
+        title: "Successfully Registered!",
+        description: "The account has been registered and logged in directly.",
+      });
+      //If successfully, then login directly
+      login();
+    });
   }
 
   function login() {
@@ -68,14 +69,14 @@ export function LoginForm({
         setDefaultRequestToken(response.data.token);
         setAuth(true);
       })
-      .catch(error  => {
-        const parsed = error.data as RestErrorInfo
+      .catch((error) => {
+        const parsed = error.data as RestErrorInfo;
         toast({
           variant: "destructive",
           title: parsed.name,
           description: parsed.message,
-        })
-      })
+        });
+      });
   }
 
   const formSchema = z.object({

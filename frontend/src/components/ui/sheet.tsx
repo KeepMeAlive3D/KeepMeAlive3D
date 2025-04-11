@@ -25,7 +25,7 @@ const SheetOverlay = React.forwardRef<
     {...props}
     ref={ref}
   />
-))
+));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
@@ -45,7 +45,7 @@ const sheetVariants = cva(
       side: "right",
     },
   }
-)
+);
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
@@ -69,7 +69,7 @@ const SheetContent = React.forwardRef<
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   </SheetPortal>
-))
+));
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({
@@ -83,7 +83,7 @@ const SheetHeader = ({
     )}
     {...props}
   />
-)
+);
 SheetHeader.displayName = "SheetHeader";
 
 const SheetFooter = ({
@@ -97,7 +97,7 @@ const SheetFooter = ({
     )}
     {...props}
   />
-)
+);
 SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle = React.forwardRef<
@@ -109,7 +109,7 @@ const SheetTitle = React.forwardRef<
     className={cn("text-lg font-semibold text-foreground", className)}
     {...props}
   />
-))
+));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
 const SheetDescription = React.forwardRef<
@@ -121,7 +121,7 @@ const SheetDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
+));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
@@ -135,4 +135,4 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
-}
+};

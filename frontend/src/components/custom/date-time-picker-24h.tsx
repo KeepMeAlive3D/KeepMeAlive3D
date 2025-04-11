@@ -29,10 +29,7 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
     }
   };
 
-  const handleTimeChange = (
-    type: "hour" | "minute",
-    value: string
-  ) => {
+  const handleTimeChange = (type: "hour" | "minute", value: string) => {
     if (date) {
       const newDate = new Date(date);
       if (type === "hour") {
@@ -77,7 +74,9 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
                   <Button
                     key={hour}
                     size="icon"
-                    variant={date && date.getHours() === hour ? "default" : "ghost"}
+                    variant={
+                      date && date.getHours() === hour ? "default" : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() => handleTimeChange("hour", hour.toString())}
                   >
@@ -93,11 +92,15 @@ export function DateTimePicker24h({ date, setDate }: DateTimePicker24hProps) {
                   <Button
                     key={minute}
                     size="icon"
-                    variant={date && date.getMinutes() === minute ? "default" : "ghost"}
+                    variant={
+                      date && date.getMinutes() === minute ? "default" : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("minute", minute.toString())}
+                    onClick={() =>
+                      handleTimeChange("minute", minute.toString())
+                    }
                   >
-                    {minute.toString().padStart(2, '0')}
+                    {minute.toString().padStart(2, "0")}
                   </Button>
                 ))}
               </div>

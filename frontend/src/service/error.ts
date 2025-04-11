@@ -1,5 +1,5 @@
 export type RestErrorInfo = {
-  name: string,
-  message: string,
-  code: number
-}
+  name: string;
+  message: string;
+  code: number;
+};

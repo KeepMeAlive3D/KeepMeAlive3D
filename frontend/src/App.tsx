@@ -12,15 +12,15 @@ function App() {
 
   return (
     <WebSocketProvider url={websocketUrl}>
-    <Routes>
-      <Route path="/" element={<LayoutSidebar />}>
-        <Route path="/" element={<Help />} />
-        <Route path="/model/:modelId" element={<Edit />} />
-      </Route>
-      <Route path="/graphs" element={<LayoutVanilla />}>
-        <Route path="/graphs" element={<GraphView></GraphView>} />
-      </Route>
-    </Routes>
+      <Routes>
+        <Route path="/" element={<LayoutSidebar />}>
+          <Route path="/" element={<Help />} />
+          <Route path="/model/:modelId" element={<Edit />} />
+        </Route>
+        <Route path="/graphs" element={<LayoutVanilla />}>
+          <Route path="/graphs" element={<GraphView></GraphView>} />
+        </Route>
+      </Routes>
     </WebSocketProvider>
   );
 }

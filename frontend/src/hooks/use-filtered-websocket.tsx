@@ -3,12 +3,16 @@ import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast.ts";
 import {
   EventError,
-  EventSubscribe, GenericEventMessage,
+  EventSubscribe,
+  GenericEventMessage,
   MessageType,
 } from "@/service/wsTypes.ts";
 
-
-function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array<string>, messageType: MessageType, onMessage: (msg: Type) => void) {
+function useFilteredWebsocket<Type extends GenericEventMessage>(
+  topicsArg: Array<string>,
+  messageType: MessageType,
+  onMessage: (msg: Type) => void
+) {
   const { toast } = useToast();
 
   const topics = useRef<string[]>([]);
@@ -20,54 +24,49 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
 
   useEffect(() => {
     let websocketConnection: WebSocket | undefined = undefined;
-    createWebsocket().then(
-      ws => {
-        const subscriptions = topics.current.map((topic) => {
-          return {
-            manifest: {
-              version: 1,
-              messageType: MessageType.SUBSCRIBE_TOPIC,
-              timestamp: new Date().valueOf(),
-              bearerToken: localStorage.getItem("token") ?? "null",
-              uuid: localStorage.getItem("uuid"),
-            },
-            message: {
-              topic: topic,
-            },
-          } as EventSubscribe;
-        });
+    createWebsocket().then((ws) => {
+      const subscriptions = topics.current.map((topic) => {
+        return {
+          manifest: {
+            version: 1,
+            messageType: MessageType.SUBSCRIBE_TOPIC,
+            timestamp: new Date().valueOf(),
+            bearerToken: localStorage.getItem("token") ?? "null",
+            uuid: localStorage.getItem("uuid"),
+          },
+          message: {
+            topic: topic,
+          },
+        } as EventSubscribe;
+      });
 
-        websocketConnection = ws;
+      websocketConnection = ws;
 
-        subscriptions.forEach((subscription) => {
-          ws.send(JSON.stringify(subscription));
-        });
+      subscriptions.forEach((subscription) => {
+        ws.send(JSON.stringify(subscription));
+      });
 
+      ws.onmessage = (event) => {
+        const e: string = event.data.toString();
 
+        const jsonMsg = JSON.parse(e);
+        const msgType = jsonMsg["manifest"]["messageType"];
 
+        if (msgType === MessageType.ERROR) {
+          const error = jsonMsg as EventError;
 
-        ws.onmessage = event => {
-          const e: string = event.data.toString();
+          console.error(error.message.message.toString());
 
-          const jsonMsg = JSON.parse(e);
-          const msgType = jsonMsg["manifest"]["messageType"];
-
-          if (msgType === MessageType.ERROR) {
-            const error = jsonMsg as EventError;
-
-            console.error(error.message.message.toString());
-
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: error.message.message.toString(),
-            });
-          } else if (msgType === messageType) {
-            onMessage(jsonMsg as Type);
-          }
-        };
-      },
-    );
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: error.message.message.toString(),
+          });
+        } else if (msgType === messageType) {
+          onMessage(jsonMsg as Type);
+        }
+      };
+    });
     return () => {
       websocketConnection?.close();
     };
@@ -75,8 +74,11 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
 }
 
 function areArraysEqual(arr1: string[], arr2: string[]): boolean {
-  return arr1.length === arr2.length && new Set(arr1).size === new Set(arr2).size &&
-    [...new Set(arr1)].every(item => arr2.includes(item));
+  return (
+    arr1.length === arr2.length &&
+    new Set(arr1).size === new Set(arr2).size &&
+    [...new Set(arr1)].every((item) => arr2.includes(item))
+  );
 }
 
 export default useFilteredWebsocket;

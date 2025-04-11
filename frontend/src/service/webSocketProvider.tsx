@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 interface WebSocketContextType {
   socket: WebSocket | null;
@@ -17,17 +23,13 @@ export function WebSocketProvider({ url, children }: WebSocketProviderProps) {
   useEffect(() => {
     const ws = new WebSocket(url);
 
-    ws.onopen = () => {
-    };
+    ws.onopen = () => {};
 
-    ws.onclose = () => {
-    };
+    ws.onclose = () => {};
 
-    ws.onerror = () => {
-    };
+    ws.onerror = () => {};
 
     setSocket(ws);
-
   }, [url]);
 
   return (
