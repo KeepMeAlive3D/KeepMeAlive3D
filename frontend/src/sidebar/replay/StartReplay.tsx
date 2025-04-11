@@ -35,6 +35,15 @@ export function StartReplay() {
       return;
     }
 
+    if (startDate.getTime() > endDate.getTime()) {
+      toast({
+        variant: "destructive",
+        title: "Start must be before end",
+        description: "Please enter a start date before the end date.",
+      });
+      return;
+    }
+
     const message = {
       manifest: {
         version: 1,
