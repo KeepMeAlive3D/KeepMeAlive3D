@@ -26,5 +26,4 @@ export function ReplayGroup() {
   } else {
     return null;
   }
-
 }

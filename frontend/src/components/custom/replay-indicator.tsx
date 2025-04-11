@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Pause, Play } from "lucide-react";
-import { getFormattedTime } from "@/service/model_datapoint.ts";
-import { selectReplay, setReplayRunning, updateReplay } from "@/slices/ReplaySlice.ts";
+import {
+  selectReplay,
+  setReplayRunning,
+  updateReplay,
+} from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -31,12 +34,14 @@ export default function ReplayIndicator() {
     if (currentReplayTime > replay.end) {
       // Replay done
 
-      dispatch(updateReplay({
-        running: false,
-        start: undefined,
-        end: undefined,
-        startedOn: undefined,
-      }));
+      dispatch(
+        updateReplay({
+          running: false,
+          start: undefined,
+          end: undefined,
+          startedOn: undefined,
+        })
+      );
     }
   }, [dispatch, replay, tick]);
 
