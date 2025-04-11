@@ -75,7 +75,7 @@ export function StartReplay() {
         startedOn: Date.now(),
         start: startDate?.getTime(),
         end: endDate?.getTime(),
-      }),
+      })
     );
 
     setIsOpen(false);
@@ -105,8 +105,20 @@ export function StartReplay() {
             <p className="m-4">Stop</p>
             <DateTimePicker24h date={endDate} setDate={setEndDate} />
             <p className="m-4">Presets</p>
-            <Button onClick={setToLast30Seconds} variant="outline" className="w-full">Select last 30 seconds</Button>
-            <Button onClick={setToLast5Minutes} variant="outline" className="w-full mt-2">Select last 5 minutes</Button>
+            <Button
+              onClick={setToLast30Seconds}
+              variant="outline"
+              className="w-full"
+            >
+              Select last 30 seconds
+            </Button>
+            <Button
+              onClick={setToLast5Minutes}
+              variant="outline"
+              className="w-full mt-2"
+            >
+              Select last 5 minutes
+            </Button>
           </div>
           <Button onClick={onStart}>Launch</Button>
         </SheetContent>

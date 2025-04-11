@@ -34,7 +34,10 @@ export default function ReplayIndicator() {
           <main>
             Time:{" "}
             <i>
-              {format(new Date(replay.start + Date.now() - replay.startedOn), "dd/MM/yyyy HH:mm")}
+              {format(
+                new Date(replay.start + Date.now() - replay.startedOn),
+                "dd/MM/yyyy HH:mm"
+              )}
             </i>
           </main>
           <footer>
