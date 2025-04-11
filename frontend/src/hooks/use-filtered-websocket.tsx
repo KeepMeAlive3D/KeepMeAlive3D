@@ -30,6 +30,7 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(topicsArg: Array
               uuid: "50e50fd7-5aaf-436e-a2e3-1261bf9fbe9e",
               timestamp: new Date().valueOf(),
               bearerToken: localStorage.getItem("token") ?? "null",
+              uuid: localStorage.getItem("uuid"),
             },
             message: {
               topic: topic,

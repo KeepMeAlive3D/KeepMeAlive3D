@@ -78,7 +78,7 @@ export interface Manifest {
   messageType: MessageType;
   timestamp?: number | undefined;
   bearerToken?: string | undefined;
-  uuid?: string | undefined
+  uuid?: string | undefined;
 }
 
 export enum MessageType {

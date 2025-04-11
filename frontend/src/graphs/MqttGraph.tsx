@@ -6,7 +6,7 @@ import {
   MessageType,
 } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
-import { getEventDataPointsOfTopic, getFormattedTime } from "@/service/model_datapoint.ts";
+import { getEventDataPointsOfTopic, getFormattedServerTime } from "@/service/model_datapoint.ts";
 
 const chartConfig = {
   desktop: {
@@ -60,7 +60,7 @@ function MqttGraph({ topic }: { topic: string }) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            tickFormatter={(v) => getFormattedTime(v)}
+            tickFormatter={(v) => getFormattedServerTime(v)}
             dataKey={(v) => v.manifest.timestamp}
           />
           <YAxis dataKey={(v) => v.message.point} />

@@ -8,12 +8,14 @@ import {
   initStateWithPrevTab,
   withReduxStateSync,
 } from "redux-state-sync";
+import replaySlice from "@/slices/ReplaySlice.ts";
 
 const store = configureStore({
   reducer: withReduxStateSync(
     combineReducers({
       modelParts: modelPartSlice,
       settings: settingsSlice,
+      replay: replaySlice,
     })
   ),
 

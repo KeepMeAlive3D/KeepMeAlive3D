@@ -3,13 +3,13 @@ import { Suspense, useRef } from "react";
 import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import Rotate from "@/scene/Rotate.tsx";
 import ClickObjects from "@/scene/ClickObjects.tsx";
-import { Light, Object3D, Vector3 } from "three";
+import { Light, Object3D, Scene, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
 import { setLight } from "@/slices/SettingsSlice.ts";
 import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
-import { parseLimits } from "@/util/LimitUtils.ts";
+import { pullLimitsUp } from "@/util/LimitUtils.ts";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const gltf = useGLTF(objectUrl, undefined, true);
@@ -39,7 +39,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
             node.userData,
           );
 
-          const limits = parseLimits(node);
+          pullLimitsUp(node, gltf.scene as unknown as Scene);
 
           dispatch(
             addPart({
@@ -47,7 +47,6 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
               name: node.name,
               isSelected: false,
               topic: node.userData["topic"],
-              limits: limits,
             }),
           );
         }

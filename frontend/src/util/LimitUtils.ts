@@ -1,108 +1,101 @@
-import { ComponentLimit, LimitTuple } from "@/slices/ModelPartSlice.ts";
-import { Object3D, Quaternion, QuaternionLike, Vector3, Vector3Like } from "three";
+import { Object3D, Quaternion, Scene, Vector3 } from "three";
 
-
-export function getRotationByLimits(object: Object3D, limits: LimitTuple, percentage: number): Quaternion {
-  const lower = getQuaternion(limits.lower.defaultWorldRotation);
-  const upper = getQuaternion(limits.upper.defaultWorldRotation);
-
-
-  const step = lower.clone().slerp(upper, percentage);
-  const target = lower.clone().multiply(step);
-
-  const worldTransformationMatrix = new Quaternion();
-  object.parent!.getWorldQuaternion(worldTransformationMatrix).invert();
-
-  return target.multiply(worldTransformationMatrix);
+/**
+ * Sets the parents of the empty limit objects of currentObject to the parent
+ * of currentObject (effectively pulls them up to the same level).
+ *
+ * Also sets the userData 'target' key to the currentObject uuid.
+ */
+export function pullLimitsUp(currentObject: Object3D, scene: Scene) {
+  const limits = currentObject.children.filter(x => x.name.startsWith("limit_move_") || x.name.startsWith("limit_rot_"));
+  limits.forEach(limit => pullLimitUp(currentObject, limit, scene));
 }
 
-export function getLocalPositionBetweenLimits(object: Object3D, limits: LimitTuple, percentage: number): Vector3 | undefined {
-  const defaultLowerWorldPosition = vector3FromVector3Like(limits.lower.defaultWorldPosition);
-  const defaultUpperWorldPosition = vector3FromVector3Like(limits.upper.defaultWorldPosition);
+function pullLimitUp(currentObject: Object3D, limit: Object3D, scene: Scene) {
+  const worldPosition = new Vector3();
+  limit.getWorldPosition(worldPosition);
 
-  const targetLocation = defaultLowerWorldPosition.lerp(defaultUpperWorldPosition, percentage);
+  limit.name = limit.name.replace("limit_", "limit" + limit.uuid + "_");
 
-  // Rounding the vector is needed as there is a small different between the coordinates which is not there in blender
-  roundVector(targetLocation);
+  const newParent = currentObject.parent ?? scene;
 
-  const objWorld = new Vector3();
-  object.getWorldPosition(objWorld);
+  newParent.attach(limit);
+  limit.updateMatrix();
+  limit.updateMatrixWorld(true);
 
-  // The position is returned in the local coordinates space of the parent
-  return object.parent?.worldToLocal(targetLocation);
+  limit.userData["target"] = currentObject.uuid;
+
+  return;
 }
 
 /**
- * Searches the passed object for children which represent a limit for this object. The positions and rotations are
- * parsed and stored in a ComponentLimit object. The notation of limit objects is noted in the documentation.
+ * Returns the animation of the object between its limits. The distance of the
+ * new position will be #percentage between lower and upper limit.
+ * Either returns a Vector3 for movement of Quaternion for rotation events.
  */
-export function parseLimits(object: Object3D): LimitTuple | undefined {
-  const limitObjects = object.children.filter(x => x.name.startsWith("limit_"));
+export function getAnimation(object: Object3D, scene: Scene, percentage: number): Vector3 | Quaternion {
+  const { upper, lower } = getUpperAndLowerLimit(object, scene);
 
-  const limits = limitObjects.map(x => parseLimit(x)).filter(x => x != null);
+  if (upper.name.endsWith("_max") && lower.name.endsWith("_min")) {
+    return getRotationByLimits(object, scene, upper, lower, percentage);
+  } else {
+    return getPositionByLimits(object, scene, upper, lower, percentage);
+  }
+}
 
-  const upper = limits.find(x => x.isUpperLimit);
-  const lower = limits.find(x => !x.isUpperLimit);
+function getRotationByLimits(object: Object3D, scene: Scene, upperLimit: Object3D, lowerLimit: Object3D, percentage: number): Quaternion {
+  const upperWorldRotation = new Quaternion();
+  const lowerWorldRotation = new Quaternion();
 
-  if (limits.length == 0) {
-    // Not every object with custom properties must have limits
-    return;
-  } else if (!upper || !lower) {
-    console.error("Found limits for object " + object.name + " but could not identify lower and upper limit.");
-    return;
+  upperLimit.getWorldQuaternion(upperWorldRotation);
+  lowerLimit.getWorldQuaternion(lowerWorldRotation);
+
+
+  const step = lowerWorldRotation.clone().slerp(upperWorldRotation, percentage);
+
+  const worldTransformationMatrix = new Quaternion();
+  (object.parent ?? scene).getWorldQuaternion(worldTransformationMatrix).invert();
+
+  return step.multiply(worldTransformationMatrix);
+}
+
+function getPositionByLimits(object: Object3D, scene: Scene, upperLimit: Object3D, lowerLimit: Object3D, percentage: number): Vector3 {
+
+  const currentLowerWorldPosition = new Vector3();
+  const currentUpperWorldPosition = new Vector3();
+
+  upperLimit.getWorldPosition(currentUpperWorldPosition);
+  lowerLimit.getWorldPosition(currentLowerWorldPosition);
+
+  const targetLocation = currentLowerWorldPosition.lerp(currentUpperWorldPosition, percentage);
+
+  // The position is returned in the local coordinates space of the parent
+  return (object.parent ?? scene).worldToLocal(targetLocation);
+}
+
+/**
+ * Returns the upper and lower limit of the currentObject.
+ * The corresponding limits are determined by the user data key 'target' matching
+ * the uuid of the currentObject.
+ */
+function getUpperAndLowerLimit(currentObject: Object3D, scene: Scene) {
+  const limits = (currentObject.parent ?? scene).children.filter(node => {
+    return Object.keys(node.userData).length > 0 && node.userData["target"] && node.userData["target"] === currentObject.uuid;
+  });
+
+  if (!limits || limits.length != 2) {
+    throw new Error("Did not find two limits for object " + currentObject.name);
+  }
+
+  const upper = limits.find(x => x.name.endsWith("_up") || x.name.endsWith("_max"));
+  const lower = limits.find(x => x.name.endsWith("_down") || x.name.endsWith("_min"));
+
+  if (!upper || !lower) {
+    throw new Error("Did not find upper and lower limit for object " + currentObject.name);
   }
 
   return {
     upper: upper,
     lower: lower,
   };
-}
-
-function parseLimit(object: Object3D): ComponentLimit | undefined {
-  const worldPosition = new Vector3();
-  object.getWorldPosition(worldPosition);
-
-  const worldRotation = new Quaternion();
-  object.getWorldQuaternion(worldRotation);
-
-  return {
-    name: object.name,
-    isUpperLimit: object.name.endsWith("_up") || object.name.endsWith("_max"),
-    defaultWorldPosition: {
-      x: worldPosition.x,
-      y: worldPosition.y,
-      z: worldPosition.z,
-    },
-    defaultWorldRotation: {
-      x: worldRotation.x,
-      y: worldRotation.z, // Axis are exchange between Blender and ThreeJs
-      z: worldRotation.y,
-      w: worldRotation.w,
-    },
-  };
-}
-
-/**
- * Converts and Vector3Like to an actual Vector3
- */
-function vector3FromVector3Like(vector: Vector3Like): Vector3 {
-  return new Vector3(vector.x, vector.y, vector.z);
-}
-
-function getQuaternion(quat: QuaternionLike): Quaternion {
-  return new Quaternion(roundToDecimal(quat.x, 6), roundToDecimal(quat.y, 6), roundToDecimal(quat.z, 6), roundToDecimal(quat.w, 6));
-}
-
-/**
- * Rounds a vector to the 5th digit
- */
-function roundVector(vector: Vector3) {
-  vector.setX(roundToDecimal(vector.x, 5));
-  vector.setY(roundToDecimal(vector.y, 5));
-  vector.setZ(roundToDecimal(vector.z, 5));
-}
-
-function roundToDecimal(num: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(num * factor) / factor;
 }

@@ -3,6 +3,7 @@ import { LoginForm } from "@/components/login-form.tsx";
 import { refreshToken } from "@/service/login.ts";
 import { setDefaultRequestToken } from "@/service/service.ts";
 import App from "@/App.tsx";
+import { v4 as uuid } from "uuid";
 
 function Login() {
   const [authenticated, login] = useState(false);
@@ -23,6 +24,8 @@ function Login() {
   };
 
   useEffect(() => {
+    initUUID();
+
     if (
       token !== null &&
       refresh !== null &&
@@ -39,6 +42,14 @@ function Login() {
     return <App></App>;
   } else {
     return <LoginForm setAuth={login} key="login"></LoginForm>;
+  }
+}
+
+function initUUID() {
+  const uuid2 = localStorage.getItem("uuid");
+
+  if (!uuid2) {
+    localStorage.setItem("uuid", uuid());
   }
 }
 
