@@ -27,10 +27,8 @@ interface IWsSessionService {
 class WsSessionService : IWsSessionService, KoinComponent {
     private val replayService: IReplayService by inject()
     private val sessions = mutableListOf<WsSessionData>()
-    private val mainConnectionTopic = "connection.main"
 
     override fun newSession(info: Manifest): Result<WsSessionData> {
-        val channel = Channel<GenericMessageEvent>()
         val uuid = try {
             UUID.fromString(info.uuid)
         } catch (_: Exception) {
@@ -38,9 +36,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
         }
         val wsSessionData = WsSessionData(
             uuid = uuid,
-            channels = mutableListOf(
-                WsSessionChannelData(mainConnectionTopic, channel)
-            )
+            channels = mutableListOf()
         )
         sessions.add(wsSessionData)
         return Result.success(wsSessionData)
@@ -50,6 +46,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
         val wsSession = sessions.find { it.uuid.toString() == uuid } ?: return Result.failure(
             EntityNotFoundException("The session could not be found")
         )
+        wsSession.replayJob?.cancel()
         sessions.remove(wsSession)
         return Result.success(Unit)
     }
@@ -88,9 +85,10 @@ class WsSessionService : IWsSessionService, KoinComponent {
         if (wsSession.replayState == ReplayState.NOT_IN_REPLAY) {
             return Result.failure(BadRequestDataException("There is no replay to stop for this session"))
         }
+        wsSession.replayJob?.cancel()
+        wsSession.replayJob = null
         wsSession.replayState = ReplayState.STOPPED
-        wsSession.replayStart =
-            info.stop   //set the start to the clients current timestamp to resume from that timestamp
+        wsSession.replayStart = info.stop   //set the start to the clients current timestamp to resume from that timestamp
         return Result.success(Unit)
     }
 
@@ -101,6 +99,8 @@ class WsSessionService : IWsSessionService, KoinComponent {
         wsSession.replayStart = null
         wsSession.replayEnd = null
         wsSession.replayState = ReplayState.NOT_IN_REPLAY
+        wsSession.replayJob?.cancel()
+        wsSession.replayJob = null
 
         return Result.success(Unit)
     }
