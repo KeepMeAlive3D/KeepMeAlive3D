@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import { Play, StopCircle } from "lucide-react";
+import { SkipForward } from "lucide-react";
 import {
   selectReplay,
   updateReplay,
@@ -47,7 +47,7 @@ export default function ReplayIndicator() {
     }
   }, [dispatch, replay, tick]);
 
-  function onRunToggle() {
+  function stopReplay() {
     if (!replay || !replay.start || !replay.startedOn) {
       return;
     }
@@ -62,7 +62,6 @@ export default function ReplayIndicator() {
       } as Manifest,
     } as ReplayEnd;
 
-    console.debug(websocket.socket);
     websocket.socket?.send(JSON.stringify(stopMessage));
 
     dispatch(
@@ -79,7 +78,8 @@ export default function ReplayIndicator() {
   if (replay.start && replay.end && replay.startedOn) {
     return (
       <header className="absolute flex right-0">
-        <div className="aspect-video rounded-xl bg-red-600/15 z-20 m-2 p-2 flex flex-col justify-between items-center border border-red-600">
+        <div
+          className="aspect-video rounded-xl bg-red-600/15 z-20 m-2 p-2 flex flex-col justify-between items-center border border-red-600">
           <header>
             Replay: <i>{replay.running ? "Running" : "Stopped"}</i>
           </header>
@@ -88,13 +88,13 @@ export default function ReplayIndicator() {
             <i>
               {format(
                 new Date(replay.start + Date.now() - replay.startedOn),
-                "dd/MM/yyyy HH:mm"
+                "dd/MM/yyyy HH:mm",
               )}
             </i>
           </main>
           <footer>
-            <Button variant="secondary" onClick={onRunToggle}>
-              {replay.running ? <StopCircle /> : <Play />}
+            <Button variant="secondary" onClick={stopReplay}>
+              <SkipForward />
             </Button>
           </footer>
         </div>
