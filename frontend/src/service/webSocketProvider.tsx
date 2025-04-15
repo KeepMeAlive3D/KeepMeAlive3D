@@ -27,7 +27,9 @@ export function WebSocketProvider({ url, children }: WebSocketProviderProps) {
 
     ws.onclose = () => {};
 
-    ws.onerror = () => {};
+    ws.onerror = () => {
+      console.error("Error in command websocket");
+    };
 
     setSocket(ws);
   }, [url]);

@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button.tsx";
-import { Pause, Play } from "lucide-react";
+import { Play, StopCircle } from "lucide-react";
 import {
   selectReplay,
-  setReplayRunning,
   updateReplay,
 } from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { useWebSocket } from "@/service/webSocketProvider.tsx";
+import { Manifest, MessageType, ReplayEnd } from "@/service/wsTypes.ts";
 
 export default function ReplayIndicator() {
   const replay = useAppSelector(selectReplay);
   const dispatch = useAppDispatch();
+  const websocket = useWebSocket();
 
   const [tick, setTick] = useState<number>(0);
 
@@ -46,7 +48,32 @@ export default function ReplayIndicator() {
   }, [dispatch, replay, tick]);
 
   function onRunToggle() {
-    dispatch(setReplayRunning(!replay.running));
+    if (!replay || !replay.start || !replay.startedOn) {
+      return;
+    }
+
+    const stopMessage = {
+      manifest: {
+        version: 1,
+        messageType: MessageType.REPLAY_END,
+        timestamp: new Date().valueOf(),
+        bearerToken: localStorage.getItem("token") ?? "null",
+        uuid: localStorage.getItem("uuid"),
+      } as Manifest,
+    } as ReplayEnd;
+
+    console.debug(websocket.socket);
+    websocket.socket?.send(JSON.stringify(stopMessage));
+
+    dispatch(
+      updateReplay({
+        running: false,
+        start: undefined,
+        end: undefined,
+        startedOn: undefined,
+      }),
+    );
+
   }
 
   if (replay.start && replay.end && replay.startedOn) {
@@ -67,7 +94,7 @@ export default function ReplayIndicator() {
           </main>
           <footer>
             <Button variant="secondary" onClick={onRunToggle}>
-              {replay.running ? <Pause /> : <Play />}
+              {replay.running ? <StopCircle /> : <Play />}
             </Button>
           </footer>
         </div>
