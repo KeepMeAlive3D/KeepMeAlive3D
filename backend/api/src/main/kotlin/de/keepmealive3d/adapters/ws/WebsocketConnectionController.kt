@@ -36,6 +36,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
         application.routing {
             webSocket("/ws") {
                 var session: String? = null
+                var topic: String? = null
                 for (frame in incoming) {
                     if (frame is Frame.Text) {
                         val text = frame.readText()
@@ -44,7 +45,9 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                             session = msg.manifest.uuid
                             when (msg.manifest.messageType) {
                                 MessageType.SUBSCRIBE_TOPIC -> {
-                                    sessionService.topicSubscribe(jsonParser.decodeFromString<SubscribeEvent>(text))
+                                    val event = jsonParser.decodeFromString<SubscribeEvent>(text)
+                                    topic = event.message.topic
+                                    sessionService.topicSubscribe(event)
                                         .fold({
                                             async(Dispatchers.IO) {
                                                 handleSend(it, outgoing)
@@ -84,7 +87,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                         }
                     }
                 }
-                sessionService.closeSession(session)
+                sessionService.closeSession(session, topic)
             }
         }
     }
