@@ -10,6 +10,7 @@ import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
 import { pullLimitsUp } from "@/util/LimitUtils.ts";
 import { useWindowResizeDelta } from "@/hooks/useWindowResizeDelta.tsx";
+import { setLight } from "@/slices/SettingsSlice";
 
 function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const gltf = useGLTF(objectUrl, undefined, true);
@@ -28,6 +29,11 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
       const currentHeight = containerRef.current.clientHeight + (size.height === 0 ? 0 : 2);
 
       setSize({ width: currentWidth + delta.width, height: currentHeight + delta.height });
+
+      // This is a workaround for the threejs bug that after window resize the model is dark.
+      setTimeout(() => {
+        dispatch(setLight(settings.light + 0.0000001));
+      }, 1000);
     }
   });
 
@@ -67,6 +73,10 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
       });
       // Remove lights. later custom lights will be spawned instead
       lights.forEach((x) => x.removeFromParent());
+
+      // This is a workaround for the threejs bug that after window reload the model is dark
+      dispatch(setLight(settings.light + 0.0000001));
+
     }
   };
 
