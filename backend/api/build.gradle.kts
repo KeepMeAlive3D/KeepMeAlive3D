@@ -25,6 +25,7 @@ java {
 }
 
 gradle.taskGraph.whenReady {
+    println("DETECTED VERSION: ${version}")
     layout
         .projectDirectory
         .asFile

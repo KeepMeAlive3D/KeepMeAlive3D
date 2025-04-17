@@ -6,7 +6,8 @@ RUN npm run build-prod
 
 
 FROM gradle:8-jdk23-alpine AS api
-ENV GITHUB_REF="refs/tags/0.1-docker-local"
+ARG GITHUB_REF="refs/tags/0.1-docker-local"
+ENV GITHUB_REF=$GITHUB_REF
 WORKDIR /app
 COPY ./backend .
 COPY --from=frontend /app/dist ./api/src/main/resources/static
