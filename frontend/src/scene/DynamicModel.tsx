@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { RefObject, Suspense, useRef, useState } from "react";
-import { Bounds, Grid, OrbitControls, useBounds, useGLTF } from "@react-three/drei";
+import { Bounds, Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import ClickObjects from "@/scene/ClickObjects.tsx";
 import { Light, Object3D, Scene, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
@@ -111,7 +111,6 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         <Animator />
         <Scaler />
         <OrbitControls makeDefault />
-        <Rotate />
         <ClickObjects></ClickObjects>
         <Grid
           cellSize={2}
