@@ -21,12 +21,17 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   // This fixes the bug with the canvas not shrinking on window shrinking
-  useWindowResizeDelta((delta: { width: number, height: number }) => {
+  useWindowResizeDelta((delta: { width: number; height: number }) => {
     if (containerRef.current && containerRef.current) {
-      const currentWidth = containerRef.current.clientWidth + (size.width === 0 ? 0 : 2);
-      const currentHeight = containerRef.current.clientHeight + (size.height === 0 ? 0 : 2);
+      const currentWidth =
+        containerRef.current.clientWidth + (size.width === 0 ? 0 : 2);
+      const currentHeight =
+        containerRef.current.clientHeight + (size.height === 0 ? 0 : 2);
 
-      setSize({ width: currentWidth + delta.width, height: currentHeight + delta.height });
+      setSize({
+        width: currentWidth + delta.width,
+        height: currentHeight + delta.height,
+      });
 
       // This is a workaround for the threejs bug that after window resize the model is dark.
       setTimeout(() => {
@@ -34,7 +39,6 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
       }, 1000);
     }
   });
-
 
   // Ran after model fully loaded and all transformations are done
   // useEffect is here not sufficient as threejs applies some transformations between the first useEffect call and the
@@ -73,53 +77,54 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
 
       // This is a workaround for the threejs bug that after window reload the model is dark
       dispatch(setLight(settings.light + 0.0000001));
-
     }
   };
 
-
   return (
-    <div style={{
-      height: (size.height === 0 ? "100%" : `${size.height - 2}px`),
-      width: (size.width === 0 ? "100%" : `${size.width - 2}px`),
-    }} ref={containerRef}>
-    <Canvas id="canvas">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Bounds fit observe margin={1.2}>
-          <primitive
-            scale={[settings.scale, settings.scale, settings.scale]}
-            object={gltf.scene}
-            onUpdate={handleUpdate}
+    <div
+      style={{
+        height: size.height === 0 ? "100%" : `${size.height - 2}px`,
+        width: size.width === 0 ? "100%" : `${size.width - 2}px`,
+      }}
+      ref={containerRef}
+    >
+      <Canvas id="canvas">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Bounds fit observe margin={1.2}>
+            <primitive
+              scale={[settings.scale, settings.scale, settings.scale]}
+              object={gltf.scene}
+              onUpdate={handleUpdate}
+            />
+          </Bounds>
+
+          <spotLight
+            position={[10000, 10000, 10000]}
+            angle={0.15}
+            penumbra={1}
+            decay={0}
+            intensity={settings.light}
           />
-        </Bounds>
+          <pointLight
+            position={[-10000, -10000, -10000]}
+            decay={0}
+            intensity={settings.light}
+          />
 
-        <spotLight
-          position={[10000, 10000, 10000]}
-          angle={0.15}
-          penumbra={1}
-          decay={0}
-          intensity={settings.light}
-        />
-        <pointLight
-          position={[-10000, -10000, -10000]}
-          decay={0}
-          intensity={settings.light}
-        />
-
-        <Animator />
-        <OrbitControls makeDefault />
-        <OutlineObjects />
-        <Grid
-          cellSize={2}
-          cellColor={"teal"}
-          sectionColor={"darkgray"}
-          sectionSize={2}
-          position={new Vector3(0, -2, 0)}
-          infiniteGrid={true}
-          fadeDistance={20}
-        ></Grid>
-      </Suspense>
-    </Canvas>
+          <Animator />
+          <OrbitControls makeDefault />
+          <OutlineObjects />
+          <Grid
+            cellSize={2}
+            cellColor={"teal"}
+            sectionColor={"darkgray"}
+            sectionSize={2}
+            position={new Vector3(0, -2, 0)}
+            infiniteGrid={true}
+            fadeDistance={20}
+          ></Grid>
+        </Suspense>
+      </Canvas>
     </div>
   );
 }

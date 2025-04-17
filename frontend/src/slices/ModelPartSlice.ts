@@ -31,8 +31,7 @@ export const modelPartSlice = createSlice({
   },
 });
 
-export const { addPart, clearPartsList } =
-  modelPartSlice.actions;
+export const { addPart, clearPartsList } = modelPartSlice.actions;
 
 export const selectModelParts = (state: RootState) => state.modelParts;
 

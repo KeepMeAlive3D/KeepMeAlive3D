@@ -8,7 +8,11 @@ import { useEffect, useRef } from "react";
 // @ts-expect-error Source is javascript
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
-import { OutlineState, selectOutline, setOutlinedObject } from "@/slices/OutlineSlice.ts";
+import {
+  OutlineState,
+  selectOutline,
+  setOutlinedObject,
+} from "@/slices/OutlineSlice.ts";
 import { ModelPartState } from "@/slices/ModelPartSlice";
 import { ReplayState } from "@/slices/ReplaySlice";
 import { SettingsState } from "@/slices/SettingsSlice";
@@ -61,14 +65,21 @@ function OutlineObjects() {
   return null;
 }
 
-function OnClick(state: RootState, dispatch: ThunkDispatch<{
-  modelParts: ModelPartState;
-  settings: SettingsState;
-  replay: ReplayState;
-  outline: OutlineState;
-}, undefined, UnknownAction> & Dispatch<UnknownAction>) {
+function OnClick(
+  state: RootState,
+  dispatch: ThunkDispatch<
+    {
+      modelParts: ModelPartState;
+      settings: SettingsState;
+      replay: ReplayState;
+      outline: OutlineState;
+    },
+    undefined,
+    UnknownAction
+  > &
+    Dispatch<UnknownAction>,
+) {
   const matched = state.raycaster.intersectObjects(state.scene.children);
-
 
   if (matched.length > 0) {
     const first = matched[0];
