@@ -10,7 +10,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { selectOutline } from "@/slices/OutlineSlice.ts";
 
-function ClickObjects() {
+function OutlineObjects() {
   const state = useThree();
   const canvas = state.gl.domElement;
   const composerRef = useRef<EffectComposer>();
@@ -82,4 +82,4 @@ function getRootObject(object: Object3D): Object3D {
   return object;
 }
 
-export default ClickObjects;
+export default OutlineObjects;

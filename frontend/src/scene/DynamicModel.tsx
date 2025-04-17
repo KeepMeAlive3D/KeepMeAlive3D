@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { RefObject, Suspense, useRef, useState } from "react";
 import { Bounds, Grid, OrbitControls, useGLTF } from "@react-three/drei";
-import ClickObjects from "@/scene/ClickObjects.tsx";
+import OutlineObjects from "@/scene/OutlineObjects.tsx";
 import { Light, Object3D, Scene, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
@@ -108,7 +108,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
 
         <Animator />
         <OrbitControls makeDefault />
-        <ClickObjects />
+        <OutlineObjects />
         <Grid
           cellSize={2}
           cellColor={"teal"}
