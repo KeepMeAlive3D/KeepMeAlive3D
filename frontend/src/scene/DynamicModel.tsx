@@ -1,7 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { RefObject, Suspense, useRef, useState } from "react";
-import { Grid, OrbitControls, useGLTF } from "@react-three/drei";
-import Rotate from "@/scene/Rotate.tsx";
+import { Bounds, Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import ClickObjects from "@/scene/ClickObjects.tsx";
 import { Light, Object3D, Scene, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
@@ -88,11 +87,14 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
     }} ref={containerRef}>
     <Canvas id="canvas">
       <Suspense fallback={<div>Loading...</div>}>
-        <primitive
-          scale={[settings.scale, settings.scale, settings.scale]}
-          object={gltf.scene}
-          onUpdate={handleUpdate}
-        />
+        <Bounds fit observe margin={1.2}>
+          <primitive
+            scale={[settings.scale, settings.scale, settings.scale]}
+            object={gltf.scene}
+            onUpdate={handleUpdate}
+          />
+        </Bounds>
+
         <spotLight
           position={[10000, 10000, 10000]}
           angle={0.15}
@@ -108,8 +110,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
 
         <Animator />
         <Scaler />
-        <OrbitControls />
-        <Rotate />
+        <OrbitControls makeDefault />
         <ClickObjects></ClickObjects>
         <Grid
           cellSize={2}
