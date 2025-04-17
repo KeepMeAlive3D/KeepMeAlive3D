@@ -9,6 +9,16 @@ servers:
   - url: "http://localhost:8080"
     description: "local"
 paths:
+  /api/version:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
   /status:
     get:
       description: ""
@@ -26,24 +36,24 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "Connection"
-        in: "header"
-        required: true
-        description: "Websocket Connection parameter"
-        schema:
-          type: "string"
-      - name: "Upgrade"
-        in: "header"
-        required: true
-        description: "Websocket Upgrade parameter"
-        schema:
-          type: "string"
-      - name: "Sec-WebSocket-Key"
-        in: "header"
-        required: true
-        description: "Websocket Sec-WebSocket-Key parameter"
-        schema:
-          type: "string"
+        - name: "Connection"
+          in: "header"
+          required: true
+          description: "Websocket Connection parameter"
+          schema:
+            type: "string"
+        - name: "Upgrade"
+          in: "header"
+          required: true
+          description: "Websocket Upgrade parameter"
+          schema:
+            type: "string"
+        - name: "Sec-WebSocket-Key"
+          in: "header"
+          required: true
+          description: "Websocket Sec-WebSocket-Key parameter"
+          schema:
+            type: "string"
       responses:
         "101":
           description: "Switching Protocols"
@@ -64,14 +74,8 @@ paths:
     delete:
       description: ""
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           content:
             '*/*':
               schema:
@@ -85,18 +89,6 @@ paths:
     get:
       description: ""
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-        "404":
-          description: "Not Found"
-          content:
-            '*/*':
-              schema:
-                type: "object"
         "200":
           description: "OK"
           content:
@@ -113,15 +105,6 @@ paths:
               $ref: "#/components/schemas/RegisterData"
         required: true
       responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "register.pw.invalid"
         "201":
           description: "Created"
           content:
@@ -138,17 +121,6 @@ paths:
               $ref: "#/components/schemas/BasicAuthRequest"
         required: true
       responses:
-        "401":
-          description: "Unauthorized"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Wrong username or password!"
-                Example#2:
-                  value: "Wrong username or password!"
         "200":
           description: "OK"
           content:
@@ -159,15 +131,6 @@ paths:
     post:
       description: ""
       responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Could not Authenticate!"
         "200":
           description: "OK"
           content:
@@ -178,84 +141,50 @@ paths:
     post:
       description: ""
       responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Could not Authenticate!"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/AuthResponse"
+  /api/event/{source}/dataPoints/{topic}/limit/{limit}:
+    get:
+      description: ""
+      parameters:
+        - name: "source"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "topic"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "limit"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/GenericMessageEvent"
   /api/model/{id}/download:
     get:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Missing or malformed model id!"
-        "200":
-          description: "OK <br> A file response"
-          content:
-            application/*:
-              schema:
-                type: "object"
-                format: "binary"
-  /api/model/download:
-    post:
-      description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FileModelInfo"
-        required: true
-      responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "404":
-          description: "Not Found"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "File not found!"
         "200":
           description: "OK <br> A file response"
           content:
@@ -267,170 +196,76 @@ paths:
     post:
       description: ""
       parameters:
-      - name: "filepath"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "filepath"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "File created!"
+                type: "integer"
+                format: "int32"
   /api/model/{id}:
     delete:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Missing or malformed id!"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 type: "object"
-  /api/event/{source}/dataPoints/{topic}/limit/{limit}:
-    get:
-      description: ""
-      parameters:
-      - name: "source"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "topic"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "limit"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "limit could not be found!"
-                Example#2:
-                  value: "topic could not be found!"
-                Example#3:
-                  value: "source could not be found!"
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/GenericEventMessage"
   /api/model/{id}/setting:
     get:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Missing or malformed id!"
-        "404":
-          description: "Not Found"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "The model does not exist!"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ModelSettings"
+    put:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModelSettings"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /api/models:
     get:
       description: ""
       responses:
-        "403":
-          description: "Forbidden"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "userid could not be found!"
         "200":
           description: "OK"
           content:
@@ -439,6 +274,20 @@ paths:
                 $ref: "#/components/schemas/AvailableFiles"
 components:
   schemas:
+    RestErrorInfo:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        message:
+          type: "string"
+        code:
+          type: "integer"
+          format: "int32"
+      required:
+        - "name"
+        - "message"
+        - "code"
     UserInfo:
       type: "object"
       properties:
@@ -447,11 +296,11 @@ components:
         loginType:
           type: "string"
           enum:
-          - "OAUTH"
-          - "BASIC"
+            - "OAUTH"
+            - "BASIC"
       required:
-      - "username"
-      - "loginType"
+        - "username"
+        - "loginType"
     RegisterData:
       type: "object"
       properties:
@@ -460,8 +309,8 @@ components:
         password:
           type: "string"
       required:
-      - "username"
-      - "password"
+        - "username"
+        - "password"
     BasicAuthRequest:
       type: "object"
       properties:
@@ -470,11 +319,11 @@ components:
         password:
           type: "string"
       required:
-      - "username"
-      - "password"
+        - "username"
+        - "password"
     Instant:
       type: "object"
-      properties: {}
+      properties: { }
     AuthResponse:
       type: "object"
       properties:
@@ -483,23 +332,14 @@ components:
         refreshToken:
           type: "string"
         expiresIn:
+          nullable: true
           $ref: "#/components/schemas/Instant"
       required:
-      - "token"
-      - "refreshToken"
-    FileModelInfo:
+        - "token"
+        - "refreshToken"
+    GenericMessageEvent:
       type: "object"
-      properties:
-        filename:
-          type: "string"
-        model:
-          type: "string"
-      required:
-      - "filename"
-      - "model"
-    GenericEventMessage:
-      type: "object"
-      properties: {}
+      properties: { }
     ModelSettings:
       type: "object"
       properties:
@@ -510,8 +350,8 @@ components:
           type: "number"
           format: "double"
       required:
-      - "lightIntensity"
-      - "scale"
+        - "lightIntensity"
+        - "scale"
     ModelInfo:
       type: "object"
       properties:
@@ -523,9 +363,9 @@ components:
         model:
           type: "string"
       required:
-      - "modelId"
-      - "filename"
-      - "model"
+        - "modelId"
+        - "filename"
+        - "model"
     AvailableFiles:
       type: "object"
       properties:
@@ -533,5 +373,6 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/ModelInfo"
+          uniqueItems: true
       required:
-      - "files"
+        - "files"
