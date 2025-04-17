@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button.tsx";
 import { SkipForward } from "lucide-react";
-import {
-  selectReplay,
-  updateReplay,
-} from "@/slices/ReplaySlice.ts";
+import { selectReplay, updateReplay } from "@/slices/ReplaySlice.ts";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -70,9 +67,8 @@ export default function ReplayIndicator() {
         start: undefined,
         end: undefined,
         startedOn: undefined,
-      }),
+      })
     );
-
   }
 
   if (replay.start && replay.end && replay.startedOn) {

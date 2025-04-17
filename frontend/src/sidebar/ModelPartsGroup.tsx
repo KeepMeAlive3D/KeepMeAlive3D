@@ -6,7 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
-import { toggleIsSelected } from "@/slices/ModelPartSlice.ts";
+import { setOutlinedObject } from "@/slices/OutlineSlice.ts";
 
 export function ModelPartsGroup() {
   const modelParts = useAppSelector((state) => state.modelParts.partIds);
@@ -20,7 +20,7 @@ export function ModelPartsGroup() {
           <SidebarMenuButton
             asChild
             onClick={() => {
-              dispatch(toggleIsSelected(item));
+              dispatch(setOutlinedObject(item.id));
             }}
           >
             <span>{item.name}</span>

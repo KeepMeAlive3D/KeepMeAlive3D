@@ -7,7 +7,6 @@ import { RootState } from "@/store.ts";
 export type ComponentInformation = {
   id: number;
   name: string;
-  isSelected: boolean;
   topic: string;
 };
 
@@ -29,19 +28,10 @@ export const modelPartSlice = createSlice({
     clearPartsList: (state) => {
       state.partIds = [];
     },
-    toggleIsSelected: (state, action: PayloadAction<ComponentInformation>) => {
-      const index = state.partIds.findIndex(
-        (part) => part.id === action.payload.id
-      );
-      if (index !== -1) {
-        state.partIds[index].isSelected = !state.partIds[index].isSelected;
-      }
-    },
   },
 });
 
-export const { addPart, clearPartsList, toggleIsSelected } =
-  modelPartSlice.actions;
+export const { addPart, clearPartsList } = modelPartSlice.actions;
 
 export const selectModelParts = (state: RootState) => state.modelParts;
 

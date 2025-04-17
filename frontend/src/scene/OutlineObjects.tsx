@@ -7,12 +7,36 @@ import { Object3D, Scene, Vector2 } from "three";
 import { useEffect, useRef } from "react";
 // @ts-expect-error Source is javascript
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
+import {
+  OutlineState,
+  selectOutline,
+  setOutlinedObject,
+} from "@/slices/OutlineSlice.ts";
+import { ModelPartState } from "@/slices/ModelPartSlice";
+import { ReplayState } from "@/slices/ReplaySlice";
+import { SettingsState } from "@/slices/SettingsSlice";
+import { ThunkDispatch, UnknownAction, Dispatch } from "@reduxjs/toolkit";
 
-function ClickObjects() {
+function OutlineObjects() {
   const state = useThree();
   const canvas = state.gl.domElement;
   const composerRef = useRef<EffectComposer>();
   const outlinePassRef = useRef<OutlinePass>();
+  const outlinedObjectId = useAppSelector(selectOutline);
+  const dispatch = useAppDispatch();
+
+  // Take the objects from the slice. Find by id and outline.
+  useEffect(() => {
+    if (outlinedObjectId.id) {
+      const object3d = state.scene.getObjectById(outlinedObjectId.id);
+
+      if (object3d) {
+        // Highlight
+        outlinePassRef.current.selectedObjects = [object3d];
+      }
+    }
+  }, [outlinedObjectId.id, state.scene]);
 
   useEffect(() => {
     const composer = new EffectComposer(state.gl);
@@ -24,13 +48,13 @@ function ClickObjects() {
     const outlinePass = new OutlinePass(
       new Vector2(state.size.width, state.size.height),
       state.scene,
-      state.camera
+      state.camera,
     );
     composer.addPass(outlinePass);
     outlinePassRef.current = outlinePass;
 
-    canvas.addEventListener("click", () => OnClick(state, outlinePass));
-  }, [state, canvas]);
+    canvas.addEventListener("click", () => OnClick(state, dispatch));
+  }, [state, canvas, dispatch]);
 
   useFrame(() => {
     if (composerRef.current) {
@@ -41,15 +65,27 @@ function ClickObjects() {
   return null;
 }
 
-function OnClick(state: RootState, outlinePass: OutlinePass) {
+function OnClick(
+  state: RootState,
+  dispatch: ThunkDispatch<
+    {
+      modelParts: ModelPartState;
+      settings: SettingsState;
+      replay: ReplayState;
+      outline: OutlineState;
+    },
+    undefined,
+    UnknownAction
+  > &
+    Dispatch<UnknownAction>,
+) {
   const matched = state.raycaster.intersectObjects(state.scene.children);
 
   if (matched.length > 0) {
     const first = matched[0];
     const rootObject = getRootObject(first.object);
 
-    // Highlight
-    outlinePass.selectedObjects = [rootObject];
+    dispatch(setOutlinedObject(rootObject.id));
   }
 }
 
@@ -68,4 +104,4 @@ function getRootObject(object: Object3D): Object3D {
   return object;
 }
 
-export default ClickObjects;
+export default OutlineObjects;

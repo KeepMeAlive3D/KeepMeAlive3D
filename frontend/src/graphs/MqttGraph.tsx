@@ -27,7 +27,6 @@ function MqttGraph({ topic }: { topic: string }) {
     setData([]);
   }, [replay]);
 
-
   const dataCallback = useCallback((msg: DataPointEventMessage) => {
     setData((d) => {
       const current = [...d, msg];

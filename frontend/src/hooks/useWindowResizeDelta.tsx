@@ -3,8 +3,13 @@ import { useEffect, useRef } from "react";
 /**
  * Gets called on window resizing with the delta between the last and the current width and height.
  */
-export const useWindowResizeDelta = (onResizeDelta: (delta: { width: number, height: number }) => void) => {
-  const prevSize = useRef({ width: window.innerWidth, height: window.innerHeight });
+export const useWindowResizeDelta = (
+  onResizeDelta: (delta: { width: number; height: number }) => void,
+) => {
+  const prevSize = useRef({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   useEffect(() => {
     const handleResize = () => {
