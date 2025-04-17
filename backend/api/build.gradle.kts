@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.keepmealive3d"
-version = "0.0.1"
+version = System.getenv("GITHUB_REF")?.removePrefix("refs/tags/") ?: "0.1-local"   //use tag name as version
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -18,15 +18,21 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-kotlin {
-    jvmToolchain {
-        version = 23
-    }
-}
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(23))
     }
+}
+
+gradle.taskGraph.whenReady {
+    layout
+        .projectDirectory
+        .asFile
+        .resolve("src")
+        .resolve("main")
+        .resolve("resources")
+        .resolve("kma_version")
+        .writeText(version.toString())
 }
 
 repositories {

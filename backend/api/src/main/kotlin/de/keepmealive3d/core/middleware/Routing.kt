@@ -6,12 +6,22 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.io.FileNotFoundException
+import java.io.InputStream
 
 fun Application.configureRouting() {
+    fun getResourceAsStream(filePath: String): InputStream {
+        return this::class.java.classLoader.getResourceAsStream(filePath)
+            ?: throw FileNotFoundException("could not find $filePath")
+    }
+
     install(Resources)
     routing {
         get("/status") {
             call.respondText("Up!")
+        }
+        get("/api/version") {
+            call.respondText(getResourceAsStream("kma_version").readAllBytes().decodeToString())
         }
         swaggerUI("/swagger", "openapi/documentation.yaml") {}
         singlePageApplication {
