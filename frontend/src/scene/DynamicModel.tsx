@@ -5,7 +5,6 @@ import ClickObjects from "@/scene/ClickObjects.tsx";
 import { Light, Object3D, Scene, Vector3 } from "three";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { addPart, clearPartsList } from "@/slices/ModelPartSlice.ts";
-import Scaler from "@/scene/Scaler.tsx";
 import Animator from "@/scene/Animator.tsx";
 import { pullLimitsUp } from "@/util/LimitUtils.ts";
 import { useWindowResizeDelta } from "@/hooks/useWindowResizeDelta.tsx";
@@ -64,7 +63,6 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
             addPart({
               id: node.id,
               name: node.name,
-              isSelected: false,
               topic: node.userData["topic"],
             })
           );
@@ -109,9 +107,8 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
         />
 
         <Animator />
-        <Scaler />
         <OrbitControls makeDefault />
-        <ClickObjects></ClickObjects>
+        <ClickObjects />
         <Grid
           cellSize={2}
           cellColor={"teal"}

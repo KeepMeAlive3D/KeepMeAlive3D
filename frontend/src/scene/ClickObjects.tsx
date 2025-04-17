@@ -7,12 +7,26 @@ import { Object3D, Scene, Vector2 } from "three";
 import { useEffect, useRef } from "react";
 // @ts-expect-error Source is javascript
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { useAppSelector } from "@/hooks/hooks.ts";
+import { selectOutline } from "@/slices/OutlineSlice.ts";
 
 function ClickObjects() {
   const state = useThree();
   const canvas = state.gl.domElement;
   const composerRef = useRef<EffectComposer>();
   const outlinePassRef = useRef<OutlinePass>();
+  const outlinedObjectId = useAppSelector(selectOutline);
+
+  useEffect(() => {
+    if (outlinedObjectId.id) {
+      const object3d = state.scene.getObjectById(outlinedObjectId.id);
+
+      if (object3d) {
+        // Highlight
+        outlinePassRef.current.selectedObjects = [object3d];
+      }
+    }
+  }, [outlinedObjectId.id, state.scene]);
 
   useEffect(() => {
     const composer = new EffectComposer(state.gl);
