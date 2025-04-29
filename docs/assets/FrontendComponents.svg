@@ -7,7 +7,7 @@
     <g>
         <g class="title" data-source-line="1">
             <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing"
-                  textLength="391.7471" x="81.0951" y="22.9951">React Component UML-Style Component Diagram
+                  textLength="151.7471" x="195.0951" y="22.9951">Component Diagram
             </text>
         </g><!--entity Login-->
         <g class="entity" data-entity="Login" data-source-line="6" data-uid="ent0002" id="entity_Login">
