@@ -2,7 +2,9 @@ import { Channel } from "typescript-channel";
 
 export async function createWebsocket(): Promise<WebSocket> {
   return new Promise((resolve) => {
-    const ws = new WebSocket(import.meta.env.VITE_APP_BASE_URL ?? window.origin + "/ws");
+    const origin = window.origin.replace("http://", "ws://").replace("https://", "ws://");
+    const url = (import.meta.env.VITE_APP_BASE_URL ?? origin) + "/ws";
+    const ws = new WebSocket(url);
 
     ws.onopen = () => {
       resolve(ws);
