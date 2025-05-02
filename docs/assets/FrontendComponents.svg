@@ -1,0 +1,230 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" contentStyleType="text/css"
+     data-diagram-type="DESCRIPTION" height="649px" preserveAspectRatio="none"
+     style="width:567px;height:649px;background:#FFFFFF;" version="1.1" viewBox="0 0 567 649" width="567px"
+     zoomAndPan="magnify">
+    <title>Component Diagram</title>
+    <defs/>
+    <g>
+        <g class="title" data-source-line="1">
+            <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing"
+                  textLength="151.7471" x="195.0951" y="22.9951">Component Diagram
+            </text>
+        </g><!--entity Login-->
+        <g class="entity" data-entity="Login" data-source-line="6" data-uid="ent0002" id="entity_Login">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="78.0146" x="115.74" y="44.2969"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="173.7546"
+                  y="49.2969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="171.7546"
+                  y="51.2969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="171.7546"
+                  y="55.2969"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="38.0146"
+                  x="130.74" y="77.292">Login
+            </text>
+        </g><!--entity LoginForm-->
+        <g class="entity" data-entity="LoginForm" data-source-line="7" data-uid="ent0003" id="entity_LoginForm">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="114.0264" x="18.74" y="167.5969"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="112.7664"
+                  y="172.5969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="110.7664"
+                  y="174.5969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="110.7664"
+                  y="178.5969"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="74.0264"
+                  x="33.74" y="200.592">LoginForm
+            </text>
+        </g><!--entity App-->
+        <g class="entity" data-entity="App" data-source-line="8" data-uid="ent0004" id="entity_App">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="67.3506" x="200.07" y="167.5969"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="247.4206"
+                  y="172.5969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="245.4206"
+                  y="174.5969"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="245.4206"
+                  y="178.5969"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27.3506"
+                  x="215.07" y="200.592">App
+            </text>
+        </g><!--entity Sidebar-->
+        <g class="entity" data-entity="Sidebar" data-source-line="9" data-uid="ent0005" id="entity_Sidebar">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="93.498" x="7" y="274.8869"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="80.498"
+                  y="279.8869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="78.498" y="281.8869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="78.498" y="285.8869"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53.498"
+                  x="22" y="307.882">Sidebar
+            </text>
+        </g><!--entity GraphView-->
+        <g class="entity" data-entity="GraphView" data-source-line="10" data-uid="ent0006" id="entity_GraphView">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="116.4736" x="108.51" y="382.1869"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="204.9836"
+                  y="387.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="202.9836"
+                  y="389.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="202.9836"
+                  y="393.1869"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="76.4736"
+                  x="123.51" y="415.182">GraphView
+            </text>
+        </g><!--entity Help-->
+        <g class="entity" data-entity="Help" data-source-line="11" data-uid="ent0007" id="entity_Help">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="71.917" x="259.79" y="382.1869"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="311.707"
+                  y="387.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="309.707"
+                  y="389.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="309.707"
+                  y="393.1869"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="31.917"
+                  x="274.79" y="415.182">Help
+            </text>
+        </g><!--entity ModelLoader-->
+        <g class="entity" data-entity="ModelLoader" data-source-line="12" data-uid="ent0008" id="entity_ModelLoader">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="130.2344" x="366.63" y="382.1869"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="476.8644"
+                  y="387.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="474.8644"
+                  y="389.1869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="474.8644"
+                  y="393.1869"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="90.2344"
+                  x="381.63" y="415.182">ModelLoader
+            </text>
+        </g><!--entity DynamicModel-->
+        <g class="entity" data-entity="DynamicModel" data-source-line="13" data-uid="ent0009" id="entity_DynamicModel">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="143.7764" x="359.86" y="489.4869"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="483.6364"
+                  y="494.4869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="481.6364"
+                  y="496.4869"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="481.6364"
+                  y="500.4869"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.7764"
+                  x="374.86" y="522.482">DynamicModel
+            </text>
+        </g><!--entity OutlineObject-->
+        <g class="entity" data-entity="OutlineObject" data-source-line="14" data-uid="ent0010"
+           id="entity_OutlineObject">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="136.2432" x="286.63" y="596.7769"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="402.8732"
+                  y="601.7769"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="400.8732"
+                  y="603.7769"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="400.8732"
+                  y="607.7769"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96.2432"
+                  x="301.63" y="629.772">OutlineObject
+            </text>
+        </g><!--entity Animator-->
+        <g class="entity" data-entity="Animator" data-source-line="15" data-uid="ent0011" id="entity_Animator">
+            <rect fill="#F1F1F1" height="46.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;"
+                  width="104.3672" x="457.57" y="596.7769"/>
+            <rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="541.9372"
+                  y="601.7769"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="539.9372"
+                  y="603.7769"/>
+            <rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="539.9372"
+                  y="607.7769"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="64.3672"
+                  x="472.57" y="629.772">Animator
+            </text>
+        </g><!--link Login to LoginForm-->
+        <g class="link" data-entity-1="Login" data-entity-2="LoginForm" data-source-line="18" data-uid="lnk12"
+           id="link_Login_LoginForm">
+            <path d="M115.59,83.2169 C99.28,91.5469 82.01,103.7369 72.75,120.5969 C65,134.7069 64.9858,147.1069 67.8758,161.3369"
+                  fill="none" id="Login-to-LoginForm" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="69.07,167.2169,71.1987,157.6008,68.0749,162.3169,63.3588,159.193,69.07,167.2169"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="116.3716"
+                  x="73.75" y="133.6638">not authenticated
+            </text>
+        </g><!--link Login to App-->
+        <g class="link" data-entity-1="Login" data-entity-2="App" data-source-line="19" data-uid="lnk13"
+           id="link_Login_App">
+            <path d="M173.19,91.0369 C180.23,100.0269 188.14,110.5969 194.75,120.5969 C204.7,135.6569 211.8455,148.1186 219.2155,161.8686"
+                  fill="none" id="Login-to-App" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="222.05,167.1569,221.3237,157.3348,219.6879,162.75,214.2727,161.1142,222.05,167.1569"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="90.9492"
+                  x="206.75" y="133.6638">authenticated
+            </text>
+        </g><!--reverse link App to Sidebar-->
+        <g class="link" data-entity-1="App" data-entity-2="Sidebar" data-source-line="22" data-uid="lnk14"
+           id="link_App_Sidebar">
+            <path d="M189.5319,217.6058 C158.9819,235.4758 124.42,255.6969 92.45,274.3969" fill="none"
+                  id="App-backto-Sidebar" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="199.89,211.5469,192.6913,211.1236,189.5319,217.6058,196.7306,218.029,199.89,211.5469"
+                     style="stroke:#181818;stroke-width:1;"/>
+        </g><!--link App to GraphView-->
+        <g class="link" data-entity-1="App" data-entity-2="GraphView" data-source-line="25" data-uid="lnk15"
+           id="link_App_GraphView">
+            <path d="M223.5,214.3669 C216.26,230.9069 206.64,254.0069 199.75,274.8869 C187.53,311.8869 178.4249,350.2161 172.7249,376.2161"
+                  fill="none" id="App-to-GraphView" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="171.44,382.0769,177.2745,374.1422,172.5107,377.1929,169.4601,372.4291,171.44,382.0769"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49.207"
+                  x="200.75" y="302.6038">/graphs
+            </text>
+        </g><!--link App to Help-->
+        <g class="link" data-entity-1="App" data-entity-2="Help" data-source-line="26" data-uid="lnk16"
+           id="link_App_Help">
+            <path d="M240.27,214.0869 C252.17,254.9169 275.6293,335.3571 287.5493,376.2071" fill="none" id="App-to-Help"
+                  style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="289.23,381.9669,290.5488,372.2067,287.8294,377.167,282.8691,374.4477,289.23,381.9669"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="4.3799"
+                  x="272.75" y="302.6038">/
+            </text>
+        </g><!--link App to ModelLoader-->
+        <g class="link" data-entity-1="App" data-entity-2="ModelLoader" data-source-line="27" data-uid="lnk17"
+           id="link_App_ModelLoader">
+            <path d="M254.56,214.0869 C292.59,254.9169 368.7805,336.7264 406.8305,377.5764" fill="none"
+                  id="App-to-ModelLoader" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="410.92,381.9669,407.7127,372.6549,407.5121,378.3082,401.8588,378.1076,410.92,381.9669"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="106.1836"
+                  x="355.75" y="302.6038">/model/:modelId
+            </text>
+        </g><!--link ModelLoader to DynamicModel-->
+        <g class="link" data-entity-1="ModelLoader" data-entity-2="DynamicModel" data-source-line="28" data-uid="lnk18"
+           id="link_ModelLoader_DynamicModel">
+            <path d="M431.75,428.9269 C431.75,446.6869 431.75,465.3269 431.75,483.0769" fill="none"
+                  id="ModelLoader-to-DynamicModel" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="431.75,489.0769,435.75,480.0769,431.75,484.0769,427.75,480.0769,431.75,489.0769"
+                     style="stroke:#181818;stroke-width:1;"/>
+        </g><!--reverse link DynamicModel to Animator-->
+        <g class="link" data-entity-1="DynamicModel" data-entity-2="Animator" data-source-line="29" data-uid="lnk19"
+           id="link_DynamicModel_Animator">
+            <path d="M455.6217,545.8603 C468.7817,563.6303 479.89,578.6169 493.04,596.3769" fill="none"
+                  id="DynamicModel-backto-Animator" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="448.48,536.2169,448.8364,543.4192,455.6217,545.8603,455.2653,538.658,448.48,536.2169"
+                     style="stroke:#181818;stroke-width:1;"/>
+        </g><!--reverse link DynamicModel to OutlineObject-->
+        <g class="link" data-entity-1="DynamicModel" data-entity-2="OutlineObject" data-source-line="30"
+           data-uid="lnk20" id="link_DynamicModel_OutlineObject">
+            <path d="M408.1483,545.9045 C395.1583,563.6745 384.22,578.6169 371.24,596.3769" fill="none"
+                  id="DynamicModel-backto-OutlineObject" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="415.23,536.2169,408.46,538.7001,408.1483,545.9045,414.9183,543.4212,415.23,536.2169"
+                     style="stroke:#181818;stroke-width:1;"/>
+        </g><!--SRC=[PP5DQyCm38Rl_XKYbtr0AEpOms2ix0DI2YtTNOcrL9iZXyJTwB-VxRI9i_fYIUzZotxbs1c2BM7buDashHKI1_jraU_SoIjJRSLOTzWerN-pjEX3g2xYm1uRyw3K3QpeauKcjLTZ25bXQvOCi8SONKaljcicEMGfyjIsKVHxMjwnfXAxA9tZL7xji3ryCFr6OCnIv8tCS7C8Kc5jDPd2egRX-YHFiTL9iE4ggf5B2ocuEJhZtTcKNrIvICugiyyAD-ZiqFUI18EtrZf0qTvYqUpO2XheIFoRM6eLdOCyVvmyX2L8E7Dq1tyrL-X89vot4uQr_CVuRa6Ch-fZAnNo-pmVZVR8Vbla9VQaGV27QmmSt1eioVYQfZQyJIgc_YuUpqFJSGxdnjcY3fK-cv0m31XNG18ncSHPR49biOpRkyvKIeGJivcaIVpFwF2LCflG7m00]-->
+    </g>
+</svg>
