@@ -93,4 +93,8 @@ Finally, the target object is lerped to the target position. To ensure smooth an
   objects.
   It was not possible to determine where the offsets were coming from, but this could potentially solve the problem.
 
-* 
+### Access custom properties in external applications
+
+While the custom properties are stored in .blend files and can be parsed, it is more convenient to export the file as a
+to export the file as .glb and use a GLB parser. The custom properties are stored in
+with each object. They can be accessed using `node.userData["topic"]`.
