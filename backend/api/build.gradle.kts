@@ -67,7 +67,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-client-content-negotiation")
-    testImplementation("io.mockk:mockk:1.14.0")
+    testImplementation("io.mockk:mockk:1.14.6")
     implementation("io.ktor:ktor-server-auth-jwt")
 
     implementation("com.charleskorn.kaml:kaml:0.77.0")
