@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/sidebar/AppSidebar.tsx";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
-import { Outlet } from "react-router";
+import { Outlet, useLocation, useParams } from "react-router";
 import { Separator } from "@/components/ui/separator.tsx";
 
 /**
@@ -17,6 +17,7 @@ function Layout() {
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
           />
+          <GetTitle/>
         </header>
         <main className="w-full h-full">
           <div className={"main-body"}>
@@ -28,6 +29,22 @@ function Layout() {
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+function GetTitle() {
+  const { dtId, participantId } = useParams();
+  const location = useLocation();
+
+  if(dtId) {
+    if(participantId) {
+      return <div>Process Participant</div>
+    }
+    return <div>Digital Twin</div>
+  }
+  if(location.pathname.includes("state-machine")) {
+    return <div>State Machine</div>
+  }
+  return null
 }
 
 export default Layout;

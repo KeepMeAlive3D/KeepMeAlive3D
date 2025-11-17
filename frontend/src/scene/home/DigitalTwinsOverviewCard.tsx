@@ -1,6 +1,7 @@
 import type { DtProjectData } from "@/scene/home/dtProjectData.ts";
 import { FileOutput, Hammer, Star, Trash, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
+import { Link } from "react-router";
 
 export function DigitalTwinsOverviewCard({ projectData }: { projectData: DtProjectData }) {
   return (
@@ -8,15 +9,17 @@ export function DigitalTwinsOverviewCard({ projectData }: { projectData: DtProje
       <GetProjectIcon className="ml-4" iconId={projectData.icon} />
       <div className="ml-4 text-m flex-none">{projectData.name}</div>
       <div className="grow"></div>
-      <Button
-        type="button"
-        id={`load-${projectData.id}`}
-        className="col-span-1 mx-4"
-        variant="outline"
-      >
-        Load
-        <FileOutput />
-      </Button>
+      <Link to={`/dt/${projectData.id}`}>
+        <Button
+          type="button"
+          id={`load-${projectData.id}`}
+          className="col-span-1 mx-4"
+          variant="outline"
+        >
+          Load
+          <FileOutput />
+        </Button>
+      </Link>
       <Button
         type="button"
         id={`delete-${projectData.id}`}
