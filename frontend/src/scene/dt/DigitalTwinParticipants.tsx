@@ -25,22 +25,16 @@ export function DigitalTwinParticipants() {
 
   if(sampleData.length > 0) {
     return <div className="flex flex-1 flex-col gap-4 p-4">
+      <div className="max-width flex flex-row">
+        <h2 className="text-lg font-semibold">Process Participants</h2>
+      </div>
       {
         sampleData.map(it => {
           return (
-            <DigitalTwinParticipantCard data={it}/>
+              <DigitalTwinParticipantCard data={it} key={it.id}/>
           )
         })
       }
-      <div className="max-width flex flex-row">
-        <div className="grow"></div>
-        <Dialog>
-          <DialogTrigger>
-            <Button className="max-w-60">Create New Process Participant</Button>
-          </DialogTrigger>
-          <CreateParticipantDialog/>
-        </Dialog>
-      </div>
     </div>
   } else {
     return (

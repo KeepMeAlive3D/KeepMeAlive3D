@@ -21,22 +21,23 @@ export function DigitalTwinsOverview() {
 
   if(data.length > 0) {
     return <div className="flex flex-1 flex-col gap-4 p-4">
-      {
-        data.map(project => {
-          return (
-            <DigitalTwinsOverviewCard projectData={project}/>
-          )
-        })
-      }
       <div className="max-width flex flex-row">
+        <h2 className="text-xl font-semibold">Buisness Process Digital Twins</h2>
         <div className="grow"></div>
         <Dialog>
-          <DialogTrigger>
-            <Button className="max-w-42">Create New Project</Button>
+          <DialogTrigger asChild>
+            <Button className="max-w-42">Create New Digital Twin</Button>
           </DialogTrigger>
           <CreateDigitalTwinProjectDialog/>
         </Dialog>
       </div>
+      {
+        data.map(project => {
+          return (
+              <DigitalTwinsOverviewCard projectData={project}/>
+          )
+        })
+      }
     </div>
   } else {
     return (

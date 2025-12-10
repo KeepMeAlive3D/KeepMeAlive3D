@@ -19,7 +19,7 @@ export function DigitalTwinParticipantsEmpty() {
       </EmptyHeader>
       <EmptyContent>
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button>Create Process Participant</Button>
           </DialogTrigger>
           <CreateParticipantDialog/>
