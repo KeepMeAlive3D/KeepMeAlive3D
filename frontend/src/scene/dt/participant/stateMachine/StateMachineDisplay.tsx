@@ -1,9 +1,9 @@
 import { Layer, Stage } from "react-konva";
 import { useEffect, useRef, useState } from "react";
-import { StateMachineGraph } from "@/scene/stateMachine/StateMachineGraph.tsx";
+import { StateMachineGraph } from "@/scene/dt/participant/stateMachine/StateMachineGraph.tsx";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
-import type { StateData } from "@/scene/stateMachine/data.ts";
-import { StateInspectionPopover } from "@/scene/stateMachine/StateInspectionPopover.tsx";
+import type { StateData } from "@/scene/dt/participant/stateMachine/data.ts";
+import { StateInspectionPopover } from "@/scene/dt/participant/stateMachine/StateInspectionPopover.tsx";
 
 export function StateMachineDisplay() {
   const divRef = useRef<HTMLDivElement>(null)

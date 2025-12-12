@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { StateData } from "./data";
+import {getStateMachineForDT, type StateData} from "./data.ts";
 import { Circle, Arrow } from "react-konva";
 import Konva from "konva";
-import { getStateMachineForDT } from "@/service/stateMachine/stateMachine.ts";
+import {useParams} from "react-router";
 
 export function StateMachineGraph({ setLoading, setInspectState, inspectState }: {
   setLoading: (value: boolean) => void,
@@ -10,6 +10,7 @@ export function StateMachineGraph({ setLoading, setInspectState, inspectState }:
   inspectState: StateData | undefined
 }) {
   const [states, setStates] = useState<StateData[]>([]);
+  const { dtId, participantId, statemachineName } = useParams();
 
   useEffect(() => {
     fetchData().then();
@@ -18,7 +19,7 @@ export function StateMachineGraph({ setLoading, setInspectState, inspectState }:
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getStateMachineForDT("1", "A");
+      const response = await getStateMachineForDT(dtId!, participantId!, statemachineName!);
       setStates(response.data);
     } finally {
       setLoading(false);

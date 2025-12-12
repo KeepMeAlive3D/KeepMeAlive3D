@@ -8,23 +8,25 @@ import {
 } from "@/components/ui/dialog.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {useParams} from "react-router";
 import * as React from "react";
 import {type SetStateAction, useState} from "react";
+import {createParticipant} from "@/scene/dt/participant/processParticipantInfo.ts";
+import {Spinner} from "@/components/ui/spinner.tsx";
+import {Form, FormControl, FormField, FormItem, FormLabel} from "@/components/ui/form.tsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {createDigitalTwin} from "@/scene/home/digitalTwinInfo.ts";
-import {Form, FormControl, FormField, FormItem, FormLabel} from "@/components/ui/form.tsx";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue} from "@/components/ui/select.tsx";
 import {SelectTrigger} from "@radix-ui/react-select";
-import {Hammer, Star, Wrench} from "lucide-react";
-import {Spinner} from "@/components/ui/spinner.tsx";
+import {Hammer, PersonStanding, TruckElectric} from "lucide-react";
 
-export function CreateDigitalTwinProjectDialog({setOpen, setRefresh, refresh}: {
+export function CreateParticipantDialog({setOpen, setRefresh, refresh}: {
     setOpen: React.Dispatch<SetStateAction<boolean>>
     setRefresh: React.Dispatch<SetStateAction<boolean>>
     refresh: boolean
 }) {
+    const {dtId} = useParams();
     const [loading, setLoading] = useState(false)
 
     const formSchema = z.object({
@@ -42,7 +44,7 @@ export function CreateDigitalTwinProjectDialog({setOpen, setRefresh, refresh}: {
 
     function create(values: z.infer<typeof formSchema>) {
         setLoading(true)
-        createDigitalTwin({
+        createParticipant(Number(dtId), {
             name: values.name,
             icon: Number(values.icon)
         }).then(() => {
@@ -58,10 +60,10 @@ export function CreateDigitalTwinProjectDialog({setOpen, setRefresh, refresh}: {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(create)}>
                     <DialogHeader>
-                        <DialogTitle>Create Digital Twin</DialogTitle>
+                        <DialogTitle>Create Process Participant</DialogTitle>
                         <DialogDescription>
-                            Create a new Digital Twin project, to display Models
-                            and State Machines.
+                            Create a new Process Participant, to display a Model
+                            and a State Machine.
                         </DialogDescription>
                     </DialogHeader>
                     <FormField
@@ -90,8 +92,8 @@ export function CreateDigitalTwinProjectDialog({setOpen, setRefresh, refresh}: {
                                         <SelectGroup>
                                             <SelectLabel>Icon</SelectLabel>
                                             <SelectItem value="0"><Hammer/></SelectItem>
-                                            <SelectItem value="1"><Wrench/></SelectItem>
-                                            <SelectItem value="2"><Star/></SelectItem>
+                                            <SelectItem value="1"><PersonStanding/></SelectItem>
+                                            <SelectItem value="2"><TruckElectric/></SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -104,11 +106,11 @@ export function CreateDigitalTwinProjectDialog({setOpen, setRefresh, refresh}: {
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
                         <Button type="submit" disabled={loading}>
-                            {loading ? <Spinner className="ml-2"/> : <span>Create Digital Twin</span>}
+                            {loading ? <Spinner className="ml-2"/> : <span>Create Process Participant</span>}
                         </Button>
                     </DialogFooter>
                 </form>
             </Form>
         </DialogContent>
-    )
+    );
 }

@@ -9,11 +9,29 @@ import {
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {useRef, useState} from "react";
+import {type SetStateAction, useRef, useState} from "react";
+import * as React from "react";
+import type {BpInfoData} from "@/scene/dt/bp/bpInfoData.ts";
 
-export function CreateBpDialogContent() {
+export function CreateBpDialogContent({setData, setOpen}: {
+    setData: React.Dispatch<SetStateAction<BpInfoData | undefined>>,
+    setOpen: React.Dispatch<SetStateAction<boolean>>
+}) {
     const [fileName, setFileName] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const updateFileName = () => {
+        const name = fileInputRef?.current?.files?.item(0)?.name ?? "";
+        setFileName(name);
+    };
+
+    const handleUpload = () => {
+        setOpen(false)
+        setData({
+            dtId: 2,
+            fileName: fileName
+        })
+    }
 
     return (
         <DialogContent className="sm:max-w-[425px]">
@@ -49,11 +67,13 @@ export function CreateBpDialogContent() {
                         Load File
                     </Button>
                     <Input
-                        style={{ display: "none" }}
+                        style={{display: "none"}}
                         id="hiddenFileInput"
                         ref={fileInputRef}
                         type="file"
-                        onChange={() => {}}
+                        onChange={() => {
+                            updateFileName()
+                        }}
                     />
                 </div>
             </div>
@@ -61,7 +81,7 @@ export function CreateBpDialogContent() {
                 <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button type="submit">Create Process</Button>
+                <Button type="submit" onClick={() => handleUpload()}>Upload Business Process</Button>
             </DialogFooter>
         </DialogContent>
     );

@@ -1,4 +1,4 @@
-import type { StateData } from "@/scene/stateMachine/data.ts";
+import type { StateData } from "@/scene/dt/participant/stateMachine/data.ts";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Info, Shield, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";

@@ -1,80 +1,111 @@
 package de.keepmealive3d.adapters.controllers
 
-import de.keepmealive3d.adapters.data.StateData
-import de.keepmealive3d.adapters.data.StateInfoDetails
-import de.keepmealive3d.adapters.data.StateTransitionDetails
-import de.keepmealive3d.core.middleware.ResourceLoader
-import dev.klenz.matthias.kscxml.KScxml
-import dev.klenz.matthias.kscxml.components.state.KScxmlState
+import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
+import de.keepmealive3d.core.services.IStateMachineService
+import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.utils.io.*
+import kotlinx.io.readByteArray
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
-class StateMachineController(application: Application) {
+class StateMachineController(application: Application) : KoinComponent {
+    private val stateMachineService: IStateMachineService by inject()
+
     init {
         application.routing {
             authenticate("jwt") {
-                get("/api/dt/{dt}/statemachine/{sm}") {
-                    val calcText = ResourceLoader
-                        .getResourceAsStream("calculator.xml")
-                        .readAllBytes()
-                        .decodeToString()
-                    val scxml = KScxml.load(calcText)
-                    val stateData = getStateData(
-                        scxml.rootNode?.initial,
-                        scxml.rootNode?.states ?: listOf(),
-                        scxml.rootNode?.final,
-                        0
-                    )
-                    call.respond(stateData)
+                post("/api/dt/{dtId}/participant/{pId}/statemachine") {
+                    val user = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+
+                    val dtId =
+                        call.parameters["dtId"]?.toIntOrNull() ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val pId =
+                        call.parameters["pId"]?.toIntOrNull() ?: return@post call.respond(HttpStatusCode.BadRequest)
+
+                    var fileDescription = ""
+                    var fileName = ""
+                    val multipartData = call.receiveMultipart(Long.MAX_VALUE)
+
+                    multipartData.forEachPart { part ->
+                        when (part) {
+                            is PartData.FormItem -> {
+                                fileDescription = part.value
+                            }
+
+                            is PartData.FileItem -> {
+                                fileName = part.originalFileName as String
+                                val fileBytes = part.provider().readRemaining().readByteArray()
+                                stateMachineService.createStateMachine(user.userId, dtId, pId, fileBytes, fileName)
+                            }
+
+                            else -> {}
+                        }
+                        part.dispose()
+                    }
+
+                    call.respond(HttpStatusCode.OK)
+                }
+
+                get("/api/dt/{dtId}/participant/{pId}/statemachine/{fileName}") {
+                    val user = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+
+                    val dtId =
+                        call.parameters["dtId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
+                    val pId =
+                        call.parameters["pId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
+                    val fileName =
+                        call.parameters["fileName"]?.let {
+                            URLDecoder.decode(it, StandardCharsets.UTF_8)
+                        } ?: return@get call.respond(
+                            HttpStatusCode.BadRequest
+                        )
+
+                    call.respond(stateMachineService.getDecodedStateMachine(user.userId, dtId, pId, fileName))
+                }
+
+                get("/api/dt/{dtId}/participant/{pId}/statemachine") {
+                    val user = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+
+                    val dtId =
+                        call.parameters["dtId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
+                    val pId =
+                        call.parameters["pId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
+                    val files = stateMachineService.getStateMachines(user.userId, dtId, pId)
+                    call.respond(files.map { file -> URLEncoder.encode(file, StandardCharsets.UTF_8) })
+                }
+
+                delete("/api/dt/{dtId}/participant/{pId}/statemachine/{fileName}") {
+                    val user = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+
+                    val dtId =
+                        call.parameters["dtId"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                    val pId =
+                        call.parameters["pId"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                    val fileName =
+                        call.parameters["fileName"]?.let {
+                            URLDecoder.decode(it, StandardCharsets.UTF_8)
+                        } ?: return@delete call.respond(
+                            HttpStatusCode.BadRequest
+                        )
+
+                    stateMachineService.deleteStateMachine(user.userId, dtId, pId, fileName)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
         }
-    }
-
-    private fun getStateData(
-        initial: String?,
-        states: List<KScxmlState>,
-        final: KScxmlState?,
-        recursionDepth: Int
-    ): MutableList<StateData> {
-        val stateData = mutableListOf<StateData>()
-
-        if (states.isEmpty()) {
-            return stateData
-        }
-
-        states.forEachIndexed { index, state ->
-            val lStateData = StateData(
-                state.id ?: "df",
-                100 + index * 200,
-                100 + recursionDepth * 100,
-                state.transitions.mapNotNull { it.target }.toMutableList(),
-                StateInfoDetails(
-                    initial = state.initial,
-                    onEntry = state.onEntry.isNotEmpty(),
-                    onExit = state.onExit.isNotEmpty(),
-                    transitions = state.transitions.map {
-                        StateTransitionDetails(
-                            it.target,
-                            it.event,
-                            it.cond
-                        )
-                    }
-                )
-            )
-            if (initial != null && state.id == initial) {
-                stateData.addFirst(lStateData)
-            } else {
-                stateData.add(lStateData)
-            }
-
-            state.states.let { innerStates ->
-                stateData.addAll(getStateData(state.initial, innerStates, state.final, recursionDepth + 2))
-            }
-        }
-
-        return stateData
     }
 }

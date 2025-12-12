@@ -18,6 +18,7 @@ class MigrationRunner : KoinComponent {
     private val allMigrations = mapOf<Int, Migration>(
         1 to Migration001(),
         2 to Migration002(),
+        3 to Migration003(),
     )
 
     fun executeUp() {
