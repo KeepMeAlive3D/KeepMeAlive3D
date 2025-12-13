@@ -2,7 +2,7 @@ import { Layer, Stage } from "react-konva";
 import { useEffect, useRef, useState } from "react";
 import { StateMachineGraph } from "@/scene/dt/participant/stateMachine/StateMachineGraph.tsx";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
-import type { StateData } from "@/scene/dt/participant/stateMachine/data.ts";
+import type { AtomicStateData } from "@/scene/dt/participant/stateMachine/data.ts";
 import { StateInspectionPopover } from "@/scene/dt/participant/stateMachine/StateInspectionPopover.tsx";
 
 export function StateMachineDisplay() {
@@ -12,7 +12,7 @@ export function StateMachineDisplay() {
     height: 0
   })
   const [loading, setLoading] = useState(false)
-  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined)
+  const [inspectState, setInspectState] = useState<AtomicStateData | undefined>(undefined)
 
   useEffect(() => {
     const handleResize = () => {

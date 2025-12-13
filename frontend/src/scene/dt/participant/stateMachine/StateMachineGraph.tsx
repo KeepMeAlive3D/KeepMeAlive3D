@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import {getStateMachineForDT, type StateData} from "./data.ts";
+import {getStateMachineForDT, type AtomicStateData} from "./data.ts";
 import { Circle, Arrow } from "react-konva";
 import Konva from "konva";
 import {useParams} from "react-router";
 
 export function StateMachineGraph({ setLoading, setInspectState, inspectState }: {
   setLoading: (value: boolean) => void,
-  setInspectState: (value: StateData) => void,
-  inspectState: StateData | undefined
+  setInspectState: (value: AtomicStateData) => void,
+  inspectState: AtomicStateData | undefined
 }) {
-  const [states, setStates] = useState<StateData[]>([]);
+  const [states, setStates] = useState<AtomicStateData[]>([]);
   const { dtId, participantId, statemachineName } = useParams();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function StateMachineGraph({ setLoading, setInspectState, inspectState }:
     }
   };
 
-  const getConnectorPoints = (from: StateData, to: StateData) => {
+  const getConnectorPoints = (from: AtomicStateData, to: AtomicStateData) => {
     const dx = to.posX - from.posX;
     const dy = to.posY - from.posY;
     const angle = Math.atan2(-dy, dx);
@@ -54,11 +54,11 @@ export function StateMachineGraph({ setLoading, setInspectState, inspectState }:
     );
   };
 
-  const handleOnClickState = (_e: Konva.KonvaEventObject<MouseEvent>, state: StateData) => {
+  const handleOnClickState = (_e: Konva.KonvaEventObject<MouseEvent>, state: AtomicStateData) => {
     setInspectState(state);
   };
 
-  const getInitialState = (state: StateData) => {
+  const getInitialState = (state: AtomicStateData) => {
     return states.find(it => it.id === state.details.initial);
   };
 

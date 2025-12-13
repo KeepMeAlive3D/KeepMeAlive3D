@@ -1,7 +1,7 @@
 import type {AxiosResponse} from "axios";
 import service from "@/service/service.ts";
 
-export interface StateData {
+export type AtomicStateData = {
   id: string
   posX: number
   posY: number
@@ -9,21 +9,21 @@ export interface StateData {
   details: StateInfoDetails
 }
 
-export interface StateInfoDetails {
+export type StateInfoDetails = {
   initial: string | undefined,
   onEntry: boolean,
   onExit: boolean,
   transitions: StateTransitionsDetails[]
 }
 
-export interface StateTransitionsDetails {
+export type StateTransitionsDetails = {
   toState: string | undefined,
   event: string | undefined,
   condition: string | undefined
 }
 
-export function getStateMachineForDT(dtId: string, participantId: string, fileName: string): Promise<AxiosResponse<StateData[]>> {
-  return service.get<StateData[]>(`/api/dt/${dtId}/participant/${participantId}/statemachine/${fileName}`);
+export function getStateMachineForDT(dtId: string, participantId: string, fileName: string): Promise<AxiosResponse<AtomicStateData[]>> {
+  return service.get<AtomicStateData[]>(`/api/dt/${dtId}/participant/${participantId}/statemachine/${fileName}`);
 }
 
 export function uploadStateMachine(dtId: string, participantId: string, file: File) {

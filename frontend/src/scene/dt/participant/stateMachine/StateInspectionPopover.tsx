@@ -1,4 +1,4 @@
-import type { StateData } from "@/scene/dt/participant/stateMachine/data.ts";
+import type { AtomicStateData } from "@/scene/dt/participant/stateMachine/data.ts";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Info, Shield, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
@@ -8,8 +8,8 @@ import * as React from "react";
 import { Separator } from "@radix-ui/react-menubar";
 
 export function StateInspectionPopover({ inspectState, setInspectState }: {
-  inspectState: StateData | undefined,
-  setInspectState: (value: StateData | undefined) => void
+  inspectState: AtomicStateData | undefined,
+  setInspectState: (value: AtomicStateData | undefined) => void
 }) {
   if (inspectState === undefined) {
     return null;

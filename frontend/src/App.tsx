@@ -9,6 +9,7 @@ import { StateMachineDisplay } from "@/scene/dt/participant/stateMachine/StateMa
 import { DigitalTwinsOverview } from "@/scene/home/DigitalTwinsOverview.tsx";
 import { DigitalTwinOverview } from "@/scene/dt/DigitalTwinOverview.tsx";
 import { DigitalTwinParticipant } from "@/scene/dt/participant/DigitalTwinParticipant.tsx";
+import {StateMachineCanvas} from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -36,14 +37,14 @@ function App() {
           <Route path="/dt/:dtId" element={<DigitalTwinOverview />} />
           <Route path="/dt/:dtId/participant/:participantId" element={<DigitalTwinParticipant />} />
           <Route path="/dt/:dtId/participant/:participantId/state-machine/:statemachineName" element={<StateMachineDisplay />} />
-          <Route path="/dt/:dtId/participant/:participantId/model" element={<ModelLoader />} />
+          <Route path="/dt/:dtId/participant/:participantId/model/:modelId" element={<ModelLoader />} />
           <Route path="/model/:modelId" element={<ModelLoader />} />
         </Route>
         <Route path="/graphs" element={<LayoutVanilla />}>
           <Route path="/graphs" element={<GraphView></GraphView>} />
         </Route>
         <Route path="/state-machine" element={<LayoutSidebar />}>
-          <Route path="/state-machine" element={<StateMachineDisplay />} />
+          <Route path="/state-machine" element={<StateMachineCanvas />} />
         </Route>
       </Routes>
     </WebSocketProvider>
