@@ -38,11 +38,11 @@ export function RenderState({data, setData, renderStateId}: {
                     height={currentState.height}
                     cornerRadius={10}
                     stroke="green"
-                    fill={currentState.stateType === StateType.ATOMIC ? "red" : "blue"}
+                    fill={currentState.stateType === StateType.ATOMIC ? "#33333355" : "#33333355"}
                     ref={nodeRef}
                     onTransform={() => {
                         const node = nodeRef.current;
-                        updateState(node!.height() * node!.scaleY(), node!.width() * node!.scaleX())
+                        updateState(Math.round(node!.height() * node!.scaleY() / 25) * 25, Math.round(node!.width() * node!.scaleX() / 25) * 25)
                         node!.scaleX(1);
                         node!.scaleY(1);
                     }}
