@@ -4,24 +4,28 @@ import de.keepmealive3d.adapters.data.StateData
 import de.keepmealive3d.adapters.data.StateInfoDetails
 import de.keepmealive3d.adapters.data.StateTransitionDetails
 import de.keepmealive3d.core.exceptions.EntityNotFoundException
+import de.keepmealive3d.scriptingapi.Plugin
 import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.components.state.KScxmlState
+import kotlinx.coroutines.coroutineScope
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.io.File
 import kotlin.io.path.Path
-import kotlin.io.path.createFile
-import kotlin.io.path.exists
 
 interface IStateMachineService {
-    fun createStateMachine(owner: Int, dt: Int, participant: Int, fileBytes: ByteArray, fileName: String)
+    suspend fun createStateMachine(owner: Int, dt: Int, participant: Int, fileBytes: ByteArray, fileName: String)
     fun getStateMachines(owner: Int, dt: Int, participant: Int): List<String>
     fun getStateMachine(owner: Int, dt: Int, participant: Int, fileName: String): File
     fun getDecodedStateMachine(owner: Int, dt: Int, participant: Int, fileName: String): List<StateData>
     fun deleteStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
+    suspend fun startStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
 }
 
 class StateMachineService : KoinComponent, IStateMachineService {
-    override fun createStateMachine(
+    private val plugins: MutableList<Plugin> by inject()
+
+    override suspend fun createStateMachine(
         owner: Int,
         dt: Int,
         participant: Int,
@@ -31,10 +35,13 @@ class StateMachineService : KoinComponent, IStateMachineService {
         val p = Path(System.getProperty("user.dir")).resolve(owner.toString()).resolve(dt.toString())
             .resolve(participant.toString()).resolve("state-machine").resolve(fileName)
         if(!p.toFile().exists()) {
-            p.toFile().parentFile.mkdirs()
-            p.toFile().createNewFile()
+            coroutineScope {
+                p.toFile().parentFile.mkdirs()
+                p.toFile().createNewFile()
+            }
         }
         p.toFile().writeBytes(fileBytes)
+        plugins.forEach { it.registerStateChart(p.toFile()) }
     }
 
     override fun getStateMachines(
@@ -87,6 +94,15 @@ class StateMachineService : KoinComponent, IStateMachineService {
         fileName: String
     ) {
         getStateMachine(owner, dt, participant, fileName).delete()
+    }
+
+    override suspend fun startStateMachine(
+        owner: Int,
+        dt: Int,
+        participant: Int,
+        fileName: String
+    ) {
+        plugins.forEach { it.activateStateChart(fileName) }
     }
 
     private fun getStateData(

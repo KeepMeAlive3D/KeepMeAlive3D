@@ -19,7 +19,9 @@ import de.keepmealive3d.core.auth.OAuth
 import de.keepmealive3d.core.model.messages.GenericMessageEvent
 import de.keepmealive3d.core.middleware.*
 import de.keepmealive3d.scriptingapi.Loader
+import de.keepmealive3d.scriptingapi.Plugin
 import de.keepmealive3d.scriptingapi.PluginConfig
+import de.keepmealive3d.scriptingapi.kscxml.KScxmlExecutorPlugin
 import de.keepmealive3d.scriptingapi.mqtt.MqttPlugin
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -38,6 +40,7 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
         single { jwt }
         single { log }
         single(qualifier = qualifier("events")) { Channel<GenericMessageEvent>() }
+        single { mutableListOf<Plugin>() }
     }
 
     configureDependencyInjection(iniModule)
@@ -46,6 +49,7 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
     val loader = Loader(config.pluginDirs.map { File(it) })
     //current workaround: MqttPlugin stays in the :api module for better debugging experience
     loader.plugins.add(MqttPlugin() to PluginConfig("mqtt", "<none>", "1"))
+    loader.plugins.add(KScxmlExecutorPlugin() to PluginConfig("scxml", "<none>", "1"))
     loader.loadPlugins(this, config)
     launch { loader.persistEvents() }
 

@@ -25,6 +25,7 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private val eventChannel: Channel<GenericMessageEvent> by inject(qualifier = qualifier("events"))
     private val sessionService: IWsSessionService by inject()
     private val eventDao: EventDao by inject()
+    private val pluginsDep: MutableList<Plugin> by inject()
 
     val plugins: MutableList<Pair<Plugin, PluginConfig>> by lazy {
         val uris = pluginDirectories
@@ -57,6 +58,7 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
                 }
             }
         }
+        pluginsDep.addAll(plugins.map { it.first })
         launch(Dispatchers.Default, CoroutineStart.DEFAULT) {
             plugins.forEach { p ->
                 p.first.registerKtorPlugin(this@with)
@@ -65,6 +67,11 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
         plugins.forEach { p ->
             launch {
                 p.first.registerLiveDataAdapter(::receive) { false }
+            }
+            launch {
+                p.first.registerStateChangeListener { chart, from, to ->
+
+                }
             }
         }
     }
@@ -84,5 +91,9 @@ class Loader(private val pluginDirectories: List<File>): KoinComponent {
     private suspend fun receive(msg: GenericMessageEvent) {
         sessionService.distributeLiveEvent(msg)
         eventChannel.trySend(msg)
+    }
+
+    private suspend fun stateChange(chart: String, from: String, to: String) {
+
     }
 }
