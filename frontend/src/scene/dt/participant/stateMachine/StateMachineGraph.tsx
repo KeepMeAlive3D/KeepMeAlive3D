@@ -13,19 +13,19 @@ export function StateMachineGraph({ setLoading, setInspectState, inspectState }:
   const { dtId, participantId, statemachineName } = useParams();
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await getStateMachineForDT(dtId!, participantId!, statemachineName!);
+        setStates(response.data);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchData().then();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await getStateMachineForDT(dtId!, participantId!, statemachineName!);
-      setStates(response.data);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  }, [dtId, participantId, setLoading, statemachineName]);
+  
   const getConnectorPoints = (from: AtomicStateData, to: AtomicStateData) => {
     const dx = to.posX - from.posX;
     const dy = to.posY - from.posY;

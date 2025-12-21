@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {Layer, Stage} from "react-konva";
 import {sampleStateData} from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import {RenderState} from "@/scene/dt/participant/stateMachine/canvas/RenderState.tsx";
+import { DrawArrows } from "@/scene/dt/participant/stateMachine/canvas/DrawArrows.tsx";
 
 export function StateMachineCanvas() {
     const divRef = useRef<HTMLDivElement>(null)
@@ -32,6 +33,7 @@ export function StateMachineCanvas() {
             <Stage width={dimensions.width} height={dimensions.height} className="w-full">
                 <Layer>
                     <RenderState data={sm} setData={setSm} renderStateId={sm.states[0].id}/>
+                    <DrawArrows stateMachine={sm}/>
                 </Layer>
             </Stage>
         </div>

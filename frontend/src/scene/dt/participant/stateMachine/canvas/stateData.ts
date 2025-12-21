@@ -8,7 +8,8 @@ export type StateData = {
     posY: number
     height: number,
     details: StateInfoDetails
-    childStates: StateData[]
+    childStates: StateData[],
+    connectedTo: string[]
 }
 
 export enum StateType {
@@ -45,31 +46,50 @@ export const sampleStateData: StateMachine = {
             stateType: StateType.SEQUENTIAL,
             isFinal: false,
             isFirst: false,
-            posX: 10,
-            width: 100,
-            posY: 10,
-            height: 30,
+            posX: 25,
+            width: 400,
+            posY: 50,
+            height: 200,
             details: {
                 onEntry: false,
                 onExit: false,
                 transitions: []
             },
+            connectedTo: [],
             childStates: [
                 {
                     id: "on",
                     stateType: StateType.ATOMIC,
                     isFinal: false,
                     isFirst: false,
-                    posX: 500,
+                    posX: 100,
                     width: 200,
-                    posY: 50,
+                    posY: 125,
                     height: 100,
                     details: {
                         onEntry: false,
                         onExit: false,
                         transitions: []
                     },
-                    childStates: []
+                    childStates: [],
+                    connectedTo: ["off"]
+                },
+                {
+                    id: "off",
+                    stateType: StateType.ATOMIC,
+                    isFinal: false,
+                    isFirst: false,
+                    posX: 250,
+                    width: 200,
+                    posY: 125,
+                    height: 100,
+                    details: {
+                        onEntry: false,
+                        onExit: false,
+                        transitions: []
+                    },
+                    childStates: [],
+                    connectedTo: []
                 }
             ]
         }
