@@ -85,7 +85,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         plugins.forEach { it.activateStateChart(fileName) }
     }
 
-    private fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
+    internal fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
         var offset = 0
         val childStates = mutableListOf<StateData>()
         kScxml.states.forEach { state ->
@@ -158,8 +158,8 @@ class StateMachineService : KoinComponent, IStateMachineService {
                     )
                 }
             ),
-            childStates = listOf(),
-            connectedTo = listOf(),
+            childStates = childStates,
+            connectedTo = childStates.map { it.id },
         )
         return data
     }

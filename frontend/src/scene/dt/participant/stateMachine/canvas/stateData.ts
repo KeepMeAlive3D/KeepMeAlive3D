@@ -14,9 +14,9 @@ export type StateData = {
 }
 
 export enum StateType {
-    PARALLEL = "parallel",
-    SEQUENTIAL = "sequential",
-    ATOMIC = "atomic"
+    PARALLEL = "PARALLEL",
+    SEQUENTIAL = "SEQUENTIAL",
+    ATOMIC = "ATOMIC"
 }
 
 export type StateInfoDetails = {

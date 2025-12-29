@@ -90,7 +90,7 @@ export function RenderState({ data, setData, renderStateId }: {
   };
 
   useEffect(() => {
-    if (currentState?.stateType != StateType.ATOMIC)
+    if (currentState?.stateType === StateType.SEQUENTIAL)
       trRef.current!.nodes([nodeRef.current!]);
   }, [currentState]);
 
