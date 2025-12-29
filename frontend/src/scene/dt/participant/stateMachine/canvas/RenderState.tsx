@@ -7,7 +7,7 @@ import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts"
 
 export function RenderState({ data, setData, renderStateId }: {
   data: StateMachine,
-  setData: React.Dispatch<SetStateAction<StateMachine>>,
+  setData: React.Dispatch<SetStateAction<StateMachine | undefined>>,
   renderStateId: string
 }) {
   const currentState = findState(data.states, renderStateId);
@@ -104,7 +104,7 @@ export function RenderState({ data, setData, renderStateId }: {
                   x={currentState.posX}
                   y={currentState.posY}
                   radius={30}
-                  stroke="green"
+                  stroke={currentState.isActive ? "green" : "grey"}
                   fill="#333333dd"
                   ref={circleRef}
           />
@@ -119,7 +119,7 @@ export function RenderState({ data, setData, renderStateId }: {
               width={currentState.width}
               height={currentState.height}
               cornerRadius={10}
-              stroke="green"
+              stroke={currentState.isActive ? "green" : "grey"}
               fill="#33333355"
               ref={nodeRef}
               onTransform={() => handleResize}
@@ -130,8 +130,9 @@ export function RenderState({ data, setData, renderStateId }: {
               rotateEnabled={false}
               anchorStyleFunc={(a) => {
                 a.cornerRadius(10);
-                a.fill("red");
+                a.fill("grey");
               }}
+              borderStroke={"11111100"}
             />
             <Text
               text={renderStateId}

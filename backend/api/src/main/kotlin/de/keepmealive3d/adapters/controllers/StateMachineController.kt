@@ -57,7 +57,7 @@ class StateMachineController(application: Application) : KoinComponent {
                     call.respond(HttpStatusCode.OK)
                 }
 
-                get("/api/dt/{dtId}/participant/{pId}/statemachine/{fileName}") {
+                get("/api/dt/{dtId}/participant/{pId}/statemachine/{id}") {
                     val user = call.principal<KmaUserPrincipal>()
                         ?: throw InvalidAuthTokenException("Could not authenticate")
 
@@ -65,14 +65,10 @@ class StateMachineController(application: Application) : KoinComponent {
                         call.parameters["dtId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
                     val pId =
                         call.parameters["pId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val fileName =
-                        call.parameters["fileName"]?.let {
-                            URLDecoder.decode(it, StandardCharsets.UTF_8)
-                        } ?: return@get call.respond(
-                            HttpStatusCode.BadRequest
-                        )
+                    val id =
+                        call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-                    call.respond(stateMachineService.getDecodedStateMachine(user.userId, dtId, pId, fileName))
+                    call.respond(stateMachineService.getStateMachine(user.userId, dtId, pId, id))
                 }
 
                 get("/api/dt/{dtId}/participant/{pId}/statemachine") {
@@ -84,10 +80,10 @@ class StateMachineController(application: Application) : KoinComponent {
                     val pId =
                         call.parameters["pId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
                     val files = stateMachineService.getStateMachines(user.userId, dtId, pId)
-                    call.respond(files.map { file -> URLEncoder.encode(file, StandardCharsets.UTF_8) })
+                    call.respond(files)
                 }
 
-                delete("/api/dt/{dtId}/participant/{pId}/statemachine/{fileName}") {
+                delete("/api/dt/{dtId}/participant/{pId}/statemachine/{id}") {
                     val user = call.principal<KmaUserPrincipal>()
                         ?: throw InvalidAuthTokenException("Could not authenticate")
 
@@ -95,14 +91,10 @@ class StateMachineController(application: Application) : KoinComponent {
                         call.parameters["dtId"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                     val pId =
                         call.parameters["pId"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
-                    val fileName =
-                        call.parameters["fileName"]?.let {
-                            URLDecoder.decode(it, StandardCharsets.UTF_8)
-                        } ?: return@delete call.respond(
-                            HttpStatusCode.BadRequest
-                        )
+                    val id =
+                        call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
 
-                    stateMachineService.deleteStateMachine(user.userId, dtId, pId, fileName)
+                    stateMachineService.deleteStateMachine(user.userId, dtId, pId, id)
                     call.respond(HttpStatusCode.OK)
                 }
             }

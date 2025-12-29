@@ -1,29 +1,28 @@
 package de.keepmealive3d.core.services
 
-import de.keepmealive3d.adapters.data.StateData
-import de.keepmealive3d.adapters.data.StateInfoDetails
-import de.keepmealive3d.adapters.data.StateTransitionDetails
-import de.keepmealive3d.core.exceptions.EntityNotFoundException
+import de.keepmealive3d.adapters.data.*
+import de.keepmealive3d.core.exceptions.BadRequestDataException
+import de.keepmealive3d.core.repositories.IStateChartRepository
 import de.keepmealive3d.scriptingapi.Plugin
 import dev.klenz.matthias.kscxml.KScxml
+import dev.klenz.matthias.kscxml.components.KScxmlRootNode
 import dev.klenz.matthias.kscxml.components.state.KScxmlState
 import kotlinx.coroutines.coroutineScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.io.File
 import kotlin.io.path.Path
 
 interface IStateMachineService {
     suspend fun createStateMachine(owner: Int, dt: Int, participant: Int, fileBytes: ByteArray, fileName: String)
-    fun getStateMachines(owner: Int, dt: Int, participant: Int): List<String>
-    fun getStateMachine(owner: Int, dt: Int, participant: Int, fileName: String): File
-    fun getDecodedStateMachine(owner: Int, dt: Int, participant: Int, fileName: String): List<StateData>
-    fun deleteStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
+    fun getStateMachines(owner: Int, dt: Int, participant: Int): List<StateChartInfo>
+    fun getStateMachine(owner: Int, dt: Int, participant: Int, id: Int): StateMachine
+    fun deleteStateMachine(owner: Int, dt: Int, participant: Int, id: Int)
     suspend fun startStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
 }
 
 class StateMachineService : KoinComponent, IStateMachineService {
     private val plugins: MutableList<Plugin> by inject()
+    private val repo: IStateChartRepository by inject()
 
     override suspend fun createStateMachine(
         owner: Int,
@@ -34,7 +33,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
     ) {
         val p = Path(System.getProperty("user.dir")).resolve(owner.toString()).resolve(dt.toString())
             .resolve(participant.toString()).resolve("state-machine").resolve(fileName)
-        if(!p.toFile().exists()) {
+        if (!p.toFile().exists()) {
             coroutineScope {
                 p.toFile().parentFile.mkdirs()
                 p.toFile().createNewFile()
@@ -42,58 +41,39 @@ class StateMachineService : KoinComponent, IStateMachineService {
         }
         p.toFile().writeBytes(fileBytes)
         plugins.forEach { it.registerStateChart(p.toFile()) }
+        val scxml = KScxml.load(p.toFile().readText())
+        scxml.rootNode?.let {
+            val sm = initializeStateMachine(it, p.toFile().name)
+            repo.createStateChart(participant, sm.name, sm)
+        } ?: throw BadRequestDataException("Uploaded state chart malformatted")
     }
 
     override fun getStateMachines(
         owner: Int,
         dt: Int,
         participant: Int
-    ): List<String> {
-        val p = Path(System.getProperty("user.dir")).resolve(owner.toString()).resolve(dt.toString())
-            .resolve(participant.toString()).resolve("state-machine")
-        if(!p.toFile().exists()) {
-            return listOf()
-        }
-        return p.toFile().walk().filter { it.isFile }.map { it.name }.toList()
+    ): List<StateChartInfo> {
+        //todo check if owner actually owns the sc
+        return repo.getStateCharts(participant).map { StateChartInfo(it.id, it.name) }
     }
 
     override fun getStateMachine(
         owner: Int,
         dt: Int,
         participant: Int,
-        fileName: String
-    ): File {
-        val p = Path(System.getProperty("user.dir")).resolve(owner.toString()).resolve(dt.toString())
-            .resolve(participant.toString()).resolve("state-machine").resolve(fileName)
-        if(!p.toFile().isFile) {
-            throw EntityNotFoundException("The file $fileName does not exist!")
-        }
-        return p.toFile()
-    }
-
-    override fun getDecodedStateMachine(
-        owner: Int,
-        dt: Int,
-        participant: Int,
-        fileName: String
-    ): List<StateData> {
-        val file = getStateMachine(owner, dt, participant, fileName)
-        val scxml = KScxml.load(file.readText())
-        return getStateData(
-            scxml.rootNode?.initial,
-            scxml.rootNode?.states ?: listOf(),
-            scxml.rootNode?.final,
-            0
-        )
+        id: Int
+    ): StateMachine {
+        //todo check if owner actually owns the sc
+        return repo.getStateChart(id)
     }
 
     override fun deleteStateMachine(
         owner: Int,
         dt: Int,
         participant: Int,
-        fileName: String
+        id: Int
     ) {
-        getStateMachine(owner, dt, participant, fileName).delete()
+        repo.deleteStateChart(id)
     }
 
     override suspend fun startStateMachine(
@@ -105,48 +85,82 @@ class StateMachineService : KoinComponent, IStateMachineService {
         plugins.forEach { it.activateStateChart(fileName) }
     }
 
-    private fun getStateData(
-        initial: String?,
-        states: List<KScxmlState>,
-        final: KScxmlState?,
-        recursionDepth: Int
-    ): MutableList<StateData> {
-        val stateData = mutableListOf<StateData>()
-
-        if (states.isEmpty()) {
-            return stateData
+    private fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
+        var offset = 0
+        val childStates = mutableListOf<StateData>()
+        kScxml.states.forEach { state ->
+            val child = initializeStates(state, offset, state.id == kScxml.initial, false)
+            childStates.add(child)
+            offset += child.width
         }
 
-        states.forEachIndexed { index, state ->
-            val lStateData = StateData(
-                state.id ?: "df",
-                100 + index * 200,
-                100 + recursionDepth * 100,
-                state.transitions.mapNotNull { it.target }.toMutableList(),
-                StateInfoDetails(
-                    initial = state.initial,
-                    onEntry = state.onEntry.isNotEmpty(),
-                    onExit = state.onExit.isNotEmpty(),
-                    transitions = state.transitions.map {
-                        StateTransitionDetails(
-                            it.target,
-                            it.event,
-                            it.cond
-                        )
-                    }
-                )
+        return StateMachine(
+            fileName,
+            kScxml.initial ?: "unknown",
+            states = childStates
+        )
+    }
+
+    private fun initializeStates(
+        state: KScxmlState,
+        offsetX: Int = 0,
+        isFirst: Boolean,
+        isFinal: Boolean
+    ): StateData {
+        val childStates = mutableListOf<StateData>()
+        var width = 200
+        var childOffset = offsetX
+        state.states.forEach {
+            val child = initializeStates(
+                it,
+                childOffset,
+                state.initial == it.id,
+                false,
             )
-            if (initial != null && state.id == initial) {
-                stateData.addFirst(lStateData)
-            } else {
-                stateData.add(lStateData)
-            }
-
-            state.states.let { innerStates ->
-                stateData.addAll(getStateData(state.initial, innerStates, state.final, recursionDepth + 2))
-            }
+            childStates.add(child)
+            width += child.width + 25
+            childOffset += child.width + 25
         }
-
-        return stateData
+        state.final?.let {
+            val child = initializeStates(
+                it,
+                childOffset,
+                state.initial == it.id,
+                true,
+            )
+            childStates.add(child)
+            width += child.width
+        }
+        var height = 200
+        val type = if (state.states.isEmpty()) StateType.ATOMIC else StateType.SEQUENTIAL
+        if (type == StateType.ATOMIC) {
+            width = 30
+            height = 30
+        }
+        val data = StateData(
+            id = state.id ?: "unknown",
+            stateType = type,
+            isFinal = isFinal,
+            isFirst = isFirst,
+            posX = offsetX,
+            width = width,
+            posY = 200,
+            height = height,
+            isActive = false,
+            details = StateInfoDetails(
+                onEntry = state.onEntry.isNotEmpty(),
+                onExit = state.onExit.isNotEmpty(),
+                transitions = state.transitions.map {
+                    StateTransitionDetails(
+                        it.target,
+                        it.event,
+                        it.cond
+                    )
+                }
+            ),
+            childStates = listOf(),
+            connectedTo = listOf(),
+        )
+        return data
     }
 }

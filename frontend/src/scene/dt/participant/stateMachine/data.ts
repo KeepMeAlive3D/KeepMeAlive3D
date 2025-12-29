@@ -1,5 +1,6 @@
 import type {AxiosResponse} from "axios";
 import service from "@/service/service.ts";
+import type { StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 
 export type AtomicStateData = {
   id: string
@@ -22,8 +23,13 @@ export type StateTransitionsDetails = {
   condition: string | undefined
 }
 
-export function getStateMachineForDT(dtId: string, participantId: string, fileName: string): Promise<AxiosResponse<AtomicStateData[]>> {
-  return service.get<AtomicStateData[]>(`/api/dt/${dtId}/participant/${participantId}/statemachine/${fileName}`);
+export type StateChartInfo = {
+  id: number,
+  name: string
+}
+
+export function getStateMachineForDT(dtId: string, participantId: string, id: number): Promise<AxiosResponse<StateMachine>> {
+  return service.get<StateMachine>(`/api/dt/${dtId}/participant/${participantId}/statemachine/${id}`);
 }
 
 export function uploadStateMachine(dtId: string, participantId: string, file: File) {
@@ -34,9 +40,9 @@ export function uploadStateMachine(dtId: string, participantId: string, file: Fi
 }
 
 export function getAllStateMachines(dtId: string, participantId: string) {
-  return service.get<string[]>(`/api/dt/${dtId}/participant/${participantId}/statemachine`);
+  return service.get<StateChartInfo[]>(`/api/dt/${dtId}/participant/${participantId}/statemachine`);
 }
 
-export function deleteStateMachine(dtId: string, participantId: string, fileName: string) {
-  return service.delete(`/api/dt/${dtId}/participant/${participantId}/statemachine/${fileName}`);
+export function deleteStateMachine(dtId: string, participantId: string, id: number) {
+  return service.delete(`/api/dt/${dtId}/participant/${participantId}/statemachine/${id}`);
 }

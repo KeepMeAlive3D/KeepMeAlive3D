@@ -13,7 +13,9 @@ import de.keepmealive3d.core.repositories.ModelRepository
 import de.keepmealive3d.core.services.ModelService
 import de.keepmealive3d.core.repositories.IModelDao
 import de.keepmealive3d.core.repositories.IProcessParticipantRepository
+import de.keepmealive3d.core.repositories.IStateChartRepository
 import de.keepmealive3d.core.repositories.ProcessParticipantRepository
+import de.keepmealive3d.core.repositories.StateChartRepository
 import de.keepmealive3d.core.services.DigitalTwinService
 import de.keepmealive3d.core.services.IDigitalTwinService
 import de.keepmealive3d.core.services.IProcessParticipantService
@@ -50,6 +52,7 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IProcessParticipantRepository> { ProcessParticipantRepository() }
                 single<IProcessParticipantService> { ProcessParticipantService() }
                 single<IStateMachineService> { StateMachineService() }
+                single<IStateChartRepository> { StateChartRepository() }
             })
     }
 }

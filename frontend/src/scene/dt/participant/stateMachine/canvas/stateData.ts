@@ -7,6 +7,7 @@ export type StateData = {
     width: number
     posY: number
     height: number,
+    isActive: boolean,
     details: StateInfoDetails
     childStates: StateData[],
     connectedTo: string[]
@@ -46,6 +47,7 @@ export const sampleStateData: StateMachine = {
             stateType: StateType.SEQUENTIAL,
             isFinal: false,
             isFirst: false,
+            isActive: false,
             posX: 25,
             width: 400,
             posY: 50,
@@ -62,6 +64,7 @@ export const sampleStateData: StateMachine = {
                     stateType: StateType.ATOMIC,
                     isFinal: false,
                     isFirst: false,
+                    isActive: true,
                     posX: 100,
                     width: 200,
                     posY: 125,
@@ -79,6 +82,7 @@ export const sampleStateData: StateMachine = {
                     stateType: StateType.ATOMIC,
                     isFinal: false,
                     isFirst: false,
+                    isActive: false,
                     posX: 250,
                     width: 200,
                     posY: 125,

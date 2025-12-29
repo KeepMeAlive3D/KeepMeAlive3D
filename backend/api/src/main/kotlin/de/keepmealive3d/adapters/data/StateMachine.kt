@@ -1,9 +1,47 @@
 package de.keepmealive3d.adapters.data
 
 import kotlinx.serialization.Serializable
+import java.util.Locale.getDefault
+
+@Serializable
+data class StateMachine(
+    val name: String,
+    val initial: String?,
+    val states: List<StateData>
+)
+
+@Serializable
+data class StateChartInfo(
+    val id: Int,
+    val name: String
+)
 
 @Serializable
 data class StateData(
+    val id: String,
+    val stateType: StateType,
+    val isFinal: Boolean,
+    val isFirst: Boolean,
+    val posX: Int,
+    val width: Int,
+    val posY: Int,
+    val height: Int,
+    val isActive: Boolean,
+    val details: StateInfoDetails,
+    val childStates: List<StateData>,
+    val connectedTo: List<String>
+)
+
+enum class StateType {
+    PARALLEL,
+    SEQUENTIAL,
+    ATOMIC;
+
+    override fun toString() = name.lowercase(getDefault())
+}
+
+@Serializable
+data class StateDataOld(
     val id: String,
     val posX: Int,
     val posY: Int,
@@ -13,7 +51,6 @@ data class StateData(
 
 @Serializable
 data class StateInfoDetails(
-    val initial: String?,
     val onEntry: Boolean = false,
     val onExit: Boolean = false,
     val transitions: List<StateTransitionDetails>,

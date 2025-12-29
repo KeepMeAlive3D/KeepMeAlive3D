@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {Dialog, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {Card} from "@/components/ui/card.tsx";
 import {Plus} from "lucide-react";
-import {getAllStateMachines} from "@/scene/dt/participant/stateMachine/data.ts";
+import { getAllStateMachines, type StateChartInfo } from "@/scene/dt/participant/stateMachine/data.ts";
 import {useParams} from "react-router";
 import {StateMachineCard} from "@/scene/dt/participant/stateMachine/StateMachineCard.tsx";
 import {StateMachineDialog} from "@/scene/dt/participant/stateMachine/StateMachineDialog.tsx";
@@ -12,7 +12,7 @@ export function StateMachineOverview() {
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
     const [refresh, setRefresh] = useState(false)
-    const [stateMachines, setStateMachines] = useState<string[]>([])
+    const [stateMachines, setStateMachines] = useState<StateChartInfo[]>([])
 
     const { dtId, participantId } = useParams();
 
@@ -39,7 +39,7 @@ export function StateMachineOverview() {
             <div className="flex flex-wrap">
                 <div className="mr-2"></div>
                 {
-                    stateMachines.map(it => <StateMachineCard data={it} setRefresh={setRefresh} refresh={refresh}/>)
+                    stateMachines.map(it => <StateMachineCard id={it.id} setRefresh={setRefresh} refresh={refresh} name={it.name}/>)
                 }
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>

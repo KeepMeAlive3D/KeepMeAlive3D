@@ -5,7 +5,6 @@ import { Route, Routes } from "react-router";
 import LayoutSidebar from "@/routerLayouts/LayoutSidebar.tsx";
 import LayoutVanilla from "@/routerLayouts/LayoutVanilla.tsx";
 import { WebSocketProvider } from "@/service/webSocketProvider.tsx";
-import { StateMachineDisplay } from "@/scene/dt/participant/stateMachine/StateMachineDisplay.tsx";
 import { DigitalTwinsOverview } from "@/scene/home/DigitalTwinsOverview.tsx";
 import { DigitalTwinOverview } from "@/scene/dt/DigitalTwinOverview.tsx";
 import { DigitalTwinParticipant } from "@/scene/dt/participant/DigitalTwinParticipant.tsx";
@@ -36,7 +35,7 @@ function App() {
           <Route path="/" element={<DigitalTwinsOverview />} />
           <Route path="/dt/:dtId" element={<DigitalTwinOverview />} />
           <Route path="/dt/:dtId/participant/:participantId" element={<DigitalTwinParticipant />} />
-          <Route path="/dt/:dtId/participant/:participantId/state-machine/:statemachineName" element={<StateMachineDisplay />} />
+          <Route path="/dt/:dtId/participant/:participantId/state-machine/:scId" element={<StateMachineCanvas />} />
           <Route path="/dt/:dtId/participant/:participantId/model/:modelId" element={<ModelLoader />} />
           <Route path="/model/:modelId" element={<ModelLoader />} />
         </Route>
