@@ -14,7 +14,7 @@ COPY --from=frontend /app/dist ./api/src/main/resources/static
 RUN ./gradlew :api:build -x test
 
 
-FROM openjdk:27-ea-slim
+FROM ghcr.io/graalvm/native-image-community:25
 WORKDIR /app
 COPY --from=api /app/api/build/libs/api-all.jar .
 EXPOSE 8080
