@@ -13,7 +13,5 @@ export function findState(states: StateData[], searchId: string): StateData | un
   }
   if (state)
     return state;
-
-  console.error(`could not find state ${searchId}`);
   return undefined;
 }

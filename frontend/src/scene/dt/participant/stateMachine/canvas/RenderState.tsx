@@ -1,41 +1,22 @@
-import { type StateData, type StateMachine, StateType } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
+import { type StateData, StateType } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import { Group, Rect, Text, Transformer, Circle } from "react-konva";
-import * as React from "react";
-import { type SetStateAction, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts";
+import { useDispatch } from "react-redux";
+import { updateNodePosition } from "@/redux/slices/StateMachineSlice.ts";
+import { useAppSelector } from "@/hooks/hooks.ts";
+import type { RootState } from "@/redux/store.ts";
 
-export function RenderState({ data, setData, renderStateId }: {
-  data: StateMachine,
-  setData: React.Dispatch<SetStateAction<StateMachine | undefined>>,
+export function RenderState({ renderStateId}: {
   renderStateId: string
 }) {
+  const data = useAppSelector((state: RootState) => state.sm);
   const currentState = findState(data.states, renderStateId);
   const nodeRef = useRef<Konva.Rect>(null);
   const circleRef = useRef<Konva.Circle>(null);
   const trRef = useRef<Konva.Transformer>(null);
-
-  //this is scary, but we really check in the useEffect to call this function
-  //only if it's really necessary, as this function will trigger the useEffect
-  //again
-  function updateState(
-    height: number | undefined,
-    width: number | undefined,
-    posX: number | undefined,
-    posY: number | undefined,
-  ) {
-    const newStateMachine: StateMachine = { ...data };
-    const state = findState(newStateMachine.states, renderStateId);
-    if (state) {
-      console.debug(`update data: `, width, height, posX, posY);
-      state.width = width ?? state.width;
-      state.height = height ?? state.height;
-      state.posX = posX ?? state.posX;
-      state.posY = posY ?? state.posY;
-      console.debug(`update state data for`, state.id, state.posX, state.posY);
-      setData(newStateMachine);
-    }
-  }
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const state = findState(data.states, renderStateId);
@@ -47,19 +28,39 @@ export function RenderState({ data, setData, renderStateId }: {
         || nodeRef.current.height() != state.height
         || nodeRef.current.x() != state.posX
         || nodeRef.current.y() != state.posY
+        || nodeRef.current.absolutePosition().x != state.absX
+        || nodeRef.current.absolutePosition().y != state.absY
       ) {
-        updateState(nodeRef.current.width(), nodeRef.current.height(), nodeRef.current.x(), nodeRef.current.y());
+        dispatch(updateNodePosition({
+          id: renderStateId,
+          x: nodeRef.current.x(),
+          y: nodeRef.current.y(),
+          width: nodeRef.current.width(),
+          height: nodeRef.current.height(),
+          absX: nodeRef.current.absolutePosition().x,
+          absY: nodeRef.current.absolutePosition().y
+        }));
       }
     } else if (circleRef.current) {
       if (circleRef.current.width() != state.width
         || circleRef.current.height() != state.height
         || circleRef.current.x() != state.posX
         || circleRef.current.y() != state.posY
+        || circleRef.current.absolutePosition().x != state.absX
+        || circleRef.current.absolutePosition().y != state.absY
       ) {
-        updateState(circleRef.current.width(), circleRef.current.height(), circleRef.current.x(), circleRef.current.y());
+        dispatch(updateNodePosition({
+          id: renderStateId,
+          x: circleRef.current.x(),
+          y: circleRef.current.y(),
+          width: circleRef.current.width(),
+          height: circleRef.current.height(),
+          absX: circleRef.current.absolutePosition().x,
+          absY: circleRef.current.absolutePosition().y
+        }));
       }
     }
-  }, [data, renderStateId, updateState]);
+  }, [data, dispatch, renderStateId]);
 
   const handleDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
     const x = Math.round(e.target.x() / 25) * 25;
@@ -68,25 +69,47 @@ export function RenderState({ data, setData, renderStateId }: {
     e.target.x(x);
     e.target.y(y);
 
-    nodeRef.current?.x(Math.round(nodeRef.current.x() / 25) * 25);
-    nodeRef.current?.y(Math.round(nodeRef.current.y() / 25) * 25);
-
-    if (nodeRef)
-      updateState(undefined, undefined, nodeRef.current?.x(), nodeRef.current?.y());
-    else
-      updateState(undefined, undefined, x, y);
+    if (nodeRef.current) {
+      nodeRef.current.x(Math.round(nodeRef.current.x() / 25) * 25);
+      nodeRef.current.y(Math.round(nodeRef.current.y() / 25) * 25);
+      dispatch(updateNodePosition({
+        id: renderStateId,
+        x: nodeRef.current.x(),
+        y: nodeRef.current.y(),
+        width: nodeRef.current.width(),
+        height: nodeRef.current.height(),
+        absX: nodeRef.current.absolutePosition().x,
+        absY: nodeRef.current.absolutePosition().y
+      }));
+    } else if (circleRef.current) {
+      circleRef.current.x(Math.round(circleRef.current.x() / 25) * 25);
+      circleRef.current.y(Math.round(circleRef.current.y() / 25) * 25);
+      dispatch(updateNodePosition({
+        id: renderStateId,
+        x: circleRef.current.x(),
+        y: circleRef.current.y(),
+        width: circleRef.current.width(),
+        height: circleRef.current.height(),
+        absX: circleRef.current.absolutePosition().x,
+        absY: circleRef.current.absolutePosition().y
+      }));
+    }
   };
 
   const handleResize = () => {
-    const node = nodeRef.current;
-    updateState(
-      Math.round(node!.height() * node!.scaleY() / 25) * 25,
-      Math.round(node!.width() * node!.scaleX() / 25) * 25,
-      undefined,
-      undefined,
-    );
-    node!.scaleX(1);
-    node!.scaleY(1);
+    if (nodeRef.current) {
+      dispatch(updateNodePosition({
+        id: renderStateId,
+        x: nodeRef.current.x(),
+        y: nodeRef.current.y(),
+        height: Math.round(nodeRef.current.height() * nodeRef.current.scaleY() / 25) * 25,
+        width: Math.round(nodeRef.current.width() * nodeRef.current.scaleX() / 25) * 25,
+        absX: nodeRef.current.absolutePosition().x,
+        absY: nodeRef.current.absolutePosition().y
+      }));
+      nodeRef.current.scaleX(1);
+      nodeRef.current.scaleY(1);
+    }
   };
 
   useEffect(() => {
@@ -143,7 +166,10 @@ export function RenderState({ data, setData, renderStateId }: {
             />
             {
               currentState.childStates.map((it: StateData) =>
-                <RenderState data={data} setData={setData} renderStateId={it.id} key={it.id} />,
+                <RenderState
+                  renderStateId={it.id}
+                  key={it.id}
+                />,
               )
             }
           </Group>

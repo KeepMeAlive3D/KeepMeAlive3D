@@ -10,6 +10,7 @@ import {
 } from "redux-state-sync";
 import replaySlice from "@/redux/slices/ReplaySlice.ts";
 import outlineSlice from "@/redux/slices/OutlineSlice.ts";
+import stateMachineSlice from "@/redux/slices/StateMachineSlice.ts";
 
 const store = configureStore({
   reducer: withReduxStateSync(
@@ -18,6 +19,7 @@ const store = configureStore({
       settings: settingsSlice,
       replay: replaySlice,
       outline: outlineSlice,
+      sm: stateMachineSlice
     })
   ),
 

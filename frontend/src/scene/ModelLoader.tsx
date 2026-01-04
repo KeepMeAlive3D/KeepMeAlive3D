@@ -19,7 +19,6 @@ function ModelLoader() {
   // Fetch model and model settings
   useEffect(() => {
     if (modelId !== undefined) {
-      setLoading(true);
       downloadModel(Number(modelId)).then((response) => {
         setModelUrl(URL.createObjectURL(response.data));
         setTimeout(() => {

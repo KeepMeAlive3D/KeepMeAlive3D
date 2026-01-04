@@ -1,15 +1,17 @@
 export type StateData = {
     id: string
-    stateType: StateType,
-    isFinal: boolean,
-    isFirst: boolean,
-    posX: number,
+    stateType: StateType
+    isFinal: boolean
+    isFirst: boolean
+    posX: number
     width: number
+    absX: number
     posY: number
-    height: number,
-    isActive: boolean,
+    height: number
+    absY: number
+    isActive: boolean
     details: StateInfoDetails
-    childStates: StateData[],
+    childStates: StateData[]
     connectedTo: string[]
 }
 
@@ -20,21 +22,21 @@ export enum StateType {
 }
 
 export type StateInfoDetails = {
-    onEntry: boolean,
-    onExit: boolean,
+    onEntry: boolean
+    onExit: boolean
     transitions: StateTransitionsDetails[]
 }
 
 
 export type StateTransitionsDetails = {
-    toState: string | undefined,
-    event: string | undefined,
+    toState: string | undefined
+    event: string | undefined
     condition: string | undefined
 }
 
 export type StateMachine = {
-    name: string,
-    initial: string | undefined,
+    name: string
+    initial: string | undefined
     states: StateData[]
 }
 
@@ -52,6 +54,8 @@ export const sampleStateData: StateMachine = {
             width: 400,
             posY: 50,
             height: 200,
+            absX: 25,
+            absY: 50,
             details: {
                 onEntry: false,
                 onExit: false,
@@ -75,7 +79,9 @@ export const sampleStateData: StateMachine = {
                         transitions: []
                     },
                     childStates: [],
-                    connectedTo: ["off"]
+                    connectedTo: ["off"],
+                    absX: 100,
+                    absY: 125
                 },
                 {
                     id: "off",
@@ -93,7 +99,9 @@ export const sampleStateData: StateMachine = {
                         transitions: []
                     },
                     childStates: [],
-                    connectedTo: []
+                    connectedTo: [],
+                    absX: 250,
+                    absY: 125
                 }
             ]
         }

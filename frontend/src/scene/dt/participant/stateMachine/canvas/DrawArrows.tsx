@@ -1,60 +1,56 @@
-import type { StateData, StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
+import type { StateData } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts";
-import { Arrow } from "react-konva";
 
-export function DrawArrows({ stateMachine }: { stateMachine: StateMachine }) {
+import { useMemo } from 'react';
+import { Arrow } from 'react-konva';
+import { useAppSelector } from "@/hooks/hooks.ts";
+import type { RootState } from "@/redux/store.ts";
+
+export function DrawArrows() {
+  const stateMachine = useAppSelector((state: RootState) => state.sm);
+
+  // 1. Move helper functions outside or wrap them to prevent re-creation
   const getConnectorPoints = (from: StateData, to: StateData) => {
-    const dx = to.posX - from.posX;
-    const dy = to.posY - from.posY;
+    const dx = to.absX - from.absX;
+    const dy = to.absY - from.absY;
     const angle = Math.atan2(-dy, dx);
 
     const radius = 30;
 
     return [
-      from.posX + -radius * Math.cos(angle + Math.PI),
-      from.posY + radius * Math.sin(angle + Math.PI),
-      to.posX + -radius * Math.cos(angle),
-      to.posY + radius * Math.sin(angle),
+      from.absX + -radius * Math.cos(angle + Math.PI),
+      from.absY + radius * Math.sin(angle + Math.PI),
+      to.absX + -radius * Math.cos(angle),
+      to.absY + radius * Math.sin(angle),
     ];
   };
 
-  function getConnections(states: StateData[]) {
-    const cooState = new Set<StateData[]>();
-    states.forEach(it => {
-      getAllConnections(it, cooState);
-    });
-    return Array.from(cooState);
-  }
+  const connections = useMemo(() => {
+    const cooState: StateData[][] = [];
 
-  function getAllConnections(state: StateData, connections: Set<StateData[]>) {
-    state.connectedTo.forEach(it => {
-      const to = findState(stateMachine.states, it);
-      if (to) {
-        connections.add([state, to]);
-      }
-    });
-    state.childStates.forEach(it => {
-      getAllConnections(it, connections);
-    });
-    return connections;
-  }
+    function collect(state: StateData) {
+      state.connectedTo.forEach(it => {
+        const to = findState(stateMachine.states, it);
+        if (to) cooState.push([state, to]);
+      });
+      state.childStates.forEach(collect);
+    }
+
+    stateMachine.states.forEach(collect);
+    return cooState;
+  }, [stateMachine]); // Re-run whenever stateMachine reference changes
 
   return (
     <>
-      {
-        Array.from(getConnections(stateMachine.states).map(it => {
-          console.debug(`draw arrow`, it);
-          return (
-            <Arrow
-              key={`arrow${it[0].id}-${it[1].id}`}
-              id={`arrow${it[0].id}-${it[1].id}`}
-              points={getConnectorPoints(it[0], it[1])}
-              fill="white"
-              stroke="white"
-            />
-          );
-        }))
-      }
+      {connections.map(([from, to]) => (
+        <Arrow
+          key={`arrow-${from.id}-${to.id}`}
+          points={getConnectorPoints(from, to)}
+          fill="white"
+          stroke="white"
+          strokeWidth={2}
+        />
+      ))}
     </>
   );
 }

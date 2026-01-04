@@ -143,8 +143,10 @@ class StateMachineService : KoinComponent, IStateMachineService {
             isFinal = isFinal,
             isFirst = isFirst,
             posX = offsetX,
+            absX = offsetX,
             width = width,
             posY = 200,
+            absY = 200,
             height = height,
             isActive = false,
             details = StateInfoDetails(

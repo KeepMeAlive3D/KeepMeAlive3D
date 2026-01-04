@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { Layer, Stage } from "react-konva";
-import { type StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
+import { sampleStateData, type StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import { RenderState } from "@/scene/dt/participant/stateMachine/canvas/RenderState.tsx";
 import { DrawArrows } from "@/scene/dt/participant/stateMachine/canvas/DrawArrows.tsx";
 import { useParams } from "react-router";
 import { getStateMachineForDT } from "@/scene/dt/participant/stateMachine/data.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
+import { useDispatch } from "react-redux";
+import { updateStateMachine } from "@/redux/slices/StateMachineSlice.ts";
+import { useAppSelector } from "@/hooks/hooks.ts";
 
 export function StateMachineCanvas() {
+  const dispatch = useDispatch();
   const divRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
   });
-  const [sm, setSm] = useState<StateMachine>();
+  const sm: StateMachine = useAppSelector((state) => state.sm);
+
   const { dtId, participantId, scId } = useParams();
 
   useEffect(() => {
@@ -22,15 +27,16 @@ export function StateMachineCanvas() {
       setLoading(true);
       try {
         const response = await getStateMachineForDT(dtId!, participantId!, Number(scId));
-        setSm(response.data);
-        console.debug(`sm`, response.data)
+        dispatch(updateStateMachine(response.data));
+        //dispatch(updateStateMachine(sampleStateData));
+        console.debug(`sm`, response.data);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData().then();
-  }, [dtId, participantId, setLoading, scId]);
+  }, [dtId, participantId, setLoading, scId, dispatch]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,8 +59,8 @@ export function StateMachineCanvas() {
       {
         loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full">
           <Layer>
-            <RenderState data={sm!} setData={setSm} renderStateId={sm!.states[0].id} />
-            <DrawArrows stateMachine={sm!} />
+            <RenderState renderStateId={sm.states[0].id} />
+            <DrawArrows />
           </Layer>
         </Stage>
       }
