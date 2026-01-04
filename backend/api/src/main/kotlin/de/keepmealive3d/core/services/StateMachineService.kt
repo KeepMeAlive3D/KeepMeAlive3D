@@ -86,12 +86,13 @@ class StateMachineService : KoinComponent, IStateMachineService {
     }
 
     internal fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
-        var offset = 0
+        var offsetX = 0
+        val offsetY = 225
         val childStates = mutableListOf<StateData>()
         kScxml.states.forEach { state ->
-            val child = initializeStates(state, offset, state.id == kScxml.initial, false)
+            val child = initializeStates(state, offsetX, offsetY, state.id == kScxml.initial, false)
             childStates.add(child)
-            offset += child.width
+            offsetX += child.width
         }
 
         return StateMachine(
@@ -104,49 +105,58 @@ class StateMachineService : KoinComponent, IStateMachineService {
     private fun initializeStates(
         state: KScxmlState,
         offsetX: Int = 0,
+        offsetY: Int = 225,
         isFirst: Boolean,
         isFinal: Boolean
     ): StateData {
         val childStates = mutableListOf<StateData>()
         var width = 200
-        var childOffset = offsetX
+        var modOffsetX = offsetX
+        var modOffsetY = offsetY
+        var childOffsetX = offsetX
+        var childOffsetY = offsetY
+        childOffsetY += 25
         state.states.forEach {
             val child = initializeStates(
                 it,
-                childOffset,
+                childOffsetX,
+                childOffsetY,
                 state.initial == it.id,
                 false,
             )
             childStates.add(child)
             width += child.width + 25
-            childOffset += child.width + 25
+            childOffsetX += child.width + 25
         }
         state.final?.let {
             val child = initializeStates(
                 it,
-                childOffset,
+                childOffsetX,
+                childOffsetY,
                 state.initial == it.id,
                 true,
             )
             childStates.add(child)
             width += child.width
         }
-        var height = 200
+        var height = 400 - 2 * (offsetY - 200)
         val type = if (state.states.isEmpty()) StateType.ATOMIC else StateType.SEQUENTIAL
         if (type == StateType.ATOMIC) {
             width = 30
             height = 30
+            modOffsetY += 100
+            modOffsetX += 100
         }
         val data = StateData(
             id = state.id ?: "unknown",
             stateType = type,
             isFinal = isFinal,
             isFirst = isFirst,
-            posX = offsetX,
-            absX = offsetX,
+            posX = modOffsetX,
+            absX = modOffsetX,
             width = width,
-            posY = 200,
-            absY = 200,
+            posY = modOffsetY,
+            absY = modOffsetY,
             height = height,
             isActive = false,
             details = StateInfoDetails(
@@ -161,7 +171,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
                 }
             ),
             childStates = childStates,
-            connectedTo = childStates.map { it.id },
+            connectedTo = state.transitions.mapNotNull { it.target },
         )
         return data
     }

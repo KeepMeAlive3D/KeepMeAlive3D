@@ -1,4 +1,3 @@
-import type { AtomicStateData } from "@/scene/dt/participant/stateMachine/data.ts";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Info, Shield, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
@@ -6,10 +5,11 @@ import { Badge } from "@/components/ui/badge.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import * as React from "react";
 import { Separator } from "@radix-ui/react-menubar";
+import type { StateData } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 
 export function StateInspectionPopover({ inspectState, setInspectState }: {
-  inspectState: AtomicStateData | undefined,
-  setInspectState: (value: AtomicStateData | undefined) => void
+  inspectState: StateData | undefined,
+  setInspectState: (value: StateData | undefined) => void
 }) {
   if (inspectState === undefined) {
     return null;
@@ -30,8 +30,6 @@ export function StateInspectionPopover({ inspectState, setInspectState }: {
             <div className="flex w-full flex-wrap gap-2">
               {inspectState.details.onEntry ? <Badge>OnEntry</Badge> : null}
               {inspectState.details.onExit ? <Badge>OnExit</Badge> : null}
-              {inspectState.details.initial ?
-                <Badge>Initial State | {inspectState.details.initial}</Badge> : null}
             </div>
           </div>
           {(inspectState.details.transitions !== undefined && inspectState.details.transitions.length > 0) ?

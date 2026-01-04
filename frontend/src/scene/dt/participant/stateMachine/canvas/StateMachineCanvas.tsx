@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Layer, Stage } from "react-konva";
-import { sampleStateData, type StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
+import { type StateData, type StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import { RenderState } from "@/scene/dt/participant/stateMachine/canvas/RenderState.tsx";
 import { DrawArrows } from "@/scene/dt/participant/stateMachine/canvas/DrawArrows.tsx";
 import { useParams } from "react-router";
@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner.tsx";
 import { useDispatch } from "react-redux";
 import { updateStateMachine } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
+import { StateInspectionPopover } from "@/scene/dt/participant/stateMachine/canvas/StateInspectionPopover.tsx";
 
 export function StateMachineCanvas() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export function StateMachineCanvas() {
     height: 0,
   });
   const sm: StateMachine = useAppSelector((state) => state.sm);
+  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined)
 
   const { dtId, participantId, scId } = useParams();
 
@@ -59,11 +61,14 @@ export function StateMachineCanvas() {
       {
         loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full">
           <Layer>
-            <RenderState renderStateId={sm.states[0].id} />
+            {
+              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState}/>)
+            }
             <DrawArrows />
           </Layer>
         </Stage>
       }
+      <StateInspectionPopover inspectState={inspectState} setInspectState={setInspectState}/>
     </div>
   );
 }

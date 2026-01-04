@@ -22,8 +22,8 @@ export enum StateType {
 }
 
 export type StateInfoDetails = {
-    onEntry: boolean
-    onExit: boolean
+    onEntry?: boolean
+    onExit?: boolean
     transitions: StateTransitionsDetails[]
 }
 
@@ -42,10 +42,34 @@ export type StateMachine = {
 
 export const sampleStateData: StateMachine = {
     name: "calc",
-    initial: "on",
+    initial: "off",
     states: [
         {
-            id: "wrapper",
+            id: "off",
+            absX: 0,
+            absY: 200,
+            posX: 0,
+            posY: 200,
+            width: 30,
+            height: 30,
+            details: {
+                transitions: [
+                    {
+                        event: "turn.on",
+                        toState: "on",
+                        condition: undefined,
+                    }
+                ]
+            },
+            isFinal: false,
+            isFirst: true,
+            isActive: false,
+            stateType: StateType.ATOMIC,
+            childStates: [],
+            connectedTo: []
+        },
+        {
+            id: "on",
             stateType: StateType.SEQUENTIAL,
             isFinal: false,
             isFirst: false,
@@ -64,15 +88,15 @@ export const sampleStateData: StateMachine = {
             connectedTo: [],
             childStates: [
                 {
-                    id: "on",
+                    id: "idle",
                     stateType: StateType.ATOMIC,
                     isFinal: false,
                     isFirst: false,
                     isActive: true,
                     posX: 100,
-                    width: 200,
+                    width: 500,
                     posY: 125,
-                    height: 100,
+                    height: 200,
                     details: {
                         onEntry: false,
                         onExit: false,
@@ -84,7 +108,7 @@ export const sampleStateData: StateMachine = {
                     absY: 125
                 },
                 {
-                    id: "off",
+                    id: "cooking",
                     stateType: StateType.ATOMIC,
                     isFinal: false,
                     isFirst: false,

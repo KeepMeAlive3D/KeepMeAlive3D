@@ -8,8 +8,9 @@ import { updateNodePosition } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import type { RootState } from "@/redux/store.ts";
 
-export function RenderState({ renderStateId}: {
-  renderStateId: string
+export function RenderState({ renderStateId, setInspectState}: {
+  renderStateId: string,
+  setInspectState:  (value: StateData | undefined) => void,
 }) {
   const data = useAppSelector((state: RootState) => state.sm);
   const currentState = findState(data.states, renderStateId);
@@ -17,6 +18,10 @@ export function RenderState({ renderStateId}: {
   const circleRef = useRef<Konva.Circle>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const dispatch = useDispatch();
+
+  const handleOnClickState = (_e: Konva.KonvaEventObject<MouseEvent>) => {
+    setInspectState(currentState);
+  };
 
   useEffect(() => {
     const state = findState(data.states, renderStateId);
@@ -123,6 +128,7 @@ export function RenderState({ renderStateId}: {
         return (
           <Circle draggable={true}
                   onDragMove={handleDragMove}
+                  onClick={it => handleOnClickState(it)}
                   key={currentState.id}
                   x={currentState.posX}
                   y={currentState.posY}
@@ -169,6 +175,7 @@ export function RenderState({ renderStateId}: {
                 <RenderState
                   renderStateId={it.id}
                   key={it.id}
+                  setInspectState={setInspectState}
                 />,
               )
             }
