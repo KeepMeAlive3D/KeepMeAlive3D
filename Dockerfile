@@ -15,6 +15,7 @@ RUN ./gradlew :api:installDist -x test
 
 
 FROM ghcr.io/graalvm/native-image-community:23
+RUN microdnf install findutils && microdnf clean all
 WORKDIR /app
 COPY --from=api /app/api/build/install/api ./api-dist
 EXPOSE 8080
