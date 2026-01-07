@@ -22,13 +22,6 @@ tasks.withType<Jar> {
     manifest {
         attributes("Multi-Release" to "true")
     }
-
-    exclude("META-INF/native-image/**")
-
-    exclude("com/oracle/svm/**")
-    exclude("org/graalvm/nativeimage/**")
-
-    exclude("org/graalvm/compiler/**")
 }
 
 java {
