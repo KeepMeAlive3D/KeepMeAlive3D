@@ -24,6 +24,11 @@ tasks.withType<Jar> {
     }
 
     exclude("META-INF/native-image/**")
+
+    exclude("com/oracle/svm/**")
+    exclude("org/graalvm/nativeimage/**")
+
+    exclude("org/graalvm/compiler/**")
 }
 
 java {
@@ -82,7 +87,7 @@ dependencies {
 
     //db
     implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
-    implementation("com.mysql:mysql-connector-j:9.2.0")
+    implementation("com.mysql:mysql-connector-j:9.4.0")
 
     // Koin for Ktor
     implementation("io.insert-koin:koin-ktor:4.0.4")
