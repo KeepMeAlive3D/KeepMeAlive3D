@@ -1,14 +1,19 @@
 import "./App.css";
 import ModelLoader from "@/scene/ModelLoader.tsx";
 import GraphView from "@/scene/graphs/GraphView.tsx";
-import { Route, Routes } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import LayoutSidebar from "@/routerLayouts/LayoutSidebar.tsx";
 import LayoutVanilla from "@/routerLayouts/LayoutVanilla.tsx";
 import { WebSocketProvider } from "@/service/webSocketProvider.tsx";
 import { DigitalTwinsOverview } from "@/scene/home/DigitalTwinsOverview.tsx";
 import { DigitalTwinOverview } from "@/scene/dt/DigitalTwinOverview.tsx";
 import { DigitalTwinParticipant } from "@/scene/dt/participant/DigitalTwinParticipant.tsx";
-import {StateMachineCanvas} from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
+import { StateMachineCanvas } from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
+import { DigitalTwinsOverviewHeader } from "@/scene/home/DigitalTwinsOverviewHeader.tsx";
+import * as React from "react";
+import { DigitalTwinOverviewHeader } from "@/scene/dt/DigitalTwinOverviewHeader.tsx";
+import { TraceOverview } from "@/scene/dt/eventlogs/trace/TraceOverview.tsx";
+import { TracesOverviewHeader } from "@/scene/dt/eventlogs/trace/TracesOverviewHeader.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -28,26 +33,76 @@ function App() {
   const origin = window.origin.replace("http://", "ws://").replace("https://", "wss://");  //use ws protocol instead of http
   const websocketUrl = (import.meta.env.VITE_APP_BASE_URL ?? origin) + "/ws";              //for dev use the url devined in the .env file, in production use the origin as the url
 
+  const router = createBrowserRouter([
+    // LayoutSidebar Group
+    {
+      path: "/",
+      element: <LayoutSidebar />,
+      children: [
+        {
+          index: true,
+          element: <DigitalTwinsOverview />,
+          handle: { header: <DigitalTwinsOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId",
+          element: <DigitalTwinOverview />,
+          handle: { header: <DigitalTwinOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId",
+          element: <DigitalTwinParticipant />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId/state-machine/:scId",
+          element: <StateMachineCanvas />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId/model/:modelId",
+          element: <ModelLoader />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/log/:logId",
+          element: <TraceOverview />,
+          handle: { header: <TracesOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "model/:modelId",
+          element: <ModelLoader />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "state-machine",
+          element: <StateMachineCanvas />,
+          handle: { header: null } as RouteHandle,
+        },
+      ],
+    },
+    {
+      path: "/graphs",
+      element: <LayoutVanilla />,
+      children: [
+        {
+          index: true,
+          element: <GraphView />,
+          handle: { header: null } as RouteHandle,
+        },
+      ],
+    },
+  ]);
+
   return (
     <WebSocketProvider url={websocketUrl}>
-      <Routes>
-        <Route path="/" element={<LayoutSidebar />}>
-          <Route path="/" element={<DigitalTwinsOverview />} />
-          <Route path="/dt/:dtId" element={<DigitalTwinOverview />} />
-          <Route path="/dt/:dtId/participant/:participantId" element={<DigitalTwinParticipant />} />
-          <Route path="/dt/:dtId/participant/:participantId/state-machine/:scId" element={<StateMachineCanvas />} />
-          <Route path="/dt/:dtId/participant/:participantId/model/:modelId" element={<ModelLoader />} />
-          <Route path="/model/:modelId" element={<ModelLoader />} />
-        </Route>
-        <Route path="/graphs" element={<LayoutVanilla />}>
-          <Route path="/graphs" element={<GraphView></GraphView>} />
-        </Route>
-        <Route path="/state-machine" element={<LayoutSidebar />}>
-          <Route path="/state-machine" element={<StateMachineCanvas />} />
-        </Route>
-      </Routes>
+      <RouterProvider router={router} />
     </WebSocketProvider>
   );
 }
 
 export default App;
+
+export interface RouteHandle {
+  header: React.ReactNode;
+}

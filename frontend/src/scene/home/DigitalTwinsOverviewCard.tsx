@@ -18,7 +18,7 @@ export function DigitalTwinsOverviewCard({dtData, refresh, setRefresh}: {
     return (
         <Link to={`/dt/${dtData.id}`} className="w-full max-w-sm mx-2 my-4">
             <Card className=" hover:bg-accent cursor-pointer min-h-25 flex-row">
-                <GetProjectIcon iconId={dtData.icon} className="m-auto ml-5"/>
+                <GetDigitalTwinIcon iconId={dtData.icon} className="m-auto ml-5"/>
                 <h2 className="m-auto font-medium">{dtData.name}</h2>
                 <Button
                     type="button"
@@ -37,7 +37,7 @@ export function DigitalTwinsOverviewCard({dtData, refresh, setRefresh}: {
     );
 }
 
-function GetProjectIcon({iconId, className}: { iconId: number, className: string }) {
+export function GetDigitalTwinIcon({iconId, className}: { iconId: number, className: string }) {
     switch (iconId) {
         case 1:
             return (<Wrench className={className}/>);

@@ -15,6 +15,11 @@ export function getDigitalTwins() {
   return service.get<DigitalTwinInfo[]>(`/api/dt`)
 }
 
+export function getDigitalTwin(dtId: number) {
+  return service.get<DigitalTwinInfo>(`/api/dt/${dtId}`)
+}
+
+
 export function createDigitalTwin(data: DigitalTwinCreate) {
   return service.post<DigitalTwinInfo>(`/api/dt`, data)
 }

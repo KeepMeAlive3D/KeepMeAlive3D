@@ -1,7 +1,8 @@
 import { AppSidebar } from "@/sidebar/AppSidebar.tsx";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
-import { Outlet, useLocation, useParams } from "react-router";
+import { Outlet, type UIMatch, useMatches } from "react-router";
 import { Separator } from "@/components/ui/separator.tsx";
+import type { RouteHandle } from "@/App.tsx";
 
 /**
  * Layout that includes the Sidebar
@@ -17,7 +18,7 @@ function Layout() {
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
           />
-          <GetTitle/>
+          <GetTitle />
         </header>
         <main className="w-full h-full">
           <div className={"main-body"}>
@@ -31,20 +32,20 @@ function Layout() {
   );
 }
 
-function GetTitle() {
-  const { dtId, participantId } = useParams();
-  const location = useLocation();
-
-  if(dtId) {
-    if(participantId) {
-      return <div>Process Participant</div>
-    }
-    return <div>Digital Twin</div>
-  }
-  if(location.pathname.includes("state-machine")) {
-    return <div>State Machine</div>
-  }
-  return null
+function hasHeaderHandle(match: UIMatch<unknown, unknown>): match is UIMatch<unknown, RouteHandle> {
+  return (
+    match.handle !== null &&
+    typeof match.handle === "object" &&
+    "header" in match.handle
+  );
 }
 
+function GetTitle() {
+  const matches = useMatches();
+
+  // Filter and find using the type guard
+  const matchWithHeader = [...matches].reverse().find(hasHeaderHandle);
+
+  return matchWithHeader ? matchWithHeader.handle.header : null;
+}
 export default Layout;
