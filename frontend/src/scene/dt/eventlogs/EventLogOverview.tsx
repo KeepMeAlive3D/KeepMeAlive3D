@@ -1,19 +1,34 @@
 import { Bolt, Plus } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Card } from "@/components/ui/card.tsx";
-import { CreateParticipantDialog } from "@/scene/dt/participant/CreateParticipantDialog.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EventLogCard } from "@/scene/dt/eventlogs/EventLogCard.tsx";
-import type { EventLog } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogInfo, getAllEventLogs } from "@/scene/dt/eventlogs/data.ts";
+import { CreateEventLogDialog } from "@/scene/dt/eventlogs/CreateEventLogDialog.tsx";
+import { useParams } from "react-router";
+import { Spinner } from "@/components/ui/spinner.tsx";
 
 export function EventLogOverview() {
   const [open, setOpen] = useState(false)
   const [refresh, setRefresh] = useState(false)
-  const [eventLogs, setEventLogs] = useState<EventLog[]>([{
-    id: 1,
-    name: "abc",
-    traces: []
-  }])
+  const [loading, setLoading] = useState(true);
+  const [eventLogs, setEventLogs] = useState<EventLogInfo[]>([])
+  const { dtId } = useParams();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await getAllEventLogs(Number(dtId));
+        setEventLogs(response.data);
+      } finally {
+        setLoading(false);
+      }
+    };
+    // noinspection JSIgnoredPromiseFromCall
+    fetchData();
+  }, [dtId, refresh]);
+
 
   return (
     <>
@@ -21,6 +36,7 @@ export function EventLogOverview() {
         <h2 className="text-lg font-semibold flex flex-row">
           <Bolt />
           <span className="ml-2">Event Logs</span>
+          {loading ? <Spinner className="ml-2 my-auto size-5" /> : null}
         </h2>
       </div>
       <div className="flex flex-wrap">
@@ -28,7 +44,7 @@ export function EventLogOverview() {
         {
           eventLogs.map(it => {
             return (
-              <EventLogCard data={it} />
+              <EventLogCard data={it} refresh={refresh} setRefresh={setRefresh}/>
             );
           })
         }
@@ -38,7 +54,7 @@ export function EventLogOverview() {
               <Plus className="m-auto" size={40} />
             </Card>
           </DialogTrigger>
-          <CreateParticipantDialog setOpen={setOpen} setRefresh={setRefresh} refresh={refresh} />
+          <CreateEventLogDialog setOpen={setOpen} setRefresh={setRefresh} refresh={refresh} />
         </Dialog>
       </div>
     </>

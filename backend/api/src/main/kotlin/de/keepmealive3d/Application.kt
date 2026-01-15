@@ -5,6 +5,7 @@ import de.keepmealive3d.adapters.controllers.DigitalTwinController
 import de.keepmealive3d.adapters.controllers.RegisterController
 import de.keepmealive3d.adapters.controllers.UserController
 import de.keepmealive3d.adapters.controllers.EventController
+import de.keepmealive3d.adapters.controllers.EventLogController
 import de.keepmealive3d.adapters.controllers.ModelDeleteController
 import de.keepmealive3d.adapters.controllers.ModelDownloadController
 import de.keepmealive3d.adapters.controllers.ModelInfoController
@@ -77,4 +78,5 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
     DigitalTwinController(this)
     ProcessParticipantController(this)
     StateMachineController(this)
+    EventLogController(this)
 }
