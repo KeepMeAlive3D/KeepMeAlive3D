@@ -8,8 +8,10 @@ import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.components.KScxmlRootNode
 import dev.klenz.matthias.kscxml.components.state.KScxmlState
 import kotlinx.coroutines.coroutineScope
+import okhttp3.internal.wait
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.io.File
 import kotlin.io.path.Path
 
 interface IStateMachineService {
@@ -18,6 +20,7 @@ interface IStateMachineService {
     fun getStateMachine(owner: Int, dt: Int, participant: Int, id: Int): StateMachine
     fun deleteStateMachine(owner: Int, dt: Int, participant: Int, id: Int)
     suspend fun startStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
+    fun getAllStateMachineFiles(owner: Int, dt: Int, participant: Int): List<File>
 }
 
 class StateMachineService : KoinComponent, IStateMachineService {
@@ -83,6 +86,16 @@ class StateMachineService : KoinComponent, IStateMachineService {
         fileName: String
     ) {
         plugins.forEach { it.activateStateChart(fileName) }
+    }
+
+    override fun getAllStateMachineFiles(
+        owner: Int,
+        dt: Int,
+        participant: Int
+    ): List<File> {
+        val p = Path(System.getProperty("user.dir")).resolve(owner.toString()).resolve(dt.toString())
+            .resolve(participant.toString()).resolve("state-machine")
+        return p.toFile().walk().maxDepth(1).filter { it.isFile && it.name.endsWith(".xml") }.toList()
     }
 
     internal fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
