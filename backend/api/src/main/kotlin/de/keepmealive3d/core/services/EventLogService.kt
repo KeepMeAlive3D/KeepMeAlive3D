@@ -10,6 +10,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.xml.parsers.DocumentBuilderFactory
 
 interface IEventLogService {
@@ -70,7 +73,7 @@ class EventLogService : KoinComponent, IEventLogService {
                                     ?.attributes
                                     ?.getNamedItem("value")
                                     ?.nodeValue
-                                    ?.let{Instant.parse(it + "Z")},
+                                    ?.let{ LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC).also { i -> println("DEBUG ${i.toEpochMilli()}") }},
                                 source = event
                                     .childNodes
                                     .toList()

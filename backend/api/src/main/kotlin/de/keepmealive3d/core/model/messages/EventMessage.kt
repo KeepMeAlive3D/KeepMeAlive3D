@@ -54,24 +54,34 @@ data class MessageSubscribeEventData(
 @Serializable
 data class ReplayStartEvent(
     val manifest: Manifest,
-    @Serializable(with = UnixTimeSerializer::class)
-    val start: Instant,
-    @Serializable(with = UnixTimeSerializer::class)
-    val end: Instant
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
 @Serializable
-data class ReplayStopEvent(
+data class ReplayPauseEvent(
     val manifest: Manifest,
-    @Serializable(with = UnixTimeSerializer::class)
-    val stop: Instant
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
 @Serializable
 data class ReplayEndEvent(
-    val manifest: Manifest
+    val manifest: Manifest,
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
+@Serializable
+data class ReplayForwardEvent(
+    val manifest: Manifest,
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
+)
 
 @Serializable
 data class ErrorEvent(

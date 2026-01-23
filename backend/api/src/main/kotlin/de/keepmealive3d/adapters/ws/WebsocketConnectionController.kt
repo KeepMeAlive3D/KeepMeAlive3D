@@ -1,13 +1,6 @@
 package de.keepmealive3d.adapters.ws
 
-import de.keepmealive3d.core.model.messages.SubscribeEvent
-import de.keepmealive3d.core.model.messages.GenericMessageEvent
-import de.keepmealive3d.core.model.messages.MessageType
-import de.keepmealive3d.core.model.messages.ReplayEndEvent
-import de.keepmealive3d.core.model.messages.ReplayStartEvent
-import de.keepmealive3d.core.model.messages.ReplayStopEvent
-import de.keepmealive3d.core.model.messages.UnknownTypeEvent
-import de.keepmealive3d.core.model.messages.wsCreateErrorEventMessage
+import de.keepmealive3d.core.model.messages.*
 import de.keepmealive3d.core.services.IWsSessionService
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -61,11 +54,15 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                                 )
 
                                 MessageType.REPLAY_END -> sessionService.endReplay(
-                                    jsonParser.decodeFromString<ReplayEndEvent>(text).manifest
+                                    jsonParser.decodeFromString<ReplayEndEvent>(text)
                                 )
 
-                                MessageType.REPLAY_STOP -> sessionService.stopReplay(
-                                    jsonParser.decodeFromString<ReplayStopEvent>(text)
+                                MessageType.REPLAY_PAUSE -> sessionService.pauseReplay(
+                                    jsonParser.decodeFromString<ReplayPauseEvent>(text)
+                                )
+
+                                MessageType.REPLAY_FORWARD -> sessionService.forwardReplay(
+                                    jsonParser.decodeFromString<ReplayForwardEvent>(text)
                                 )
 
                                 else -> {

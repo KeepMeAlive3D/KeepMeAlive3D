@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
 import { useEffect, useState } from "react";
 import { type EventLogInfo, getEventLog } from "@/scene/dt/eventlogs/data.ts";
@@ -47,7 +47,11 @@ export function TraceOverview() {
               <div className="grow"></div>
               <Button variant="destructive" className="cursor-pointer"><CircleStop/></Button>
               <Button variant="outline" className="ml-2 cursor-pointer"><CircleArrowRight/></Button>
-              <Button variant="outline" className="ml-2 cursor-pointer"><Search/></Button>
+              <Link to={`/dt/${dtId}/log/${logId}/trace/${it.name}`} className="cursor-pointer">
+                <Button variant="outline" className="ml-2 cursor-pointer">
+                  <Search/>
+                </Button>
+              </Link>
             </TableCell>
           </TableRow>
         ))}

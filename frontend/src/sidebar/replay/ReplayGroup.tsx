@@ -4,7 +4,6 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@/components/ui/sidebar.tsx";
-import { StartReplay } from "@/sidebar/replay/StartReplay.tsx";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { selectModelParts } from "@/redux/slices/ModelPartSlice.ts";
 
@@ -18,7 +17,7 @@ export function ReplayGroup() {
         <SidebarGroupLabel>Replay</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <StartReplay />
+
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>

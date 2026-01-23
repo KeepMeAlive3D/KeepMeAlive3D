@@ -21,7 +21,14 @@ export interface EventLogEvent {
   name: string,
   datetime: number | undefined,
   source: string | undefined,
-  value: string | undefined
+  value: string | undefined,
+  replayState: EventReplayState
+}
+
+export enum EventReplayState {
+  EXECUTED = "EXECUTED",
+  ACTIVE= "ACTIVE",
+  NOT_EXECUTED = "NOT_EXECUTED"
 }
 
 export function getAllEventLogs(dt: number) {

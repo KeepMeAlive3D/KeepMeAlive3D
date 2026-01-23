@@ -14,6 +14,8 @@ import * as React from "react";
 import { DigitalTwinOverviewHeader } from "@/scene/dt/DigitalTwinOverviewHeader.tsx";
 import { TraceOverview } from "@/scene/dt/eventlogs/trace/TraceOverview.tsx";
 import { TracesOverviewHeader } from "@/scene/dt/eventlogs/trace/TracesOverviewHeader.tsx";
+import { TraceReplayInspect } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspect.tsx";
+import { TraceReplayInspectHeader } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspectHeader.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -68,6 +70,11 @@ function App() {
           path: "dt/:dtId/log/:logId",
           element: <TraceOverview />,
           handle: { header: <TracesOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/log/:logId/trace/:traceName",
+          element: <TraceReplayInspect/>,
+          handle: { header: <TraceReplayInspectHeader/> } as RouteHandle,
         },
         {
           path: "model/:modelId",

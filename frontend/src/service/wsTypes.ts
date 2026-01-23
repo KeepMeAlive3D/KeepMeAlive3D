@@ -1,3 +1,5 @@
+import type { EventLogEvent } from "@/scene/dt/eventlogs/data.ts";
+
 export interface GenericEventMessage {
   manifest: Manifest;
   message: GenericMessageData;
@@ -53,24 +55,47 @@ export interface RelativePositionMessageData extends GenericMessageData {
 
 export interface ReplayStart {
   manifest: Manifest;
-  start?: number | undefined;
-  end?: number | undefined;
+  dtId: number;
+  logId: number;
+  trace: string;
 }
 
-export interface ReplayStop {
+export interface ReplayPauseEvent {
   manifest: Manifest;
-  /**
-   * the time the user clicked stop, so the server can start on this time again
-   */
-  stop: number;
+  dtId: number;
+  logId: number;
+  trace: string;
+}
+
+export interface ReplayForwardEvent {
+  manifest: Manifest;
+  dtId: number;
+  logId: number;
+  trace: string;
 }
 
 export interface ReplayEnd {
   manifest: Manifest;
+  dtId: number;
+  logId: number;
+  trace: string;
 }
 
 export interface NewSession {
   manifest: Manifest;
+}
+
+export interface StateTransitionInfo extends GenericEventMessage {
+  manifest: Manifest;
+  message: StateTransitionInfoData;
+}
+
+export interface StateTransitionInfoData extends GenericMessageData {
+  from: string;
+  to: string;
+  topic: string;
+  datasource: string;
+  allEvents: EventLogEvent[];
 }
 
 export interface Manifest {
@@ -87,6 +112,8 @@ export enum MessageType {
   ERROR = "ERROR",
   SUBSCRIBE_TOPIC = "SUBSCRIBE_TOPIC",
   REPLAY_START = "REPLAY_START",
-  REPLAY_STOP = "REPLAY_STOP",
+  REPLAY_PAUSE = "REPLAY_PAUSE",
   REPLAY_END = "REPLAY_END",
+  REPLAY_FORWARD = "REPLAY_FORWARD",
+  STATE_TRANSITION = "STATE_TRANSITION"
 }

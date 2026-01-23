@@ -13,7 +13,7 @@ object UnixTimeSerializer: KSerializer<Instant> {
         PrimitiveSerialDescriptor("Instant", PrimitiveKind.LONG)
 
     override fun serialize(encoder: Encoder, value: Instant) {
-        encoder.encodeLong(value.epochSecond)
+        encoder.encodeLong(value.toEpochMilli())
     }
 
     override fun deserialize(decoder: Decoder): Instant {

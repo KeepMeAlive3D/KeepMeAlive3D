@@ -29,7 +29,13 @@ data class EventLog(
         @Serializable(UnixTimeSerializer::class)
         val datetime: Instant?,
         val source: String?,
-        val value: String?
+        val value: String?,
+        val replayState: EventReplayState = EventReplayState.NOT_EXECUTED
     )
-}
 
+    enum class EventReplayState {
+        EXECUTED,
+        ACTIVE,
+        NOT_EXECUTED
+    }
+}

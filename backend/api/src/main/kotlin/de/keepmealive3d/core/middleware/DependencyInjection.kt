@@ -26,7 +26,6 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IModelRepository> { ModelRepository() }
                 single<IModelDao> { ModelDao() }
                 single<IModelService> { ModelService() }
-                single<IReplayService> { ReplayService() }
                 single<IWsSessionService> { WsSessionService() }
                 single<IDigitalTwinRepository> { DigitalTwinRepository() }
                 single<IDigitalTwinService> { DigitalTwinService() }

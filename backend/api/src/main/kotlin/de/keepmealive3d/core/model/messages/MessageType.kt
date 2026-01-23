@@ -6,6 +6,8 @@ enum class MessageType {
     ERROR,
     SUBSCRIBE_TOPIC,
     REPLAY_START,
-    REPLAY_STOP,
+    REPLAY_PAUSE,
     REPLAY_END,
+    REPLAY_FORWARD,
+    STATE_TRANSITION
 }

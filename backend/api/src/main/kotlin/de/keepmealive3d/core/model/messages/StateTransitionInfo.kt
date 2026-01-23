@@ -1,5 +1,6 @@
 package de.keepmealive3d.core.model.messages
 
+import de.keepmealive3d.adapters.data.EventLog
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,4 +15,5 @@ data class StateTransitionInfoData(
     val to: String,
     override val topic: String,
     override val dataSource: String,
+    val allEvents: List<EventLog.Event>
 ): GenericMessageData
