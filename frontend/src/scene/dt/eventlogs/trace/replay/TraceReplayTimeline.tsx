@@ -81,7 +81,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
     const fastForwardReplayData: ReplayForwardEvent = {
       manifest: {
         version: 1,
-        messageType: MessageType.REPLAY_PAUSE,
+        messageType: MessageType.REPLAY_FORWARD,
         timestamp: new Date().valueOf(),
         bearerToken: localStorage.getItem("token") ?? "null",
         uuid: localStorage.getItem("uuid") ?? undefined,

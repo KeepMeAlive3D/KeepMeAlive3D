@@ -51,12 +51,13 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     private val replays = mutableListOf<ActiveReplayInfo>()
     private val activeReplayJobs = mutableMapOf<Pair<Int, String>, Job>()
     private val eventLogService: IEventLogService by inject()
-    private val stateMachineService: StateMachineService by inject()
+    private val stateMachineService: IStateMachineService by inject()
     private val processParticipantService: IProcessParticipantService by inject()
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val logger = LoggerFactory.getLogger("EventLogReplayService")
 
     override suspend fun startReplay(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String) {
+        logger.info("Starting Replay for session ${sessionData.uuid}")
         val eventLog = eventLogService.get(owner, dt, id)
         val trace = eventLog.eventLog.traces.firstOrNull { it.name == trace }
         if (trace == null) {
@@ -136,6 +137,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         id: Int,
         trace: String
     ) {
+        logger.info("Resuming Replay for session ${sessionData.uuid}")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             val secondsToAdd = it.secondsUntilNextEventOnPause.get()
             it.waitUntil.set(Instant.now().plusSeconds(secondsToAdd))
@@ -151,6 +153,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         id: Int,
         trace: String
     ) {
+        logger.info("Pause Replay for session ${sessionData.uuid}")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             val until = it.waitUntil.get()
             it.secondsUntilNextEventOnPause.set((until.epochSecond - Instant.now().epochSecond).coerceAtLeast(0))
@@ -166,6 +169,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         id: Int,
         trace: String
     ) {
+        logger.info("Step forward Replay for session ${sessionData.uuid}")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             it.waitUntil.set(Instant.now())
             it.secondsUntilNextEventOnPause.set(0)
@@ -173,6 +177,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     }
 
     override fun end(owner: Int, dt: Int, id: Int, trace: String) {
+        logger.info("End Replay $trace")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             it.currentEvent.set(it.allEvents.last())
             it.waitUntil.set(Instant.now())

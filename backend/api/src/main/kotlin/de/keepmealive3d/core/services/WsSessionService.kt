@@ -11,6 +11,7 @@ import io.ktor.util.collections.*
 import kotlinx.coroutines.channels.Channel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.slf4j.LoggerFactory
 import java.util.*
 
 interface IWsSessionService {
@@ -27,8 +28,9 @@ interface IWsSessionService {
 
 class WsSessionService : IWsSessionService, KoinComponent {
     private val sessions = ConcurrentSet<WsSessionData>()
-    private val eventLogReplayService: EventLogReplayService by inject()
+    private val eventLogReplayService: IEventLogReplayService by inject()
     private val jwt: JWT by inject()
+    private val logger = LoggerFactory.getLogger("WsSessionService")
 
     override fun newSession(info: Manifest): Result<WsSessionData> {
         val uuid = try {
@@ -36,6 +38,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
         } catch (_: Exception) {
             return Result.failure(BadRequestDataException("Invalid session UUID"))
         }
+        logger.info("Creating new Websocket session $uuid")
         val wsSessionData = WsSessionData(
             uuid = uuid,
             channels = mutableListOf()
@@ -45,6 +48,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override fun closeSession(uuid: String?, topic: String?): Result<Unit> {
+        logger.info("Closing websocket session $uuid")
         val wsSession = sessions.find { it.uuid.toString() == uuid } ?: return Result.failure(
             EntityNotFoundException("The session could not be found")
         )
@@ -57,6 +61,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override fun topicSubscribe(info: SubscribeEvent): Result<Channel<GenericMessageEvent>> {
+        logger.info("Subscribe to topic: ${info.message.topic}")
         val wsSession =
             sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
                 return Result.failure(it)
@@ -68,12 +73,17 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override suspend fun startReplay(info: ReplayStartEvent): Result<Unit> {
+        logger.info("Start Replay")
         val wsSession =
             sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
+                logger.warn("The session could not be found")
                 return Result.failure(it)
             }
         val userid = info.manifest.bearerToken?.let {
-            jwt.getUserId(it).getOrElse { err ->  return Result.failure(err) }
+            jwt.getUserId(it).getOrElse { err ->
+                logger.warn("The user id could not be found")
+                return Result.failure(err)
+            }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
 
         eventLogReplayService.startReplay(wsSession, userid, info.dtId, info.logId, info.trace)
@@ -81,6 +91,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override suspend fun pauseReplay(info: ReplayPauseEvent): Result<Unit> {
+        logger.info("Pause Replay")
         val wsSession =
             sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
                 return Result.failure(it)
@@ -94,6 +105,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override fun endReplay(info: ReplayEndEvent): Result<Unit> {
+        logger.info("End Replay")
         val userid = info.manifest.bearerToken?.let {
             jwt.getUserId(it).getOrElse { err ->  return Result.failure(err) }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
@@ -103,6 +115,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     }
 
     override suspend fun forwardReplay(info: ReplayForwardEvent): Result<Unit> {
+        logger.info("Forward Replay")
         val wsSession =
             sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
                 return Result.failure(it)
