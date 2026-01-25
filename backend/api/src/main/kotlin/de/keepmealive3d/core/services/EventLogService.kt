@@ -8,8 +8,6 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.NotFoundException
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.io.File
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -23,7 +21,8 @@ interface IEventLogService {
 }
 
 class EventLogService : KoinComponent, IEventLogService {
-    val repository: IEventLogRepository by inject()
+    private val repository: IEventLogRepository by inject()
+    private val eventLogReplayService: IEventLogReplayService by inject()
 
     override fun save(owner: Int, dt: Int, eventLog: ByteArray, name: String) {
         val data = convert(eventLog, name) ?: throw BadRequestException("Event log is malformatted, can't save $name")
@@ -32,7 +31,22 @@ class EventLogService : KoinComponent, IEventLogService {
 
     override fun get(owner: Int, dt: Int, id: Int): EventLogInfo {
         //todo check if owner matches
-        return repository.getEventLog(id) ?: throw NotFoundException("Event log is not found")
+        val log = repository.getEventLog(id) ?: throw NotFoundException("Event log is not found")
+        val traces = log.eventLog.traces.filter { it.name != null }.map {
+            val activeReplayEvents = eventLogReplayService.getWithState(log.owner, log.dt, log.id, it.name!!)
+            if(activeReplayEvents.isNotEmpty()) {
+                EventLog.Trace(
+                    it.name,
+                    activeReplayEvents,
+                    eventLogReplayService.getReplayState(log.owner, log.dt, log.id, it.name)
+                )
+            } else {
+                it
+            }
+        }
+
+        log.eventLog.traces = traces
+        return log
     }
 
     override fun getAll(owner: Int, dt: Int): List<EventLogInfo> {
@@ -73,7 +87,10 @@ class EventLogService : KoinComponent, IEventLogService {
                                     ?.attributes
                                     ?.getNamedItem("value")
                                     ?.nodeValue
-                                    ?.let{ LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC).also { i -> println("DEBUG ${i.toEpochMilli()}") }},
+                                    ?.let {
+                                        LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                            .toInstant(ZoneOffset.UTC)
+                                    },
                                 source = event
                                     .childNodes
                                     .toList()
@@ -89,7 +106,8 @@ class EventLogService : KoinComponent, IEventLogService {
                                     ?.getNamedItem("value")
                                     ?.nodeValue
                             )
-                        }
+                        },
+                        replayState = EventLog.ReplayState.END
                     )
                 }
             )

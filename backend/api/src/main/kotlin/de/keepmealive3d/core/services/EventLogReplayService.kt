@@ -2,11 +2,12 @@ package de.keepmealive3d.core.services
 
 import de.keepmealive3d.adapters.data.EventLog
 import de.keepmealive3d.core.model.messages.*
-import de.keepmealive3d.core.model.session.WsSessionData
 import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.execution.KScxmlExecutor
 import dev.klenz.matthias.kscxml.execution.state.InternalScxmlState
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
@@ -14,12 +15,13 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
 interface IEventLogReplayService {
-    suspend fun startReplay(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun continueReplay(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun pauseReplay(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun stepForward(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun startReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun continueReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun pauseReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun stepForward(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
     fun end(owner: Int, dt: Int, id: Int, trace: String)
     fun getWithState(owner: Int, dt: Int, id: Int, trace: String): List<EventLog.Event>
+    fun getReplayState(owner: Int, dt: Int, id: Int, trace: String): EventLog.ReplayState
 }
 
 class EventLogReplayService : KoinComponent, IEventLogReplayService {
@@ -56,8 +58,8 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val logger = LoggerFactory.getLogger("EventLogReplayService")
 
-    override suspend fun startReplay(sessionData: WsSessionData, owner: Int, dt: Int, id: Int, trace: String) {
-        logger.info("Starting Replay for session ${sessionData.uuid}")
+    override suspend fun startReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String) {
+        logger.info("Starting Replay for trace $trace")
         val eventLog = eventLogService.get(owner, dt, id)
         val trace = eventLog.eventLog.traces.firstOrNull { it.name == trace }
         if (trace == null) {
@@ -85,22 +87,18 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         val job = scope.launch {
             // send transitions of the state machine to the client
             executor.registerTransitionEventListener { from, to ->
-                sessionData.channels.forEach { channel ->
-                    if (channel.topic == "replay-${id}-${trace}") {
-                        runBlocking {
-                            channel.channel.send(
-                                StateTransitionInfo(
-                                    Manifest(1, MessageType.STATE_TRANSITION),
-                                    StateTransitionInfoData(
-                                        from = from.id ?: "unknown",
-                                        to = to.id ?: "unknown",
-                                        dataSource = "replay-service",
-                                        topic = "replay-${id}-${trace}",
-                                        allEvents = getWithState(owner, dt, id, trace.name ?: "unknown")
-                                    )
-                                )
+                replyTo.forEach { channel ->
+                    runBlocking {
+                        channel.send(StateTransitionInfo(
+                            Manifest(1, MessageType.STATE_TRANSITION),
+                            StateTransitionInfoData(
+                                from = from.id ?: "unknown",
+                                to = to.id ?: "unknown",
+                                dataSource = "replay-service",
+                                topic = "replay-${id}-${trace}",
+                                allEvents = getWithState(owner, dt, id, trace.name ?: "unknown")
                             )
-                        }
+                        ))
                     }
                 }
             }
@@ -124,36 +122,36 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
             executor.start()
             delay(2_000)
 
-            runEventLogLoop(info, sessionData)
+            runEventLogLoop(info, replyTo)
         }
 
         activeReplayJobs[id to trace.name!!] = job
     }
 
     override suspend fun continueReplay(
-        sessionData: WsSessionData,
+        replyTo: List<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
         trace: String
     ) {
-        logger.info("Resuming Replay for session ${sessionData.uuid}")
+        logger.info("Resuming Replay for trace $trace")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             val secondsToAdd = it.secondsUntilNextEventOnPause.get()
             it.waitUntil.set(Instant.now().plusSeconds(secondsToAdd))
             it.secondsUntilNextEventOnPause.set(0)
             it.isPaused.set(false)
-        } ?: startReplay(sessionData, owner, dt, id, trace)
+        } ?: startReplay(replyTo, owner, dt, id, trace)
     }
 
     override suspend fun pauseReplay(
-        sessionData: WsSessionData,
+        replyTo: List<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
         trace: String
     ) {
-        logger.info("Pause Replay for session ${sessionData.uuid}")
+        logger.info("Pause Replay for trace $trace")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             val until = it.waitUntil.get()
             it.secondsUntilNextEventOnPause.set((until.epochSecond - Instant.now().epochSecond).coerceAtLeast(0))
@@ -163,13 +161,13 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     }
 
     override suspend fun stepForward(
-        sessionData: WsSessionData,
+        replyTo: List<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
         trace: String
     ) {
-        logger.info("Step forward Replay for session ${sessionData.uuid}")
+        logger.info("Step forward Replay for trace $trace")
         replays.firstOrNull { it.id == id && it.trace == trace }?.let {
             it.waitUntil.set(Instant.now())
             it.secondsUntilNextEventOnPause.set(0)
@@ -203,8 +201,8 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
                     source = event.source,
                     value = event.value,
                     replayState =
-                        if (currentIndex == index) EventLog.EventReplayState.ACTIVE
-                        else if (currentIndex < index) EventLog.EventReplayState.EXECUTED
+                        if (index == currentIndex) EventLog.EventReplayState.ACTIVE
+                        else if (index < currentIndex) EventLog.EventReplayState.EXECUTED
                         else EventLog.EventReplayState.NOT_EXECUTED,
                 )
             }
@@ -212,9 +210,19 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         return emptyList()
     }
 
-    private suspend fun runEventLogLoop(info: ActiveReplayInfo, wsSessionData: WsSessionData) {
+    override fun getReplayState(
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    ): EventLog.ReplayState {
+        val replay = replays.firstOrNull { it.id == id && it.trace == trace } ?: return EventLog.ReplayState.END
+        return if (replay.isPaused.get()) EventLog.ReplayState.PAUSED else EventLog.ReplayState.RUNNING
+    }
+
+    private suspend fun runEventLogLoop(info: ActiveReplayInfo, replyTo: List<Channel<GenericMessageEvent>>) {
         while (info.currentEvent.get() != info.allEvents.last()) {
-            if (info.waitUntil.get().isBefore(Instant.now())) {
+            if (info.waitUntil.get().isAfter(Instant.now())) {
                 try {
                     delay(100)
                 } catch (e: InterruptedException) {
@@ -234,7 +242,9 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
                 val next = info.allEvents[index + 1]
                 val timeOffset = next.datetime!!.toEpochMilli() - current.datetime!!.toEpochMilli()
 
-                sendCurrentEventToClient(wsSessionData, info)
+                logger.info("Executed event $index / ${info.allEvents.size}")
+                sendCurrentEventToClient(replyTo, info)
+                info.currentEvent.set(next)
 
                 if (info.isPaused.get()) {
                     info.waitUntil.set(Instant.MAX)
@@ -244,24 +254,30 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
                     info.secondsUntilNextEventOnPause.set(0)
                 }
             } else {
+                logger.error("Invalid state, index out of bounds, replay didn't stop")
                 break
             }
         }
     }
 
-    private suspend fun sendCurrentEventToClient(wsSessionData: WsSessionData, info: ActiveReplayInfo) {
-        wsSessionData.channels.forEach { channel ->
-            if (channel.topic == "replay-${info.id}-${info.trace}") {
-                channel.channel.send(
-                    DataPointMessageEvent(
-                        Manifest(1, MessageType.TOPIC_DATAPOINT, info.currentEvent.get().datetime),
-                        DataPointMessageData(
+    private suspend fun sendCurrentEventToClient(replyTo: List<Channel<GenericMessageEvent>>, info: ActiveReplayInfo) {
+        logger.info("Sending current event: ${info.currentEvent.get()} to ${replyTo.size} channels")
+        replyTo.forEach {
+            try {
+                it.send(
+                    StateTransitionInfo(
+                        Manifest(1, MessageType.STATE_TRANSITION, info.currentEvent.get().datetime),
+                        StateTransitionInfoData(
+                            "",
+                            "",
                             "replay-${info.id}-${info.trace}",
                             info.currentEvent.get().source ?: "unknown",
-                            info.currentEvent.get().value?.toDoubleOrNull() ?: 0.0
+                            getWithState(info.owner, info.dt, info.id, info.trace)
                         )
                     )
                 )
+            } catch (e: ClosedSendChannelException) {
+                logger.warn("Failed to send current event: ${info.currentEvent.get()} to a closed channel: ${e.cause}")
             }
         }
     }

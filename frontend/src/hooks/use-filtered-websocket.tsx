@@ -1,5 +1,5 @@
 import { createWebsocket } from "@/service/wsService.ts";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   type EventError,
@@ -29,18 +29,17 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(
   onMessage: (msg: Type) => void
 ) {
 
-  const topics = useRef<string[]>([]);
+  const [topics, setTopics] = useState<string[]>(topicsArg)
 
-  // Only update if the topics actually changed and not only the reference of the array
-  if (!topics.current || !areArraysEqual(topicsArg, topics.current)) {
-    topics.current = topicsArg;
+  if(!areArraysEqual(topicsArg, topics)) {
+    setTopics(topicsArg)
   }
 
   useEffect(() => {
     let websocketConnection: WebSocket | undefined = undefined;
     createWebsocket().then((ws) => {
       // Create subscription messages
-      const subscriptions = topics.current.map((topic) => {
+      const subscriptions = topics.map((topic: string) => {
         return {
           manifest: {
             version: 1,
@@ -66,9 +65,9 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(
         const e: string = event.data.toString();
 
         const jsonMsg = JSON.parse(e);
-        const msgType = jsonMsg["manifest"]["messageType"];
+        const receivedMsgType: MessageType = jsonMsg["manifest"]["messageType"];
 
-        if (msgType === MessageType.ERROR) {
+        if (receivedMsgType === MessageType.ERROR) {
           const error = jsonMsg as EventError;
 
           console.error(error.message.message.toString());
@@ -76,9 +75,11 @@ function useFilteredWebsocket<Type extends GenericEventMessage>(
           toast.error("Error", {
             description: error.message.message.toString()
           })
-        } else if (msgType === messageType) {
+        } else if (receivedMsgType === messageType) {
           // Call callback function with the parsed message
           onMessage(jsonMsg as Type);
+        } else {
+          console.error(`Received invalid msg type from server, got '${receivedMsgType}' but expected '${messageType}'`)
         }
       };
     });

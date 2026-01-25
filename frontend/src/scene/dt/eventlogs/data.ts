@@ -15,7 +15,15 @@ export interface EventLog {
 export interface EventLogTrace {
   name: string;
   events: EventLogEvent[];
+  replayState: ReplayState;
 }
+
+export enum ReplayState {
+  RUNNING = "RUNNING",
+  PAUSED = "PAUSED",
+  END = "END"
+}
+
 
 export interface EventLogEvent {
   name: string,

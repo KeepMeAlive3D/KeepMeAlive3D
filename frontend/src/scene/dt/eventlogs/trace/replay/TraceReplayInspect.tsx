@@ -4,7 +4,7 @@ import { type EventLogTrace, getEventLog } from "@/scene/dt/eventlogs/data.ts";
 import { useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { useWebSocket } from "@/service/webSocketProvider.tsx";
-import { type EventSubscribe, MessageType, type StateTransitionInfo } from "@/service/wsTypes.ts";
+import { MessageType, type StateTransitionInfo } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 
 export function TraceReplayInspect() {
@@ -21,21 +21,6 @@ export function TraceReplayInspect() {
         setData(response.data.eventLog.traces.find(it => it.name === traceName));
       } finally {
         setLoading(false);
-
-        const topicSub = {
-          manifest: {
-            version: 1,
-            messageType: MessageType.SUBSCRIBE_TOPIC,
-            timestamp: new Date().valueOf(),
-            bearerToken: localStorage.getItem("token") ?? "null",
-            uuid: localStorage.getItem("uuid"),
-          },
-          message: {
-            topic: `replay-${logId}-${traceName}`,
-          },
-        } as EventSubscribe;
-
-        socket?.send(JSON.stringify(topicSub))
       }
     };
     // noinspection JSIgnoredPromiseFromCall

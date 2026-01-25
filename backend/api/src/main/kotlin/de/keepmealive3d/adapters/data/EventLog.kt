@@ -15,13 +15,20 @@ data class EventLogInfo(
 @Serializable
 data class EventLog(
     val name: String,
-    val traces: List<Trace>,
+    var traces: List<Trace>,
 ) {
     @Serializable
     data class Trace(
         val name: String?,
-        val events: List<Event>
+        val events: List<Event>,
+        val replayState: ReplayState
     )
+
+    enum class ReplayState {
+        RUNNING,
+        PAUSED,
+        END,
+    }
 
     @Serializable
     data class Event(

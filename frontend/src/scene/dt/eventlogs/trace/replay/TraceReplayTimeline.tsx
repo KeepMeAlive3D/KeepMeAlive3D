@@ -1,5 +1,5 @@
 import { Timeline, TimelineItem } from "@/components/custom/Timeline.tsx";
-import { type EventLogTrace, EventReplayState } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogTrace, EventReplayState, ReplayState } from "@/scene/dt/eventlogs/data.ts";
 import { ButtonGroup } from "@/components/ui/button-group.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Flame, Pause, Play, Rewind, SkipForward } from "lucide-react";
@@ -18,13 +18,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
   const { socket } = useWebSocket();
   const { logId, dtId, traceName } = useParams();
 
-  enum InnerReplayState {
-    RUNNING,
-    PAUSED,
-    END
-  }
-
-  const [replayState, setReplayState] = useState(InnerReplayState.END);
+  const [replayState, setReplayState] = useState(trace.replayState);
 
   function startReplay() {
     const startReplayData: ReplayStart = {
@@ -40,7 +34,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(startReplayData));
-    setReplayState(InnerReplayState.RUNNING)
+    setReplayState(ReplayState.RUNNING)
   }
 
   function endReplay() {
@@ -57,7 +51,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(endReplayData));
-    setReplayState(InnerReplayState.END)
+    setReplayState(ReplayState.END)
   }
 
   function pauseReplay() {
@@ -74,7 +68,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(pauseReplayData));
-    setReplayState(InnerReplayState.PAUSED)
+    setReplayState(ReplayState.PAUSED)
   }
 
   function fastForward() {
@@ -97,13 +91,13 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
     <header className="flex flex-row mt-2 justify-center items-center">
       <h2 className="text-xl font-semibold text-center grow">Timeline</h2>
       <ButtonGroup className="grow">
-        {(replayState !== InnerReplayState.END) ?
+        {(replayState !== ReplayState.END) ?
           <Button variant="outline" onClick={endReplay}><Rewind /></Button> : null}
-        {(replayState === InnerReplayState.RUNNING) ?
+        {(replayState === ReplayState.RUNNING) ?
           <Button variant="outline" onClick={pauseReplay}><Pause /></Button> : null}
-        {(replayState !== InnerReplayState.RUNNING) ?
+        {(replayState !== ReplayState.RUNNING) ?
           <Button variant="outline" onClick={startReplay}><Play /></Button> : null}
-        {(replayState !== InnerReplayState.END) ?
+        {(replayState !== ReplayState.END) ?
           <Button variant="outline" onClick={fastForward}><SkipForward /></Button> : null}
       </ButtonGroup>
     </header>
@@ -112,6 +106,7 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       {trace.events.map(it => {
         const date = new Date(it.datetime ?? 0);
         return <TimelineItem
+          key={it.name + it.datetime}
           date={date.toLocaleString()}
           title={it.name}
           description={((it.source ? it.source + " = " : undefined) ?? "") + (it.value ?? "")}

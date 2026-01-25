@@ -7,9 +7,9 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -37,7 +37,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                                     topics.add(event.message.topic)
                                     sessionService.topicSubscribe(event)
                                         .fold({
-                                            async(Dispatchers.IO) {
+                                            launch(Dispatchers.IO) {
                                                 handleSend(it, outgoing)
                                             }
                                         }) {

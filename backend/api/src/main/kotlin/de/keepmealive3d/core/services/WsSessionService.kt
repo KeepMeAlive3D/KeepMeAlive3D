@@ -13,6 +13,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
 import java.util.*
+import kotlin.collections.map
 
 interface IWsSessionService {
     fun newSession(info: Manifest): Result<WsSessionData>
@@ -74,11 +75,6 @@ class WsSessionService : IWsSessionService, KoinComponent {
 
     override suspend fun startReplay(info: ReplayStartEvent): Result<Unit> {
         logger.info("Start Replay")
-        val wsSession =
-            sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
-                logger.warn("The session could not be found")
-                return Result.failure(it)
-            }
         val userid = info.manifest.bearerToken?.let {
             jwt.getUserId(it).getOrElse { err ->
                 logger.warn("The user id could not be found")
@@ -86,28 +82,26 @@ class WsSessionService : IWsSessionService, KoinComponent {
             }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
 
-        eventLogReplayService.startReplay(wsSession, userid, info.dtId, info.logId, info.trace)
+        val topic = "replay-${info.logId}-${info.trace}"
+        eventLogReplayService.startReplay(getAllChannelsForTopic(topic), userid, info.dtId, info.logId, info.trace)
         return Result.success(Unit)
     }
 
     override suspend fun pauseReplay(info: ReplayPauseEvent): Result<Unit> {
         logger.info("Pause Replay")
-        val wsSession =
-            sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
-                return Result.failure(it)
-            }
         val userid = info.manifest.bearerToken?.let {
-            jwt.getUserId(it).getOrElse { err ->  return Result.failure(err) }
+            jwt.getUserId(it).getOrElse { err -> return Result.failure(err) }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
 
-        eventLogReplayService.pauseReplay(wsSession, userid, info.dtId, info.logId, info.trace)
+        val topic = "replay-${info.logId}-${info.trace}"
+        eventLogReplayService.pauseReplay(getAllChannelsForTopic(topic), userid, info.dtId, info.logId, info.trace)
         return Result.success(Unit)
     }
 
     override fun endReplay(info: ReplayEndEvent): Result<Unit> {
         logger.info("End Replay")
         val userid = info.manifest.bearerToken?.let {
-            jwt.getUserId(it).getOrElse { err ->  return Result.failure(err) }
+            jwt.getUserId(it).getOrElse { err -> return Result.failure(err) }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
 
         eventLogReplayService.end(userid, info.dtId, info.logId, info.trace)
@@ -116,32 +110,25 @@ class WsSessionService : IWsSessionService, KoinComponent {
 
     override suspend fun forwardReplay(info: ReplayForwardEvent): Result<Unit> {
         logger.info("Forward Replay")
-        val wsSession =
-            sessions.find { it.uuid.toString() == info.manifest.uuid } ?: newSession(info.manifest).getOrElse {
-                return Result.failure(it)
-            }
         val userid = info.manifest.bearerToken?.let {
-            jwt.getUserId(it).getOrElse { err ->  return Result.failure(err) }
+            jwt.getUserId(it).getOrElse { err -> return Result.failure(err) }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
 
-        eventLogReplayService.stepForward(wsSession, userid, info.dtId, info.logId, info.trace)
+        val topic = "replay-${info.logId}-${info.trace}"
+        eventLogReplayService.stepForward(getAllChannelsForTopic(topic), userid, info.dtId, info.logId, info.trace)
         return Result.success(Unit)
     }
 
-    override suspend fun distributeLiveEvent(msg: GenericMessageEvent) {
-        sessions
-            //in session filter channels for specified topic
-            .map {
-                it.channels.filter { c -> c.topic == msg.message.topic }
-            }
-            //list of lists to one big list (session independent)
-            .flatten()
-            //only channels
+    private fun getAllChannelsForTopic(topic: String): List<Channel<GenericMessageEvent>> {
+        return sessions
+            .flatMap { it.channels.filter { c -> c.topic == topic } }
             .map { it.channel }
-            //send event
-            .forEach { channel ->
-                println("WRITING TO CHANNEL : ${channel.hashCode()} ->  ${msg.message.topic}")
-                channel.send(msg)
-            }
+    }
+
+    override suspend fun distributeLiveEvent(msg: GenericMessageEvent) {
+        getAllChannelsForTopic(msg.message.topic).forEach { channel ->
+            println("WRITING TO CHANNEL : ${channel.hashCode()} ->  ${msg.message.topic}")
+            channel.send(msg)
+        }
     }
 }
