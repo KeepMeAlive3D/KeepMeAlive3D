@@ -15,7 +15,10 @@ import { useParams } from "react-router";
 import { type SetStateAction } from "react";
 import * as React from "react";
 
-export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace, setTrace:  React.Dispatch<SetStateAction<EventLogTrace | null | undefined>>}) {
+export function TraceReplayTimeline({ trace, setTrace }: {
+  trace: EventLogTrace,
+  setTrace: React.Dispatch<SetStateAction<EventLogTrace | null | undefined>>
+}) {
   const { socket } = useWebSocket();
   const { logId, dtId, traceName } = useParams();
 
@@ -36,8 +39,8 @@ export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace,
     setTrace({
       name: trace.name,
       events: trace.events,
-      replayState: ReplayState.RUNNING
-    })
+      replayState: ReplayState.RUNNING,
+    });
   }
 
   function endReplay() {
@@ -58,9 +61,9 @@ export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace,
       {
         name: trace.name,
         events: trace.events,
-        replayState: ReplayState.END
-      }
-    )
+        replayState: ReplayState.END,
+      },
+    );
   }
 
   function pauseReplay() {
@@ -80,8 +83,8 @@ export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace,
     setTrace({
       name: trace.name,
       events: trace.events,
-      replayState: ReplayState.PAUSED
-    })
+      replayState: ReplayState.PAUSED,
+    });
   }
 
   function fastForward() {
@@ -101,17 +104,18 @@ export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace,
   }
 
   return (<main className="rounded-2xl border max-w-90 m-2 p-2">
-    <header className="flex flex-row mt-2 justify-center items-center">
-      <h2 className="text-xl font-semibold text-center grow">Timeline</h2>
-      <ButtonGroup className="grow">
-        {(trace.replayState !== ReplayState.END) ?
-          <Button variant="outline" onClick={endReplay}><Rewind /></Button> : null}
+    <header className="flex flex-row mt-2 justify-center items-center sticky top-2 bg-muted rounded-2xl p-2 z-20">
+      <h2 className="text-xl font-semibold text-center ml-4">Timeline</h2>
+      <div className="grow"></div>
+      <ButtonGroup className="mr-4">
+        <Button variant="outline" className="cursor-pointer" disabled={trace.replayState === ReplayState.END}
+                onClick={endReplay}><Rewind /></Button>
         {(trace.replayState === ReplayState.RUNNING) ?
-          <Button variant="outline" onClick={pauseReplay}><Pause /></Button> : null}
+          <Button variant="outline" className="cursor-pointer" onClick={pauseReplay}><Pause /></Button> : null}
         {(trace.replayState !== ReplayState.RUNNING) ?
-          <Button variant="outline" onClick={startReplay}><Play /></Button> : null}
-        {(trace.replayState !== ReplayState.END) ?
-          <Button variant="outline" onClick={fastForward}><SkipForward /></Button> : null}
+          <Button variant="outline" className="cursor-pointer" onClick={startReplay}><Play /></Button> : null}
+        <Button variant="outline" className="cursor-pointer" disabled={trace.replayState === ReplayState.END}
+                onClick={fastForward}><SkipForward /></Button>
       </ButtonGroup>
     </header>
 
@@ -134,8 +138,11 @@ export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace,
 
 function getColor(e: EventReplayState): TimelineColor {
   switch (e) {
-    case EventReplayState.ACTIVE: return "destructive"
-    case EventReplayState.EXECUTED: return "primary"
-    default: return "muted"
+    case EventReplayState.ACTIVE:
+      return "destructive";
+    case EventReplayState.EXECUTED:
+      return "primary";
+    default:
+      return "muted";
   }
 }

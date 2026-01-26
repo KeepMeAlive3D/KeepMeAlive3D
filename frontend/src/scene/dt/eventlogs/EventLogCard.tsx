@@ -19,7 +19,7 @@ export function EventLogCard({ data, setRefresh, refresh }: {
 
   return (
     <Link to={`/dt/${dtId}/log/${data.id}`} className="w-full max-w-sm mx-2 my-4">
-      <Card className=" hover:bg-accent cursor-pointer min-h-25 flex-row">
+      <Card className="hover:bg-accent cursor-pointer min-h-25 flex-row">
         <File className="m-auto ml-5" />
         <h2 className="m-auto font-medium">{data.eventLog.name}</h2>
         <Button

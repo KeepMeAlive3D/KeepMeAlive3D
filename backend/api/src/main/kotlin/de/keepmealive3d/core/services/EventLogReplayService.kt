@@ -15,10 +15,38 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
 interface IEventLogReplayService {
-    suspend fun startReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun continueReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun pauseReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun stepForward(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun startReplay(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    )
+
+    suspend fun continueReplay(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    )
+
+    suspend fun pauseReplay(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    )
+
+    suspend fun stepForward(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    )
+
     fun end(owner: Int, dt: Int, id: Int, trace: String)
     fun getWithState(owner: Int, dt: Int, id: Int, trace: String): List<EventLog.Event>
     fun getReplayState(owner: Int, dt: Int, id: Int, trace: String): EventLog.ReplayState
@@ -51,81 +79,85 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     )
 
     private val replays = mutableListOf<ActiveReplayInfo>()
-    private val activeReplayJobs = mutableMapOf<Pair<Int, String>, Job>()
+    private val activeReplayJobs = mutableMapOf<Pair<Int, String>, MutableList<Job>>()
     private val eventLogService: IEventLogService by inject()
     private val stateMachineService: IStateMachineService by inject()
     private val processParticipantService: IProcessParticipantService by inject()
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val logger = LoggerFactory.getLogger("EventLogReplayService")
 
-    override suspend fun startReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String) {
+    override suspend fun startReplay(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        owner: Int,
+        dt: Int,
+        id: Int,
+        trace: String
+    ) {
         logger.info("Starting Replay for trace $trace")
         val eventLog = eventLogService.get(owner, dt, id)
         val trace = eventLog.eventLog.traces.firstOrNull { it.name == trace }
         if (trace == null) {
             return
         }
-        val processParticipants = processParticipantService.getAll(dt, owner)
-        val participant = processParticipants.firstOrNull {
-            stateMachineService.getAllStateMachineFiles(owner, dt, it.id).isNotEmpty()
-        } ?: run {
-            logger.warn("Could not find participant with a state machine")
-            return
-        }
-        val stateMachine =
-            stateMachineService.getAllStateMachineFiles(owner, dt, participant.id).firstOrNull() ?: run {
-                logger.warn("Could not find state machine for $id.")
-                return
-            }
-        val node = KScxml.load(stateMachine.readText()).rootNode ?: run {
-            logger.warn("Could not load state machine ${stateMachine.name}")
-            return
-        }
-        val internalScxmlState = InternalScxmlState()
-        val executor = KScxmlExecutor(node, internalScxmlState)
+        processParticipantService.getAll(dt, owner).forEach { participant ->
+            stateMachineService.getAllStateMachineFiles(owner, dt, participant.id).forEach { stateMachine ->
+                val node = KScxml.load(stateMachine.readText()).rootNode ?: run {
+                    logger.warn("Could not load state machine ${stateMachine.name}")
+                    return@forEach
+                }
+                val internalScxmlState = InternalScxmlState()
+                val executor = KScxmlExecutor(node, internalScxmlState)
 
-        val job = scope.launch {
-            // send transitions of the state machine to the client
-            executor.registerTransitionEventListener { from, to ->
-                replyTo.forEach { channel ->
-                    runBlocking {
-                        channel.send(StateTransitionInfo(
-                            Manifest(1, MessageType.STATE_TRANSITION),
-                            StateTransitionInfoData(
-                                from = from.id ?: "unknown",
-                                to = to.id ?: "unknown",
-                                dataSource = "replay-service",
-                                topic = "replay-${id}-${trace}",
-                                allEvents = getWithState(owner, dt, id, trace.name ?: "unknown")
-                            )
-                        ))
+                val job = scope.launch {
+                    // send transitions of the state machine to the client
+                    executor.registerTransitionEventListener { from, to ->
+                        replyTo.forEach { channel ->
+                            runBlocking {
+                                channel.send(
+                                    StateTransitionInfo(
+                                        Manifest(1, MessageType.STATE_TRANSITION),
+                                        StateTransitionInfoData(
+                                            from = from.id ?: "unknown",
+                                            to = to.id ?: "unknown",
+                                            dataSource = stateMachine.name,
+                                            topic = "replay-${id}-${trace}",
+                                            allEvents = getWithState(owner, dt, id, trace.name ?: "unknown")
+                                        )
+                                    )
+                                )
+                            }
+                        }
                     }
+
+                    val sorted = trace.events.filter { it.datetime != null }.sortedBy { it.datetime }
+                    val info = ActiveReplayInfo(
+                        id = id,
+                        owner = owner,
+                        trace = trace.name!!,
+                        dt = dt,
+                        currentEvent = AtomicReference(sorted.first()),
+                        allEvents = sorted,
+                        executor = executor,
+                        secondsUntilNextEventOnPause = AtomicReference(0L),
+                        waitUntil = AtomicReference(Instant.now()),
+                        isPaused = AtomicReference(false),
+                    )
+                    replays.add(info)
+
+                    delay(2_000)
+                    executor.start()
+                    delay(2_000)
+
+                    runEventLogLoop(info, replyTo)
+                }
+
+                // add job to active replay jobs
+                activeReplayJobs[id to trace.name!!]?.add(job) ?: run {
+                    val jobs = mutableListOf(job)
+                    activeReplayJobs[id to trace.name] = jobs
                 }
             }
-
-            val sorted = trace.events.filter { it.datetime != null }.sortedBy { it.datetime }
-            val info = ActiveReplayInfo(
-                id = id,
-                owner = owner,
-                trace = trace.name!!,
-                dt = dt,
-                currentEvent = AtomicReference(sorted.first()),
-                allEvents = sorted,
-                executor = executor,
-                secondsUntilNextEventOnPause = AtomicReference(0L),
-                waitUntil = AtomicReference(Instant.now()),
-                isPaused = AtomicReference(false),
-            )
-            replays.add(info)
-
-            delay(2_000)
-            executor.start()
-            delay(2_000)
-
-            runEventLogLoop(info, replyTo)
         }
-
-        activeReplayJobs[id to trace.name!!] = job
     }
 
     override suspend fun continueReplay(
@@ -181,7 +213,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
             it.waitUntil.set(Instant.now())
             it.secondsUntilNextEventOnPause.set(0)
         }
-        activeReplayJobs[id to trace]?.cancel("Replay Stopped")
+        activeReplayJobs[id to trace]?.forEach { it.cancel("Replay Stopped") }
         activeReplayJobs.remove(id to trace)
         replays.removeIf { it.id == id && it.trace == trace }
     }
@@ -260,7 +292,10 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         }
     }
 
-    private suspend fun sendCurrentEventToClient(replyTo: MutableList<Channel<GenericMessageEvent>>, info: ActiveReplayInfo) {
+    private suspend fun sendCurrentEventToClient(
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
+        info: ActiveReplayInfo
+    ) {
         logger.info("Sending current event: ${info.currentEvent.get()} to ${replyTo.size} channels")
         replyTo.forEach {
             try {

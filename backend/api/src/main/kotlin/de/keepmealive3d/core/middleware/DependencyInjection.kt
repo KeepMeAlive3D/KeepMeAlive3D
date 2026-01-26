@@ -36,6 +36,8 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IEventLogRepository> { EventLogRepository() }
                 single<IEventLogService> { EventLogService() }
                 single<IEventLogReplayService> { EventLogReplayService() }
+                single<IReplayComponentRepository> { ReplayComponentRepository() }
+                single<IReplayComponentService> { ReplayComponentService()  }
             })
     }
 }
