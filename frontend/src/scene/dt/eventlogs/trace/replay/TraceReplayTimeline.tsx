@@ -1,4 +1,4 @@
-import { Timeline, TimelineItem } from "@/components/custom/Timeline.tsx";
+import { Timeline, type TimelineColor, TimelineItem } from "@/components/custom/Timeline.tsx";
 import { type EventLogTrace, EventReplayState, ReplayState } from "@/scene/dt/eventlogs/data.ts";
 import { ButtonGroup } from "@/components/ui/button-group.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -12,13 +12,12 @@ import {
 } from "@/service/wsTypes.ts";
 import { useWebSocket } from "@/service/webSocketProvider.tsx";
 import { useParams } from "react-router";
-import { useState } from "react";
+import { type SetStateAction } from "react";
+import * as React from "react";
 
-export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
+export function TraceReplayTimeline({ trace, setTrace }: { trace: EventLogTrace, setTrace:  React.Dispatch<SetStateAction<EventLogTrace | null | undefined>>}) {
   const { socket } = useWebSocket();
   const { logId, dtId, traceName } = useParams();
-
-  const [replayState, setReplayState] = useState(trace.replayState);
 
   function startReplay() {
     const startReplayData: ReplayStart = {
@@ -34,7 +33,11 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(startReplayData));
-    setReplayState(ReplayState.RUNNING)
+    setTrace({
+      name: trace.name,
+      events: trace.events,
+      replayState: ReplayState.RUNNING
+    })
   }
 
   function endReplay() {
@@ -51,7 +54,13 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(endReplayData));
-    setReplayState(ReplayState.END)
+    setTrace(
+      {
+        name: trace.name,
+        events: trace.events,
+        replayState: ReplayState.END
+      }
+    )
   }
 
   function pauseReplay() {
@@ -68,7 +77,11 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
       trace: traceName ?? "undefined",
     };
     socket?.send(JSON.stringify(pauseReplayData));
-    setReplayState(ReplayState.PAUSED)
+    setTrace({
+      name: trace.name,
+      events: trace.events,
+      replayState: ReplayState.PAUSED
+    })
   }
 
   function fastForward() {
@@ -91,13 +104,13 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
     <header className="flex flex-row mt-2 justify-center items-center">
       <h2 className="text-xl font-semibold text-center grow">Timeline</h2>
       <ButtonGroup className="grow">
-        {(replayState !== ReplayState.END) ?
+        {(trace.replayState !== ReplayState.END) ?
           <Button variant="outline" onClick={endReplay}><Rewind /></Button> : null}
-        {(replayState === ReplayState.RUNNING) ?
+        {(trace.replayState === ReplayState.RUNNING) ?
           <Button variant="outline" onClick={pauseReplay}><Pause /></Button> : null}
-        {(replayState !== ReplayState.RUNNING) ?
+        {(trace.replayState !== ReplayState.RUNNING) ?
           <Button variant="outline" onClick={startReplay}><Play /></Button> : null}
-        {(replayState !== ReplayState.END) ?
+        {(trace.replayState !== ReplayState.END) ?
           <Button variant="outline" onClick={fastForward}><SkipForward /></Button> : null}
       </ButtonGroup>
     </header>
@@ -111,10 +124,18 @@ export function TraceReplayTimeline({ trace }: { trace: EventLogTrace }) {
           title={it.name}
           description={((it.source ? it.source + " = " : undefined) ?? "") + (it.value ?? "")}
           status="pending"
-          iconColor={it.replayState === EventReplayState.NOT_EXECUTED ? "muted" : "primary"}
+          iconColor={getColor(it.replayState)}
           icon={<Flame />}
         />;
       })}
     </Timeline>
   </main>);
+}
+
+function getColor(e: EventReplayState): TimelineColor {
+  switch (e) {
+    case EventReplayState.ACTIVE: return "destructive"
+    case EventReplayState.EXECUTED: return "primary"
+    default: return "muted"
+  }
 }

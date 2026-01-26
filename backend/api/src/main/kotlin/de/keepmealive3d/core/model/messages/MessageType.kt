@@ -9,5 +9,6 @@ enum class MessageType {
     REPLAY_PAUSE,
     REPLAY_END,
     REPLAY_FORWARD,
-    STATE_TRANSITION
+    STATE_TRANSITION,
+    END_MESSAGE
 }

@@ -15,10 +15,10 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
 interface IEventLogReplayService {
-    suspend fun startReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun continueReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun pauseReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
-    suspend fun stepForward(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun startReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun continueReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun pauseReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
+    suspend fun stepForward(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String)
     fun end(owner: Int, dt: Int, id: Int, trace: String)
     fun getWithState(owner: Int, dt: Int, id: Int, trace: String): List<EventLog.Event>
     fun getReplayState(owner: Int, dt: Int, id: Int, trace: String): EventLog.ReplayState
@@ -58,7 +58,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val logger = LoggerFactory.getLogger("EventLogReplayService")
 
-    override suspend fun startReplay(replyTo: List<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String) {
+    override suspend fun startReplay(replyTo: MutableList<Channel<GenericMessageEvent>>, owner: Int, dt: Int, id: Int, trace: String) {
         logger.info("Starting Replay for trace $trace")
         val eventLog = eventLogService.get(owner, dt, id)
         val trace = eventLog.eventLog.traces.firstOrNull { it.name == trace }
@@ -129,7 +129,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     }
 
     override suspend fun continueReplay(
-        replyTo: List<Channel<GenericMessageEvent>>,
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
@@ -145,7 +145,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     }
 
     override suspend fun pauseReplay(
-        replyTo: List<Channel<GenericMessageEvent>>,
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
@@ -161,7 +161,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
     }
 
     override suspend fun stepForward(
-        replyTo: List<Channel<GenericMessageEvent>>,
+        replyTo: MutableList<Channel<GenericMessageEvent>>,
         owner: Int,
         dt: Int,
         id: Int,
@@ -220,7 +220,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         return if (replay.isPaused.get()) EventLog.ReplayState.PAUSED else EventLog.ReplayState.RUNNING
     }
 
-    private suspend fun runEventLogLoop(info: ActiveReplayInfo, replyTo: List<Channel<GenericMessageEvent>>) {
+    private suspend fun runEventLogLoop(info: ActiveReplayInfo, replyTo: MutableList<Channel<GenericMessageEvent>>) {
         while (info.currentEvent.get() != info.allEvents.last()) {
             if (info.waitUntil.get().isAfter(Instant.now())) {
                 try {
@@ -260,7 +260,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
         }
     }
 
-    private suspend fun sendCurrentEventToClient(replyTo: List<Channel<GenericMessageEvent>>, info: ActiveReplayInfo) {
+    private suspend fun sendCurrentEventToClient(replyTo: MutableList<Channel<GenericMessageEvent>>, info: ActiveReplayInfo) {
         logger.info("Sending current event: ${info.currentEvent.get()} to ${replyTo.size} channels")
         replyTo.forEach {
             try {

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.Instant
 
 class WebsocketConnectionController(application: Application) : KoinComponent {
     private val sessionService: IWsSessionService by inject()
@@ -79,7 +80,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                         }
                     }
                 }
-                topics.forEach {  topic ->
+                topics.forEach { topic ->
                     sessionService.closeSession(session, topic)
                 }
             }
@@ -90,5 +91,14 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
         for (event in channel) {
             sendChannel.send(Frame.Text(Json.encodeToString(event)))
         }
+        sendChannel.send(
+            Frame.Text(
+                Json.encodeToString(
+                    EndOfMessageEvent(
+                        Manifest(1, MessageType.END_MESSAGE, Instant.now()),
+                    )
+                )
+            )
+        )
     }
 }

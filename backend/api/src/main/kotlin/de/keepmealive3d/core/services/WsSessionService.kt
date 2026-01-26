@@ -32,6 +32,7 @@ class WsSessionService : IWsSessionService, KoinComponent {
     private val eventLogReplayService: IEventLogReplayService by inject()
     private val jwt: JWT by inject()
     private val logger = LoggerFactory.getLogger("WsSessionService")
+    private val topicChannels = mutableMapOf<String, MutableList<Channel<GenericMessageEvent>>>()
 
     override fun newSession(info: Manifest): Result<WsSessionData> {
         val uuid = try {
@@ -53,6 +54,9 @@ class WsSessionService : IWsSessionService, KoinComponent {
         val wsSession = sessions.find { it.uuid.toString() == uuid } ?: return Result.failure(
             EntityNotFoundException("The session could not be found")
         )
+        topicChannels[topic]?.let { channels ->
+            channels.removeAll { c -> wsSession.channels.filter { it.topic == topic }.map { it.channel }.contains(c) }
+        }
         wsSession.channels.filter { it.topic == topic }.forEach { it.channel.close() }
         wsSession.channels.removeAll { it.topic == topic }
         if (wsSession.channels.isEmpty()) {
@@ -69,6 +73,9 @@ class WsSessionService : IWsSessionService, KoinComponent {
             }
         val channel = Channel<GenericMessageEvent>()
         val wsChannelData = WsSessionChannelData(info.message.topic, channel)
+        topicChannels[info.message.topic]?.add(channel) ?: run {
+            topicChannels[info.message.topic] = mutableListOf(channel)
+        }
         wsSession.channels.add(wsChannelData)
         return Result.success(channel)
     }
@@ -119,10 +126,12 @@ class WsSessionService : IWsSessionService, KoinComponent {
         return Result.success(Unit)
     }
 
-    private fun getAllChannelsForTopic(topic: String): List<Channel<GenericMessageEvent>> {
-        return sessions
-            .flatMap { it.channels.filter { c -> c.topic == topic } }
-            .map { it.channel }
+    private fun getAllChannelsForTopic(topic: String): MutableList<Channel<GenericMessageEvent>> {
+        topicChannels[topic]?.let { return it }
+
+        val list = mutableListOf<Channel<GenericMessageEvent>>()
+        topicChannels[topic] = list
+        return list
     }
 
     override suspend fun distributeLiveEvent(msg: GenericMessageEvent) {

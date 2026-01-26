@@ -1,5 +1,5 @@
 import { TraceReplayTimeline } from "@/scene/dt/eventlogs/trace/replay/TraceReplayTimeline.tsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { type EventLogTrace, getEventLog } from "@/scene/dt/eventlogs/data.ts";
 import { useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner.tsx";
@@ -11,7 +11,7 @@ export function TraceReplayInspect() {
   const { logId, dtId, traceName } = useParams();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<EventLogTrace | null>();
-  const { socket } = useWebSocket()
+  const { socket } = useWebSocket();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,31 +27,44 @@ export function TraceReplayInspect() {
     fetchData();
   }, [dtId, logId, socket, traceName]);
 
-  useFilteredWebsocket<StateTransitionInfo>(
-    [`replay-${logId}-${traceName}`],
-    MessageType.STATE_TRANSITION,
-    onStateChangeMessage
+  const topics = useMemo(
+    () => [`replay-${logId}-${traceName}`],
+    [logId, traceName],
   );
 
-  function onStateChangeMessage(msg: StateTransitionInfo) {
-    console.debug(`rcv from server: `, msg)
-    setData({
-      name: data?.name ?? "unknown",
-      events: msg.message.allEvents
-    })
-  }
+  const onStateChangeMessage = useCallback((msg: StateTransitionInfo) => {
+    console.debug(`rcv from server: `, msg);
 
-  if(loading) {
-    return <Spinner/>
+    // Using the (prev) => ... syntax ensures this function
+    // reference never changes, even when data updates.
+    setData((prevData) => {
+      if (prevData) {
+        return {
+          ...prevData,
+          events: msg.message.allEvents,
+        };
+      }
+    });
+  }, []);
+
+
+  useFilteredWebsocket<StateTransitionInfo>(
+    topics,
+    MessageType.STATE_TRANSITION,
+    onStateChangeMessage,
+  );
+
+  if (loading) {
+    return <Spinner />;
   } else {
-    if(data === null) {
-      return <div>Error: Trace {traceName} not found in Event Log!</div>
+    if (data === null) {
+      return <div>Error: Trace {traceName} not found in Event Log!</div>;
     } else {
       return (
         <>
-          <TraceReplayTimeline trace={data!}/>
+          <TraceReplayTimeline trace={data!} setTrace={setData} />
         </>
-      )
+      );
     }
   }
 }

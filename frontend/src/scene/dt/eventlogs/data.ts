@@ -34,8 +34,8 @@ export interface EventLogEvent {
 }
 
 export enum EventReplayState {
-  EXECUTED = "EXECUTED",
   ACTIVE= "ACTIVE",
+  EXECUTED = "EXECUTED",
   NOT_EXECUTED = "NOT_EXECUTED"
 }
 

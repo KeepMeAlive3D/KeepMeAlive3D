@@ -1,6 +1,5 @@
 package de.keepmealive3d.core.model.messages
 
-import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -39,6 +38,11 @@ sealed interface GenericMessageData {
 data class SubscribeEvent(
     val manifest: Manifest,
     val message: MessageSubscribeEventData
+)
+
+@Serializable
+data class EndOfMessageEvent(
+    val manifest: Manifest
 )
 
 @Serializable
