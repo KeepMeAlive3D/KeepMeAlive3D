@@ -11,7 +11,11 @@ import { updateStateMachine } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { StateInspectionPopover } from "@/scene/dt/participant/stateMachine/canvas/StateInspectionPopover.tsx";
 
-export function StateMachineCanvas() {
+export function StateMachineCanvas({ pDtId, pParticipantId, pScId }: {
+  pDtId: string | undefined,
+  pParticipantId: string | undefined,
+  pScId: number | undefined
+}) {
   const dispatch = useDispatch();
   const divRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +24,7 @@ export function StateMachineCanvas() {
     height: 0,
   });
   const sm: StateMachine = useAppSelector((state) => state.sm);
-  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined)
+  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined);
 
   const { dtId, participantId, scId } = useParams();
 
@@ -28,7 +32,7 @@ export function StateMachineCanvas() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getStateMachineForDT(dtId!, participantId!, Number(scId));
+        const response = await getStateMachineForDT(pDtId ?? dtId!, pParticipantId ?? participantId!, pScId ?? Number(scId));
         dispatch(updateStateMachine(response.data));
         //dispatch(updateStateMachine(sampleStateData));
         console.debug(`sm`, response.data);
@@ -38,7 +42,7 @@ export function StateMachineCanvas() {
     };
 
     fetchData().then();
-  }, [dtId, participantId, setLoading, scId, dispatch]);
+  }, [dtId, participantId, setLoading, scId, dispatch, pDtId, pParticipantId, pScId]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -62,13 +66,13 @@ export function StateMachineCanvas() {
         loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full">
           <Layer>
             {
-              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState}/>)
+              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState} />)
             }
             <DrawArrows />
           </Layer>
         </Stage>
       }
-      <StateInspectionPopover inspectState={inspectState} setInspectState={setInspectState}/>
+      <StateInspectionPopover inspectState={inspectState} setInspectState={setInspectState} />
     </div>
   );
 }

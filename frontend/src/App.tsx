@@ -58,7 +58,7 @@ function App() {
         },
         {
           path: "dt/:dtId/participant/:participantId/state-machine/:scId",
-          element: <StateMachineCanvas />,
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined} />,
           handle: { header: null } as RouteHandle,
         },
         {
@@ -83,7 +83,7 @@ function App() {
         },
         {
           path: "state-machine",
-          element: <StateMachineCanvas />,
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined} />,
           handle: { header: null } as RouteHandle,
         },
       ],
