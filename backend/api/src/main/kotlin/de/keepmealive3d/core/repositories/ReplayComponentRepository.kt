@@ -69,7 +69,7 @@ class ReplayComponentRepository : KoinComponent, IReplayComponentRepository {
     }
 
     override fun delete(id: Int) {
-        val records = kmaSqlDatabase.database.delete(DBReplayComponentTable) { it.dt eq id }
+        val records = kmaSqlDatabase.database.delete(DBReplayComponentTable) { it.id eq id }
         if (records == 0)
             throw NotFoundException("Component with id $id not found")
     }

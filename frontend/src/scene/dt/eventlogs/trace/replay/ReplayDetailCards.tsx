@@ -37,7 +37,7 @@ export function ReplayDetailCards() {
       {replayComponents?.map(it => {
         switch (it.type) {
           case "statemachine":
-            return <ReplayStateMachineComponent info={it} />;
+            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} />;
           default:
             return null;
         }
