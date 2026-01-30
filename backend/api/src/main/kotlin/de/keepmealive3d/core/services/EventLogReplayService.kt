@@ -121,6 +121,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
                                             to = to.id ?: "unknown",
                                             dataSource = stateMachine.name,
                                             topic = "replay-${id}-${trace}",
+                                            activeStates = internalScxmlState.activeStates.map { it.id ?: "unknown" },
                                             allEvents = getWithState(owner, dt, id, trace.name ?: "unknown")
                                         )
                                     )
@@ -307,6 +308,7 @@ class EventLogReplayService : KoinComponent, IEventLogReplayService {
                             "",
                             "replay-${info.id}-${info.trace}",
                             info.currentEvent.get().source ?: "unknown",
+                            null,
                             getWithState(info.owner, info.dt, info.id, info.trace)
                         )
                     )

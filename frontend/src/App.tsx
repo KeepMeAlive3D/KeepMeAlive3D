@@ -58,7 +58,8 @@ function App() {
         },
         {
           path: "dt/:dtId/participant/:participantId/state-machine/:scId",
-          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined} />,
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined}
+                                       activeStates={[]} />,
           handle: { header: null } as RouteHandle,
         },
         {
@@ -73,8 +74,8 @@ function App() {
         },
         {
           path: "dt/:dtId/log/:logId/trace/:traceName",
-          element: <TraceReplayInspect/>,
-          handle: { header: <TraceReplayInspectHeader/> } as RouteHandle,
+          element: <TraceReplayInspect />,
+          handle: { header: <TraceReplayInspectHeader /> } as RouteHandle,
         },
         {
           path: "model/:modelId",
@@ -83,7 +84,8 @@ function App() {
         },
         {
           path: "state-machine",
-          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined} />,
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined}
+                                       activeStates={[]} />,
           handle: { header: null } as RouteHandle,
         },
       ],

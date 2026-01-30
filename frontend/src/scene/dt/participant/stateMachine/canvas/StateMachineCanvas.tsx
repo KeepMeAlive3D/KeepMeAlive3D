@@ -11,10 +11,11 @@ import { updateStateMachine } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import { StateInspectionPopover } from "@/scene/dt/participant/stateMachine/canvas/StateInspectionPopover.tsx";
 
-export function StateMachineCanvas({ pDtId, pParticipantId, pScId }: {
+export function StateMachineCanvas({ pDtId, pParticipantId, pScId, activeStates }: {
   pDtId: string | undefined,
   pParticipantId: string | undefined,
-  pScId: number | undefined
+  pScId: number | undefined,
+  activeStates: string[]
 }) {
   const dispatch = useDispatch();
   const divRef = useRef<HTMLDivElement>(null);
@@ -66,7 +67,7 @@ export function StateMachineCanvas({ pDtId, pParticipantId, pScId }: {
         loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full">
           <Layer>
             {
-              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState} />)
+              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState} activeStates={activeStates} />)
             }
             <DrawArrows />
           </Layer>

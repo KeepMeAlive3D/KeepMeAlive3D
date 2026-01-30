@@ -12,6 +12,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import kotlin.math.sin
 
 fun Application.configureDependencyInjection(initModule: Module) {
     install(Koin) {
@@ -38,6 +39,8 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IEventLogReplayService> { EventLogReplayService() }
                 single<IReplayComponentRepository> { ReplayComponentRepository() }
                 single<IReplayComponentService> { ReplayComponentService()  }
+                single<IBpmFilesRepository> { BpmFilesRepository() }
+                single<IBpmService> { BpmService() }
             })
     }
 }

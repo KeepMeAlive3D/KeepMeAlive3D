@@ -6,10 +6,11 @@ import { type SetStateAction, useState } from "react";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { StateMachineCanvas } from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
 
-export function ReplayStateMachineComponent({ info, refresh, setRefresh }: {
+export function ReplayStateMachineComponent({ info, refresh, setRefresh, activeStates }: {
   info: ReplayLogComponent,
   setRefresh: React.Dispatch<SetStateAction<boolean>>
-  refresh: boolean
+  refresh: boolean,
+  activeStates: string[]
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,8 @@ export function ReplayStateMachineComponent({ info, refresh, setRefresh }: {
       {loading ? <Spinner className="ml-2 my-auto size-5" /> :
         <StateMachineCanvas pDtId={info.dt + ""}
                             pParticipantId={info.participantId + ""}
-                            pScId={Number(info.additionalIdentifier)} />}
+                            pScId={Number(info.additionalIdentifier)}
+                            activeStates={activeStates} />}
       <div className="absolute z-20">
         <Button
           type="button"

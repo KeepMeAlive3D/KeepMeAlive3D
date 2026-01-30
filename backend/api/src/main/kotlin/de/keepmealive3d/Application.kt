@@ -1,6 +1,7 @@
 package de.keepmealive3d
 
 import de.keepmealive3d.adapters.controllers.AuthController
+import de.keepmealive3d.adapters.controllers.BpmController
 import de.keepmealive3d.adapters.controllers.DigitalTwinController
 import de.keepmealive3d.adapters.controllers.RegisterController
 import de.keepmealive3d.adapters.controllers.UserController
@@ -81,4 +82,5 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
     StateMachineController(this)
     EventLogController(this)
     ReplayLogComponentsController(this)
+    BpmController(this)
 }

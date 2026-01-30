@@ -9,7 +9,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { CreateReplayComponentDialog } from "@/scene/dt/eventlogs/trace/replay/CreateReplayComponentDialog.tsx";
 
-export function ReplayDetailCards() {
+export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
   const [replayComponents, setComponents] = useState<ReplayLogComponent[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -37,7 +37,7 @@ export function ReplayDetailCards() {
       {replayComponents?.map(it => {
         switch (it.type) {
           case "statemachine":
-            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} />;
+            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} activeStates={activeStates} />;
           default:
             return null;
         }

@@ -15,5 +15,6 @@ data class StateTransitionInfoData(
     val to: String,
     override val topic: String,
     override val dataSource: String,
+    val activeStates: List<String>?,
     val allEvents: List<EventLog.Event>
 ): GenericMessageData

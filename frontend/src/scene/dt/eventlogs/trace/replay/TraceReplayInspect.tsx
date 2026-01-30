@@ -12,6 +12,7 @@ export function TraceReplayInspect() {
   const { logId, dtId, traceName } = useParams();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<EventLogTrace | null>();
+  const [activeStates, setActiveStates] = useState<string[]>([])
   const { socket } = useWebSocket();
 
   useEffect(() => {
@@ -42,6 +43,9 @@ export function TraceReplayInspect() {
         };
       }
     });
+    if(msg.message.activeStates) {
+      setActiveStates(msg.message.activeStates)
+    }
   }, []);
 
   const onReplayEnd = useCallback(() => {
@@ -61,6 +65,7 @@ export function TraceReplayInspect() {
         };
       }
     });
+    setActiveStates([]);
   }, []);
 
   useFilteredWebsocket<StateTransitionInfo>(
@@ -79,7 +84,7 @@ export function TraceReplayInspect() {
       return (
         <main className="flex flex-row w-full">
           <TraceReplayTimeline trace={data!} setTrace={setData} />
-          <ReplayDetailCards />
+          <ReplayDetailCards activeStates={activeStates} />
         </main>
       );
     }

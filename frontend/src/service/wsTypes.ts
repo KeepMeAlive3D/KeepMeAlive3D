@@ -95,6 +95,7 @@ export interface StateTransitionInfoData extends GenericMessageData {
   to: string;
   topic: string;
   datasource: string;
+  activeStates: string[] | undefined;
   allEvents: EventLogEvent[];
 }
 

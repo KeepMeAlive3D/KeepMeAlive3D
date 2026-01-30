@@ -8,9 +8,10 @@ import { updateNodePosition } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
 import type { RootState } from "@/redux/store.ts";
 
-export function RenderState({ renderStateId, setInspectState}: {
+export function RenderState({ renderStateId, setInspectState, activeStates }: {
   renderStateId: string,
   setInspectState:  (value: StateData | undefined) => void,
+  activeStates: string[]
 }) {
   const data = useAppSelector((state: RootState) => state.sm);
   const currentState = findState(data.states, renderStateId);
@@ -122,6 +123,10 @@ export function RenderState({ renderStateId, setInspectState}: {
       trRef.current!.nodes([nodeRef.current!]);
   }, [currentState]);
 
+  function isActive() {
+    return renderStateId in activeStates
+  }
+
   if (currentState) {
     switch (currentState.stateType) {
       case StateType.ATOMIC:
@@ -133,7 +138,7 @@ export function RenderState({ renderStateId, setInspectState}: {
                   x={currentState.posX}
                   y={currentState.posY}
                   radius={30}
-                  stroke={currentState.isActive ? "green" : "grey"}
+                  stroke={isActive() ? "green" : "grey"}
                   fill="#333333dd"
                   ref={circleRef}
           />
@@ -148,7 +153,7 @@ export function RenderState({ renderStateId, setInspectState}: {
               width={currentState.width}
               height={currentState.height}
               cornerRadius={10}
-              stroke={currentState.isActive ? "green" : "grey"}
+              stroke={isActive() ? "green" : "grey"}
               fill="#33333355"
               ref={nodeRef}
               onTransform={() => handleResize}
@@ -176,6 +181,7 @@ export function RenderState({ renderStateId, setInspectState}: {
                   renderStateId={it.id}
                   key={it.id}
                   setInspectState={setInspectState}
+                  activeStates={activeStates}
                 />,
               )
             }
