@@ -34,9 +34,11 @@ export function StateMachineCanvas({ pDtId, pParticipantId, pScId, activeStates 
       setLoading(true);
       try {
         const response = await getStateMachineForDT(pDtId ?? dtId!, pParticipantId ?? participantId!, pScId ?? Number(scId));
-        dispatch(updateStateMachine(response.data));
-        //dispatch(updateStateMachine(sampleStateData));
-        console.debug(`sm`, response.data);
+        const sm: StateMachine = response.data
+        sm.id = Number(scId)
+        sm.pId = Number(participantId)
+        sm.dtId = Number(dtId)
+        dispatch(updateStateMachine(sm));
       } finally {
         setLoading(false);
       }

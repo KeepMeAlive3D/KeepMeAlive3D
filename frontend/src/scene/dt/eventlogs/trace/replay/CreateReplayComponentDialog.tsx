@@ -16,6 +16,7 @@ import { getDtParticipants, type ProcessParticipantInfo } from "@/scene/dt/parti
 import { GetParticipantIcon } from "@/scene/dt/participant/ParticipantIcon.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
 import { getAllStateMachines, type StateChartInfo } from "@/scene/dt/participant/stateMachine/data.ts";
+import { type BpInfoData, getBpmFiles } from "@/scene/dt/bp/bpInfoData.ts";
 
 export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
   setOpen: React.Dispatch<SetStateAction<boolean>>
@@ -26,6 +27,7 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
   const { dtId, logId, traceName } = useParams();
 
   const [participants, setParticipants] = useState<ProcessParticipantInfo[]>([]);
+  const [bpmFile, setBpmFile] = useState<BpInfoData | undefined>(undefined);
   const [stateMachines, setStateMachines] = useState<Map<string, StateChartInfo[]>>();
 
   useEffect(() => {
@@ -48,6 +50,12 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
           .finally(() => {
             setLoading(false);
           });
+
+        getBpmFiles(Number(dtId)).then(it => {
+          if(it.data.length > 0) {
+            setBpmFile(it.data[0])
+          }
+        })
       } finally {
         setLoading(false);
       }
@@ -80,17 +88,22 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
         Select a component that is updated alongside the replay.
       </DialogDescription>
     </DialogHeader>
-    <h2>Process Model</h2>
-    <div className="border rounded-xl hover:bg-accent cursor-pointer flex flex-row min-h-16">
-      <File className="m-auto ml-5" />
-      <h2 className="m-auto font-medium">WIP BPM</h2>
-      <div className="m-auto"></div>
-    </div>
+    {bpmFile ? (<>
+      <h2>Process Model</h2>
+      <div className="border rounded-xl hover:bg-accent cursor-pointer flex flex-row min-h-16"
+           onClick={() => handleSubmit(-1, "bpm", bpmFile?.id + "")}>
+        <File className="m-auto ml-5" />
+        <h2 className="m-auto font-medium">{bpmFile.fileName}</h2>
+        <div className="m-auto"></div>
+      </div>
+    </>) : null}
+
     <h2>Participants</h2>
     {participants.map(partId =>
       <>
         <Separator />
-        <h3 className="flex font-bold"><GetParticipantIcon className="mr-2" iconId={partId.icon} size={20} /> {partId.name}</h3>
+        <h3 className="flex font-bold"><GetParticipantIcon className="mr-2" iconId={partId.icon}
+                                                           size={20} /> {partId.name}</h3>
         <h4>State Machines</h4>
         <div className="grid grid-cols-2 gap-2">
           {stateMachines?.get(partId.id)?.map(sm =>

@@ -2,6 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { StateData, StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 
 const initialState: StateMachine = {
+  dtId: 0,
+  pId: 0,
+  id: 0,
   name: "not defined",
   initial: "not defined",
   states: []
@@ -36,6 +39,9 @@ const stateMachineSlice = createSlice({
 
     updateStateMachine: (sm, action) => {
       const data: StateMachine = action.payload;
+      sm.id = data.id
+      sm.dtId = data.dtId
+      sm.pId = data.pId
       sm.states = data.states;
       sm.initial = data.initial;
       sm.name = data.name;

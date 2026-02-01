@@ -5,7 +5,7 @@ import { type EventLogInfo, getEventLog } from "@/scene/dt/eventlogs/data.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { CircleArrowRight, CircleStop, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 export function TraceOverview() {
   const { dtId, logId } = useParams();
@@ -45,8 +45,6 @@ export function TraceOverview() {
             <TableCell><Badge variant="secondary">Active Replay</Badge></TableCell>
             <TableCell className="flex flex-row">
               <div className="grow"></div>
-              <Button variant="destructive" className="cursor-pointer"><CircleStop/></Button>
-              <Button variant="outline" className="ml-2 cursor-pointer"><CircleArrowRight/></Button>
               <Link to={`/dt/${dtId}/log/${logId}/trace/${it.name}`} className="cursor-pointer">
                 <Button variant="outline" className="ml-2 cursor-pointer">
                   <Search/>

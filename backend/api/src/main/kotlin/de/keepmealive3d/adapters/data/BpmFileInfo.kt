@@ -1,5 +1,8 @@
 package de.keepmealive3d.adapters.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BpmFileInfo(
     val id: Int,
     val dtId: Int,

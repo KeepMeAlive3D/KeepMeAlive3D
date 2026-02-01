@@ -5,6 +5,9 @@ import java.util.Locale.getDefault
 
 @Serializable
 data class StateMachine(
+    val dtId: Int = 0,
+    val pId: Int = 0,
+    val id: Int = 0,
     val name: String,
     val initial: String?,
     val states: List<StateData>

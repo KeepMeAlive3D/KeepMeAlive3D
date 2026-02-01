@@ -43,6 +43,7 @@ export function TraceReplayInspect() {
         };
       }
     });
+    console.debug(`set new active states: `, msg.message.activeStates)
     if(msg.message.activeStates) {
       setActiveStates(msg.message.activeStates)
     }

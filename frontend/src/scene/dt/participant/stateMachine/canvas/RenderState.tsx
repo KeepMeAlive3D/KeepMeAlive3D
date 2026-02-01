@@ -122,11 +122,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
     if (currentState?.stateType === StateType.SEQUENTIAL)
       trRef.current!.nodes([nodeRef.current!]);
   }, [currentState]);
-
-  function isActive() {
-    return renderStateId in activeStates
-  }
-
+  
   if (currentState) {
     switch (currentState.stateType) {
       case StateType.ATOMIC:
@@ -138,7 +134,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
                   x={currentState.posX}
                   y={currentState.posY}
                   radius={30}
-                  stroke={isActive() ? "green" : "grey"}
+                  stroke={(activeStates.includes(renderStateId)) ? "green" : "grey"}
                   fill="#333333dd"
                   ref={circleRef}
           />
@@ -153,7 +149,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
               width={currentState.width}
               height={currentState.height}
               cornerRadius={10}
-              stroke={isActive() ? "green" : "grey"}
+              stroke={(activeStates.includes(renderStateId)) ? "green" : "grey"}
               fill="#33333355"
               ref={nodeRef}
               onTransform={() => handleResize}

@@ -1,4 +1,4 @@
-import type {AxiosResponse} from "axios";
+import type { AxiosResponse } from "axios";
 import service from "@/service/service.ts";
 import type { StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 
@@ -25,4 +25,8 @@ export function getAllStateMachines(dtId: string, participantId: string) {
 
 export function deleteStateMachine(dtId: string, participantId: string, id: number) {
   return service.delete(`/api/dt/${dtId}/participant/${participantId}/statemachine/${id}`);
+}
+
+export function sendUpdateStateMachine(dtId: number, pId: number, id: number, stateMachine: StateMachine) {
+  return service.put(`/api/dt/${dtId}/participant/${pId}/statemachine/${id}`, stateMachine);
 }

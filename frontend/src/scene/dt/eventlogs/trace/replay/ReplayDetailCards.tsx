@@ -8,6 +8,7 @@ import { useParams } from "react-router";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { CreateReplayComponentDialog } from "@/scene/dt/eventlogs/trace/replay/CreateReplayComponentDialog.tsx";
+import { ReplayBpmComponent } from "@/scene/dt/eventlogs/trace/replay/bpm/ReplayBpmComponent.tsx";
 
 export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
   const [replayComponents, setComponents] = useState<ReplayLogComponent[]>([]);
@@ -37,7 +38,9 @@ export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
       {replayComponents?.map(it => {
         switch (it.type) {
           case "statemachine":
-            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} activeStates={activeStates} />;
+            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} activeStates={activeStates} />
+          case "bpm":
+            return <ReplayBpmComponent info={it} setRefresh={setRefresh} refresh={refresh}/>
           default:
             return null;
         }

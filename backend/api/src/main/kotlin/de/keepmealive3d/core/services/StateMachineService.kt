@@ -8,7 +8,6 @@ import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.components.KScxmlRootNode
 import dev.klenz.matthias.kscxml.components.state.KScxmlState
 import kotlinx.coroutines.coroutineScope
-import okhttp3.internal.wait
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
@@ -21,6 +20,7 @@ interface IStateMachineService {
     fun deleteStateMachine(owner: Int, dt: Int, participant: Int, id: Int)
     suspend fun startStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
     fun getAllStateMachineFiles(owner: Int, dt: Int, participant: Int): List<File>
+    fun updateStateMachine(owner: Int, dt: Int, participant: Int, id: Int, stateMachine: StateMachine)
 }
 
 class StateMachineService : KoinComponent, IStateMachineService {
@@ -47,7 +47,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         val scxml = KScxml.load(p.toFile().readText())
         scxml.rootNode?.let {
             val sm = initializeStateMachine(it, p.toFile().name)
-            repo.createStateChart(participant, sm.name, sm)
+            repo.createStateMachine(participant, sm.name, sm)
         } ?: throw BadRequestDataException("Uploaded state chart malformatted")
     }
 
@@ -57,7 +57,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         participant: Int
     ): List<StateChartInfo> {
         //todo check if owner actually owns the sc
-        return repo.getStateCharts(participant).map { StateChartInfo(it.id, it.name) }
+        return repo.getStateMachines(participant).map { StateChartInfo(it.id, it.name) }
     }
 
     override fun getStateMachine(
@@ -67,7 +67,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         id: Int
     ): StateMachine {
         //todo check if owner actually owns the sc
-        return repo.getStateChart(id)
+        return repo.getStateMachine(id)
     }
 
     override fun deleteStateMachine(
@@ -76,7 +76,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         participant: Int,
         id: Int
     ) {
-        repo.deleteStateChart(id)
+        repo.deleteStateMachine(id)
     }
 
     override suspend fun startStateMachine(
@@ -98,6 +98,10 @@ class StateMachineService : KoinComponent, IStateMachineService {
         return p.toFile().walk().maxDepth(1).filter { it.isFile && it.name.endsWith(".xml") }.toList()
     }
 
+    override fun updateStateMachine(owner: Int, dt: Int, participant: Int, id: Int, stateMachine: StateMachine) {
+        repo.updateStateMachine(id, stateMachine)
+    }
+
     internal fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {
         var offsetX = 0
         val offsetY = 225
@@ -109,8 +113,8 @@ class StateMachineService : KoinComponent, IStateMachineService {
         }
 
         return StateMachine(
-            fileName,
-            kScxml.initial ?: "unknown",
+            name = fileName,
+            initial = kScxml.initial ?: "unknown",
             states = childStates
         )
     }

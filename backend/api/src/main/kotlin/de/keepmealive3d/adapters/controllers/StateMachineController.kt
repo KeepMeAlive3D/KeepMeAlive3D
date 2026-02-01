@@ -1,6 +1,9 @@
 package de.keepmealive3d.adapters.controllers
 
+import de.keepmealive3d.adapters.data.DigitalTwinCreate
+import de.keepmealive3d.adapters.data.StateMachine
 import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestDataException
 import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.services.IStateMachineService
 import io.ktor.http.*
@@ -54,6 +57,21 @@ class StateMachineController(application: Application) : KoinComponent {
                         part.dispose()
                     }
 
+                    call.respond(HttpStatusCode.OK)
+                }
+
+                put("/api/dt/{dtId}/participant/{pId}/statemachine/{id}") {
+                    val owner = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val dtId = call.parameters["dtId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'dtId' is required!")
+                    val pId = call.parameters["pId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'pId' is required!")
+                    val id = call.parameters["id"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'id' is required!")
+                    val smInfo = call.receive<StateMachine>()
+
+                    stateMachineService.updateStateMachine(owner.userId, dtId, pId, id, smInfo)
                     call.respond(HttpStatusCode.OK)
                 }
 

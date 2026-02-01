@@ -11,6 +11,7 @@ import {
 import replaySlice from "@/redux/slices/ReplaySlice.ts";
 import outlineSlice from "@/redux/slices/OutlineSlice.ts";
 import stateMachineSlice from "@/redux/slices/StateMachineSlice.ts";
+import { updateBackendMiddleware } from "@/redux/listener/StateMachineListener.ts";
 
 const store = configureStore({
   reducer: withReduxStateSync(
@@ -25,7 +26,7 @@ const store = configureStore({
 
   // @ts-ignore Middleware type from redux is not type supported (see comments)
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(createStateSyncMiddleware()),
+    getDefaultMiddleware().concat(createStateSyncMiddleware()).prepend(updateBackendMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
