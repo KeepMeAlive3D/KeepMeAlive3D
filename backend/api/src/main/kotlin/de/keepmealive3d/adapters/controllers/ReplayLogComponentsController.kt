@@ -5,6 +5,7 @@ import de.keepmealive3d.core.auth.KmaUserPrincipal
 import de.keepmealive3d.core.exceptions.BadRequestDataException
 import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
 import de.keepmealive3d.core.services.IReplayComponentService
+import de.keepmealive3d.core.services.replay.IReplayService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -16,6 +17,7 @@ import org.koin.core.component.inject
 
 class ReplayLogComponentsController(application: Application) : KoinComponent {
     private val service by inject<IReplayComponentService>()
+    private val replayService: IReplayService by inject()
 
     init {
         application.routing {
@@ -65,6 +67,19 @@ class ReplayLogComponentsController(application: Application) : KoinComponent {
 
                     service.removeComponent(componentId, owner.userId)
                     call.respond(HttpStatusCode.OK)
+                }
+
+                get("/api/dt/{dtId}/log/{refId}/trace/{trace}") {
+                    val owner = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val dtId = call.parameters["dtId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'dtId' is required!")
+                    val refId = call.parameters["refId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'refId' is required!")
+                    val trace = call.parameters["trace"]
+                        ?: throw BadRequestDataException("Request parameter 'trace' is required!")
+
+                    call.respond(replayService.getReplay(dtId, refId, trace, owner.userId))
                 }
             }
         }

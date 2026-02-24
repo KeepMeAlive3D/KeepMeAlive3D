@@ -1,4 +1,8 @@
-import { deleteReplayComponent, type ReplayLogComponent } from "@/scene/dt/eventlogs/trace/replay/data.ts";
+import {
+  deleteReplayComponent,
+  type ReplayInfo,
+  type ReplayLogComponent,
+} from "@/scene/dt/eventlogs/trace/replay/data.ts";
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import * as React from "react";
@@ -6,11 +10,11 @@ import { type SetStateAction, useState } from "react";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { StateMachineCanvas } from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
 
-export function ReplayStateMachineComponent({ info, refresh, setRefresh, activeStates }: {
+export function ReplayStateMachineComponent({ info, refresh, setRefresh, trace }: {
   info: ReplayLogComponent,
   setRefresh: React.Dispatch<SetStateAction<boolean>>
   refresh: boolean,
-  activeStates: string[]
+  trace: ReplayInfo | undefined
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +33,7 @@ export function ReplayStateMachineComponent({ info, refresh, setRefresh, activeS
         <StateMachineCanvas pDtId={info.dt + ""}
                             pParticipantId={info.participantId + ""}
                             pScId={Number(info.additionalIdentifier)}
-                            activeStates={activeStates} />}
+                            activeStates={trace?.activeStates ?? []} />}
       <div className="absolute z-20">
         <Button
           type="button"

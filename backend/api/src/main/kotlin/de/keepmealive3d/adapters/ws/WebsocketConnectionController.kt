@@ -50,17 +50,20 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                                         }
                                 }
 
-                                MessageType.REPLAY_START -> sessionService.startReplay(
-                                    jsonParser.decodeFromString<ReplayStartEvent>(text)
-                                )
+                                MessageType.REPLAY_START ->
+                                    sessionService.startReplay(
+                                        jsonParser.decodeFromString<ReplayStartEvent>(text)
+                                    )
 
-                                MessageType.REPLAY_END -> sessionService.endReplay(
-                                    jsonParser.decodeFromString<ReplayEndEvent>(text)
-                                )
+                                MessageType.REPLAY_END ->
+                                    sessionService.endReplay(
+                                        jsonParser.decodeFromString<ReplayEndEvent>(text)
+                                    )
 
-                                MessageType.REPLAY_PAUSE -> sessionService.pauseReplay(
-                                    jsonParser.decodeFromString<ReplayPauseEvent>(text)
-                                )
+                                MessageType.REPLAY_PAUSE ->
+                                    sessionService.pauseReplay(
+                                        jsonParser.decodeFromString<ReplayPauseEvent>(text)
+                                    )
 
                                 MessageType.REPLAY_FORWARD -> sessionService.forwardReplay(
                                     jsonParser.decodeFromString<ReplayForwardEvent>(text)

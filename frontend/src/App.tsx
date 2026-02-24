@@ -16,6 +16,8 @@ import { TraceOverview } from "@/scene/dt/eventlogs/trace/TraceOverview.tsx";
 import { TracesOverviewHeader } from "@/scene/dt/eventlogs/trace/TracesOverviewHeader.tsx";
 import { TraceReplayInspect } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspect.tsx";
 import { TraceReplayInspectHeader } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspectHeader.tsx";
+import { LogComponentsOverview } from "@/scene/dt/eventlogs/components/LogComponentsOverview.tsx";
+import { LogComponentHeader } from "@/scene/dt/eventlogs/components/LogComponentHeader.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -68,12 +70,17 @@ function App() {
           handle: { header: null } as RouteHandle,
         },
         {
-          path: "dt/:dtId/log/:logId",
+          path: "dt/:dtId/log/:refId",
+          element: <LogComponentsOverview />,
+          handle: { header: <LogComponentHeader /> } as RouteHandle,
+        },
+        {
+          path: `dt/:dtId/log/:refId/logId/:logId/trace`,
           element: <TraceOverview />,
           handle: { header: <TracesOverviewHeader /> } as RouteHandle,
         },
         {
-          path: "dt/:dtId/log/:logId/trace/:traceName",
+          path: "dt/:dtId/log/:refId/trace/:traceName",
           element: <TraceReplayInspect />,
           handle: { header: <TraceReplayInspectHeader /> } as RouteHandle,
         },

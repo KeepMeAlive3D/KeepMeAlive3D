@@ -3,16 +3,16 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Card } from "@/components/ui/card.tsx";
 import { useEffect, useState } from "react";
 import { EventLogCard } from "@/scene/dt/eventlogs/EventLogCard.tsx";
-import { type EventLogInfo, getAllEventLogs } from "@/scene/dt/eventlogs/data.ts";
-import { CreateEventLogDialog } from "@/scene/dt/eventlogs/CreateEventLogDialog.tsx";
+import { type EventLogInfoAll, getAllEventLogs } from "@/scene/dt/eventlogs/data.ts";
 import { useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner.tsx";
+import { CreateEventLogGroupDialog } from "@/scene/dt/eventlogs/CreateEventLogGroupDialog.tsx";
 
 export function EventLogOverview() {
   const [open, setOpen] = useState(false)
   const [refresh, setRefresh] = useState(false)
   const [loading, setLoading] = useState(true);
-  const [eventLogs, setEventLogs] = useState<EventLogInfo[]>([])
+  const [eventLogs, setEventLogs] = useState<EventLogInfoAll[]>([])
   const { dtId } = useParams();
 
   useEffect(() => {
@@ -54,7 +54,8 @@ export function EventLogOverview() {
               <Plus className="m-auto" size={40} />
             </Card>
           </DialogTrigger>
-          <CreateEventLogDialog setOpen={setOpen} setRefresh={setRefresh} refresh={refresh} />
+
+          <CreateEventLogGroupDialog setOpen={setOpen} setRefresh={setRefresh} refresh={refresh} />
         </Dialog>
       </div>
     </>

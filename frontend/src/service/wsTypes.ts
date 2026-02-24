@@ -1,4 +1,4 @@
-import type { EventLogEvent } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogEvent, EventLogType } from "@/scene/dt/eventlogs/data.ts";
 
 export interface GenericEventMessage {
   manifest: Manifest;
@@ -72,6 +72,7 @@ export interface ReplayForwardEvent {
   dtId: number;
   logId: number;
   trace: string;
+  offset: number;
 }
 
 export interface ReplayEnd {
@@ -97,6 +98,9 @@ export interface StateTransitionInfoData extends GenericMessageData {
   datasource: string;
   activeStates: string[] | undefined;
   allEvents: EventLogEvent[];
+  type: EventLogType;
+  typeId: string;
+  dt: number
 }
 
 export interface Manifest {

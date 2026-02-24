@@ -1,10 +1,33 @@
 import service from "@/service/service.ts";
 
+export interface EventLogInfoAll {
+  id: number;
+  name: string;
+  owner: number;
+  dt: number;
+  refs: EventLogRefInfo[];
+}
+
+export interface EventLogRefInfo {
+  id: number;
+  owner: number;
+  refId: number;
+  dt: number;
+  eventLog: EventLog;
+  type: EventLogType;
+  typeId: string;
+}
+
+export enum EventLogType {
+  PARTICIPANT = "PARTICIPANT",
+  PROCESS = "PROCESS"
+}
+
 export interface EventLogInfo {
   id: number;
   owner: number;
   dt: number;
-  eventLog: EventLog
+  eventLog: EventLog;
 }
 
 export interface EventLog {
@@ -34,25 +57,46 @@ export interface EventLogEvent {
 }
 
 export enum EventReplayState {
-  ACTIVE= "ACTIVE",
+  ACTIVE = "ACTIVE",
   EXECUTED = "EXECUTED",
   NOT_EXECUTED = "NOT_EXECUTED"
 }
 
+export function getEventLog(dt: number, refId: number) {
+  return service.get<EventLogRefInfo[]>(`/api/dt/${dt}/log/${refId}`);
+}
+
+export function getSpecificEventLog(dt: number, refId: number, logId: number) {
+  return service.get<EventLogRefInfo>(`/api/dt/${dt}/log/${refId}/id/${logId}`);
+}
+
+
 export function getAllEventLogs(dt: number) {
-  return service.get<EventLogInfo[]>(`/api/dt/${dt}/log`)
+  return service.get<EventLogInfoAll[]>(`/api/dt/${dt}/log`);
 }
 
-export function getEventLog(dt: number, id: number) {
-  return service.get<EventLogInfo>(`/api/dt/${dt}/log/${id}`)
+export function createEventLog(dt: number, name: string) {
+  return service.post(`/api/dt/${dt}/log`, {
+    name: name,
+  });
 }
 
-export function uploadEventLog(dtId: number, file: File) {
+export function uploadParticipantEventLog(dtId: number, refId: number, pId: number, file: File) {
   const formData = new FormData();
   formData.append("file", file);
-  return service.post(`/api/dt/${dtId}/log`, formData)
+  return service.post(`/api/dt/${dtId}/log/${refId}/uploadParticipantLog/${pId}`, formData);
 }
 
-export function deleteEventLog(dtId: number, id: number) {
-  return service.delete(`/api/dt/${dtId}/log/${id}`)
+export function uploadProcessEventLog(dtId: number, refId: number, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return service.post(`/api/dt/${dtId}/log/${refId}/uploadProcessLog`, formData);
+}
+
+export function deleteEventLog(dtId: number, refId: number) {
+  return service.delete(`/api/dt/${dtId}/log/${refId}`);
+}
+
+export function deleteEventLogComp(dtId: number, refId: number, logId: number) {
+  return service.delete(`/api/dt/${dtId}/log/${refId}/id/${logId}`);
 }

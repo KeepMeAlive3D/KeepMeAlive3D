@@ -84,7 +84,8 @@ data class ReplayForwardEvent(
     val manifest: Manifest,
     val dtId: Int,
     val logId: Int,
-    val trace: String
+    val trace: String,
+    val offset: Long
 )
 
 @Serializable

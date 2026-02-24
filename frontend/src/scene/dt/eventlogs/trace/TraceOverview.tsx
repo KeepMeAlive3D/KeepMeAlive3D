@@ -1,14 +1,14 @@
 import { Link, useParams } from "react-router";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
 import { useEffect, useState } from "react";
-import { type EventLogInfo, getEventLog } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogInfo, getSpecificEventLog } from "@/scene/dt/eventlogs/data.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Search } from "lucide-react";
 
 export function TraceOverview() {
-  const { dtId, logId } = useParams();
+  const { dtId, logId, refId } = useParams();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<EventLogInfo>();
 
@@ -16,7 +16,7 @@ export function TraceOverview() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getEventLog(Number(dtId), Number(logId));
+        const response = await getSpecificEventLog(Number(dtId), Number(refId), Number(logId));
         setData(response.data);
       } finally {
         setLoading(false);
@@ -24,7 +24,7 @@ export function TraceOverview() {
     };
     // noinspection JSIgnoredPromiseFromCall
     fetchData();
-  }, [dtId, logId]);
+  }, [dtId, logId, refId]);
 
   return (<main className="w-full m-5 overflow-hidden rounded-lg border">
     <Table>
@@ -45,7 +45,7 @@ export function TraceOverview() {
             <TableCell><Badge variant="secondary">Active Replay</Badge></TableCell>
             <TableCell className="flex flex-row">
               <div className="grow"></div>
-              <Link to={`/dt/${dtId}/log/${logId}/trace/${it.name}`} className="cursor-pointer">
+              <Link to={`/dt/${dtId}/log/${refId}/trace/${it.name}`} className="cursor-pointer">
                 <Button variant="outline" className="ml-2 cursor-pointer">
                   <Search/>
                 </Button>

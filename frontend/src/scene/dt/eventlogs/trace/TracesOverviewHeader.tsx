@@ -1,10 +1,10 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner.tsx";
-import { type EventLogInfo, getEventLog } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogInfo, getSpecificEventLog } from "@/scene/dt/eventlogs/data.ts";
 
 export function TracesOverviewHeader() {
-  const { logId, dtId } = useParams();
+  const { logId, dtId, refId } = useParams();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<EventLogInfo>();
 
@@ -12,7 +12,7 @@ export function TracesOverviewHeader() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getEventLog(Number(dtId), Number(logId));
+        const response = await getSpecificEventLog(Number(dtId), Number(refId), Number(logId));
         setData(response.data);
       } finally {
         setLoading(false);
@@ -20,7 +20,7 @@ export function TracesOverviewHeader() {
     };
     // noinspection JSIgnoredPromiseFromCall
     fetchData();
-  }, [dtId, logId]);
+  }, [dtId, logId, refId]);
 
   if (loading) {
     return (

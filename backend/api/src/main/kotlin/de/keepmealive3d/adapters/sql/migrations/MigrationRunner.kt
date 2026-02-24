@@ -23,6 +23,7 @@ class MigrationRunner : KoinComponent {
         5 to Migration005(),
         6 to Migration006(),
         7 to Migration007(),
+        8 to Migration008(),
     )
 
     fun executeUp() {

@@ -1,15 +1,42 @@
 package de.keepmealive3d.adapters.data
 
 import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
+import de.keepmealive3d.adapters.sql.tables.EventLogTableType
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
 @Serializable
-data class EventLogInfo(
+data class EventLogInfoAll(
     val id: Int,
+    val name: String,
     val owner: Int,
     val dt: Int,
+    val refs: List<EventLogRefInfo>
+)
+
+@Serializable
+data class EventLogInfo(
+    val id: Int,
+    val name: String,
+    val owner: Int,
+    val dt: Int
+)
+
+@Serializable
+data class EventLogCreateInfo(
+    val name: String
+)
+
+
+@Serializable
+data class EventLogRefInfo(
+    val id: Int,
+    val owner: Int,
+    val refId: Int,
+    val dt: Int,
     val eventLog: EventLog,
+    val type: EventLogTableType,
+    val typeId: String
 )
 
 @Serializable
@@ -37,7 +64,7 @@ data class EventLog(
         val datetime: Instant?,
         val source: String?,
         val value: String?,
-        val replayState: EventReplayState = EventReplayState.NOT_EXECUTED
+        var replayState: EventReplayState = EventReplayState.NOT_EXECUTED
     )
 
     enum class EventReplayState {

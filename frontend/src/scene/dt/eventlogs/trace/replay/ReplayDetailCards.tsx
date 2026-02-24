@@ -1,6 +1,10 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getAllReplayComponents, type ReplayLogComponent } from "@/scene/dt/eventlogs/trace/replay/data.ts";
+import {
+  getAllReplayComponents,
+  type ReplayInfo,
+  type ReplayLogComponent,
+} from "@/scene/dt/eventlogs/trace/replay/data.ts";
 import {
   ReplayStateMachineComponent,
 } from "@/scene/dt/eventlogs/trace/replay/statemachine/ReplayStateMachineComponent.tsx";
@@ -9,19 +13,20 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { CreateReplayComponentDialog } from "@/scene/dt/eventlogs/trace/replay/CreateReplayComponentDialog.tsx";
 import { ReplayBpmComponent } from "@/scene/dt/eventlogs/trace/replay/bpm/ReplayBpmComponent.tsx";
+import { EventLogType } from "@/scene/dt/eventlogs/data.ts";
 
-export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
+export function ReplayDetailCards({ traces }: { traces: ReplayInfo[] }) {
   const [replayComponents, setComponents] = useState<ReplayLogComponent[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const { dtId, logId, traceName } = useParams();
+  const { dtId, refId, traceName } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getAllReplayComponents(Number(dtId!), Number(logId!), traceName!);
+        const response = await getAllReplayComponents(Number(dtId!), Number(refId!), traceName!);
         setComponents(response.data);
       } finally {
         setLoading(false);
@@ -29,7 +34,7 @@ export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
     };
     // noinspection JSIgnoredPromiseFromCall
     fetchData();
-  }, [dtId, logId, refresh, traceName]);
+  }, [dtId, refId, refresh, traceName]);
 
 
   return (
@@ -38,9 +43,14 @@ export function ReplayDetailCards({activeStates}: {activeStates: string[]}) {
       {replayComponents?.map(it => {
         switch (it.type) {
           case "statemachine":
-            return <ReplayStateMachineComponent refresh={refresh} setRefresh={setRefresh} info={it} activeStates={activeStates} />
+            return <ReplayStateMachineComponent
+              refresh={refresh}
+              setRefresh={setRefresh}
+              info={it}
+              trace={traces.find(t => t.type == EventLogType.PROCESS && t.typeId == it.participantId.toString())}
+            />;
           case "bpm":
-            return <ReplayBpmComponent info={it} setRefresh={setRefresh} refresh={refresh}/>
+            return <ReplayBpmComponent info={it} setRefresh={setRefresh} refresh={refresh} />;
           default:
             return null;
         }

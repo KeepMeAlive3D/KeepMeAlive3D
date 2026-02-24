@@ -1,91 +1,98 @@
 import { TraceReplayTimeline } from "@/scene/dt/eventlogs/trace/replay/TraceReplayTimeline.tsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { type EventLogTrace, EventReplayState, getEventLog } from "@/scene/dt/eventlogs/data.ts";
+import { EventLogType, EventReplayState } from "@/scene/dt/eventlogs/data.ts";
 import { useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { useWebSocket } from "@/service/webSocketProvider.tsx";
 import { MessageType, type StateTransitionInfo } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 import { ReplayDetailCards } from "@/scene/dt/eventlogs/trace/replay/ReplayDetailCards.tsx";
+import { getReplayState, type ReplayInfo } from "@/scene/dt/eventlogs/trace/replay/data.ts";
 
 export function TraceReplayInspect() {
-  const { logId, dtId, traceName } = useParams();
+  const { dtId, traceName, refId } = useParams();
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<EventLogTrace | null>();
-  const [activeStates, setActiveStates] = useState<string[]>([])
+  const [processTraces, setProcessTraces] = useState<ReplayInfo[]>([]);
+  const [refresh, setRefresh] = useState(false)
   const { socket } = useWebSocket();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getEventLog(Number(dtId), Number(logId));
-        setData(response.data.eventLog.traces.find(it => it.name === traceName));
+        const state = await getReplayState(Number(dtId), Number(refId), traceName ?? "");
+        setProcessTraces(state.data);
       } finally {
         setLoading(false);
       }
     };
     // noinspection JSIgnoredPromiseFromCall
     fetchData();
-  }, [dtId, logId, socket, traceName]);
+  }, [dtId, refId, socket, traceName, refresh]);
 
   const topics = useMemo(
-    () => [`replay-${logId}-${traceName}`],
-    [logId, traceName],
+    () => [`replay-${refId}-${traceName}`],
+    [refId, traceName],
   );
 
   const onStateChangeMessage = useCallback((msg: StateTransitionInfo) => {
-    setData((prevData) => {
-      if (prevData) {
-        return {
-          ...prevData,
-          events: msg.message.allEvents,
-        };
-      }
-    });
-    console.debug(`set new active states: `, msg.message.activeStates)
-    if(msg.message.activeStates) {
-      setActiveStates(msg.message.activeStates)
-    }
+    setProcessTraces((prevData) =>
+      prevData.map((trace) =>
+        trace.type === msg.message.type && trace.typeId === msg.message.typeId
+          ? {
+            ...trace,
+            state: { ...trace.state, events: msg.message.allEvents },
+            activeStates: msg.message.activeStates ?? []
+          }
+          : trace,
+      ),
+    );
+    if(msg.message.type === EventLogType.PROCESS)
+      console.debug(`rcv events: `, msg.message.allEvents.map(it => `${it.name} - ${it.replayState}`));
   }, []);
 
   const onReplayEnd = useCallback(() => {
-    setData((prevData) => {
-      if (prevData) {
-        return {
-          ...prevData,
-          events: prevData.events.map(it => {
-            return {
-              name: it.name,
-              source: it.source,
-              datetime: it.datetime,
-              value: it.value,
-              replayState: EventReplayState.NOT_EXECUTED,
-            };
-          }),
-        };
-      }
-    });
-    setActiveStates([]);
-  }, []);
+    setProcessTraces((prevData) =>
+      prevData.map((trace): ReplayInfo => {
+          return {
+            ...trace,
+            state: {
+              ...trace.state,
+              events: trace.state.events.map(ev => {
+                return {
+                  ...ev,
+                  replayState: EventReplayState.NOT_EXECUTED,
+                };
+              }),
+            },
+            activeStates: []
+          };
+        },
+      ),
+    );
+    console.debug("End replay")
+    setRefresh(!refresh)
+  }, [refresh]);
+
 
   useFilteredWebsocket<StateTransitionInfo>(
     topics,
     MessageType.STATE_TRANSITION,
     onStateChangeMessage,
-    onReplayEnd
+    onReplayEnd,
   );
 
   if (loading) {
     return <Spinner />;
   } else {
-    if (data === null) {
+    if (processTraces === undefined) {
       return <div>Error: Trace {traceName} not found in Event Log!</div>;
     } else {
       return (
         <main className="flex flex-row w-full">
-          <TraceReplayTimeline trace={data!} setTrace={setData} />
-          <ReplayDetailCards activeStates={activeStates} />
+          <TraceReplayTimeline trace={processTraces.find(it => it.type == EventLogType.PROCESS)}
+                               setTrace={setProcessTraces} />
+          <ReplayDetailCards traces={processTraces} />
         </main>
       );
     }

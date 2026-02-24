@@ -14,21 +14,21 @@ import {useParams} from "react-router";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
+import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form.tsx";
 import {Spinner} from "@/components/ui/spinner.tsx";
-import { uploadEventLog } from "@/scene/dt/eventlogs/data.ts";
+import { uploadProcessEventLog } from "@/scene/dt/eventlogs/data.ts";
 
-export function CreateEventLogDialog({setOpen, setRefresh, refresh}: {
+export function CreateProcessEventLogDialog({setOpen, setRefresh, refresh}: {
   setOpen: React.Dispatch<SetStateAction<boolean>>
   setRefresh: React.Dispatch<SetStateAction<boolean>>
   refresh: boolean
 }) {
   const [loading, setLoading] = useState(false);
-  const {dtId} = useParams();
+  const {dtId, refId} = useParams();
 
   function upload(values: z.infer<typeof formSchema>) {
     setLoading(true)
-    uploadEventLog(Number(dtId!), values.file)
+    uploadProcessEventLog(Number(dtId), Number(refId), values.file)
       .then(() => {
         setOpen(false)
         setRefresh(!refresh)
@@ -52,7 +52,7 @@ export function CreateEventLogDialog({setOpen, setRefresh, refresh}: {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(upload)}>
           <DialogHeader>
-            <DialogTitle>Upload a Event log</DialogTitle>
+            <DialogTitle>Upload a Process Event log</DialogTitle>
             <DialogDescription>
               Upload a event log in the .xes format.
             </DialogDescription>
