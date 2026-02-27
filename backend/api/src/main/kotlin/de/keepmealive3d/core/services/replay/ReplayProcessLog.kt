@@ -68,7 +68,6 @@ class ReplayProcessLog(
         null
     }
     private val alreadySend = mutableListOf<String>()
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val processReplay: ProcessReplayInfo
     init {

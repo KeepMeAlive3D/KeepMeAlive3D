@@ -1,20 +1,17 @@
 package de.keepmealive3d.core.services.replay
 
 import de.keepmealive3d.adapters.sql.tables.EventLogTableType
-import de.keepmealive3d.core.model.messages.GenericMessageEvent
 import de.keepmealive3d.core.model.session.WsSessionData
-import de.keepmealive3d.core.services.EventLogService
 import de.keepmealive3d.core.services.IEventLogService
-import io.ktor.util.collections.ConcurrentMap
+import io.ktor.util.collections.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.DurationUnit

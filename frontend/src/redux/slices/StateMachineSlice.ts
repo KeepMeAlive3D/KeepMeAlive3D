@@ -1,21 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { StateData, StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 
-const initialState: StateMachine = {
-  dtId: 0,
-  pId: 0,
-  id: 0,
-  name: "not defined",
-  initial: "not defined",
-  states: []
+interface StateMachineRegistry {
+  instances: Record<string, StateMachine>;
 }
+
+const initialState: StateMachineRegistry = {
+  instances: {}
+};
 
 const stateMachineSlice = createSlice({
   name: 'stateMachine',
   initialState,
   reducers: {
     updateNodePosition: (state, action) => {
-      const { id, x, y, width, height, absX, absY } = action.payload;
+      const { instanceId, id, x, y, width, height, absX, absY } = action.payload;
+
+      const sm = state.instances[instanceId];
+      if (!sm) return;
 
       // Recursive helper to find the node inside the draft
       const updateRecursive = (nodes: StateData[]) => {
@@ -34,17 +36,14 @@ const stateMachineSlice = createSlice({
         return false;
       };
 
-      updateRecursive(state.states);
+      updateRecursive(sm.states);
     },
 
-    updateStateMachine: (sm, action) => {
+    updateStateMachine: (state, action) => {
       const data: StateMachine = action.payload;
-      sm.id = data.id
-      sm.dtId = data.dtId
-      sm.pId = data.pId
-      sm.states = data.states;
-      sm.initial = data.initial;
-      sm.name = data.name;
+      // Use a unique key based on the participant/process
+      const instanceId = `${data.dtId}-${data.pId}-${data.id}`;
+      state.instances[instanceId] = data;
     }
   }
 });

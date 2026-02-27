@@ -6,15 +6,19 @@ import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts"
 import { useDispatch } from "react-redux";
 import { updateNodePosition } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
-import type { RootState } from "@/redux/store.ts";
 
-export function RenderState({ renderStateId, setInspectState, activeStates }: {
+export function RenderState({ renderStateId, setInspectState, activeStates, participantId, scId, dtId  }: {
   renderStateId: string,
   setInspectState:  (value: StateData | undefined) => void,
-  activeStates: string[]
+  activeStates: string[],
+  participantId: number,
+  dtId: number,
+  scId: number
 }) {
-  const data = useAppSelector((state: RootState) => state.sm);
-  const currentState = findState(data.states, renderStateId);
+  const instanceId = `${dtId}-${participantId}-${scId}`;
+  const sm = useAppSelector((state) => state.sm.instances[instanceId]);
+
+  const currentState = findState(sm.states, renderStateId);
   const nodeRef = useRef<Konva.Rect>(null);
   const circleRef = useRef<Konva.Circle>(null);
   const trRef = useRef<Konva.Transformer>(null);
@@ -25,7 +29,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
   };
 
   useEffect(() => {
-    const state = findState(data.states, renderStateId);
+    const state = findState(sm.states, renderStateId);
     if (!state)
       return;
 
@@ -66,7 +70,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
         }));
       }
     }
-  }, [data, dispatch, renderStateId]);
+  }, [sm, dispatch, renderStateId]);
 
   const handleDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
     const x = Math.round(e.target.x() / 25) * 25;
@@ -79,6 +83,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
       nodeRef.current.x(Math.round(nodeRef.current.x() / 25) * 25);
       nodeRef.current.y(Math.round(nodeRef.current.y() / 25) * 25);
       dispatch(updateNodePosition({
+        instanceId: instanceId,
         id: renderStateId,
         x: nodeRef.current.x(),
         y: nodeRef.current.y(),
@@ -91,6 +96,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
       circleRef.current.x(Math.round(circleRef.current.x() / 25) * 25);
       circleRef.current.y(Math.round(circleRef.current.y() / 25) * 25);
       dispatch(updateNodePosition({
+        instanceId: instanceId,
         id: renderStateId,
         x: circleRef.current.x(),
         y: circleRef.current.y(),
@@ -105,6 +111,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
   const handleResize = () => {
     if (nodeRef.current) {
       dispatch(updateNodePosition({
+        instanceId: instanceId,
         id: renderStateId,
         x: nodeRef.current.x(),
         y: nodeRef.current.y(),
@@ -130,7 +137,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
           <Circle draggable={true}
                   onDragMove={handleDragMove}
                   onClick={it => handleOnClickState(it)}
-                  key={currentState.id}
+                  key={participantId + "-" + currentState.id}
                   x={currentState.posX}
                   y={currentState.posY}
                   radius={30}
@@ -143,7 +150,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
         return (
           <Group draggable={true} onDragMove={handleDragMove}>
             <Rect
-              key={currentState.id}
+              key={participantId + "-" + currentState.id}
               x={currentState.posX}
               y={currentState.posY}
               width={currentState.width}
@@ -178,6 +185,9 @@ export function RenderState({ renderStateId, setInspectState, activeStates }: {
                   key={it.id}
                   setInspectState={setInspectState}
                   activeStates={activeStates}
+                  participantId={participantId}
+                  scId={scId}
+                  dtId={dtId}
                 />,
               )
             }

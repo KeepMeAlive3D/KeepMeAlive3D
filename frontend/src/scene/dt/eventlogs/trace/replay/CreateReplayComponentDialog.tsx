@@ -24,7 +24,7 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
   refresh: boolean
 }) {
   const [loading, setLoading] = useState(false);
-  const { dtId, logId, traceName } = useParams();
+  const { dtId, refId, traceName } = useParams();
 
   const [participants, setParticipants] = useState<ProcessParticipantInfo[]>([]);
   const [bpmFile, setBpmFile] = useState<BpInfoData | undefined>(undefined);
@@ -62,13 +62,13 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
     };
     // noinspection JSIgnoredPromiseFromCall
     fetchData();
-  }, [dtId, logId, traceName]);
+  }, [dtId, refId, traceName]);
 
 
   function handleSubmit(participantId: number, type: string, additionalIdentifier: string) {
     setLoading(true);
     createReplayComponent(Number(dtId!), {
-      logId: Number(logId!),
+      logId: Number(refId!),
       trace: traceName!,
       participantId: participantId,
       type: type,
@@ -80,7 +80,7 @@ export function CreateReplayComponentDialog({ setOpen, setRefresh, refresh }: {
     });
   }
 
-  return (<DialogContent className="3xl">
+  return (<DialogContent className="3xl overflow-auto">
     <DialogHeader>
       <DialogTitle>Select a component to display {loading ?
         <Spinner className="ml-2 my-auto size-5" /> : null}</DialogTitle>

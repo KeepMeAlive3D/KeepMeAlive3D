@@ -43,6 +43,6 @@ class ReplayComponentService: IReplayComponentService, KoinComponent {
         logId: Int,
         trace: String
     ): List<ReplayLogComponent> {
-        return repo.getAllComponents(owner, dt, logId, trace)
+        return repo.getAllComponents(dt, logId, trace)
     }
 }

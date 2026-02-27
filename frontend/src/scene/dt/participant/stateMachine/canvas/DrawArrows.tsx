@@ -4,10 +4,14 @@ import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts"
 import { useMemo } from 'react';
 import { Arrow } from 'react-konva';
 import { useAppSelector } from "@/hooks/hooks.ts";
-import type { RootState } from "@/redux/store.ts";
 
-export function DrawArrows() {
-  const stateMachine = useAppSelector((state: RootState) => state.sm);
+export function DrawArrows({participantId, dtId, scId}: {
+  participantId: number,
+  dtId: number,
+  scId: number
+}) {
+  const instanceId = `${dtId}-${participantId}-${scId}`;
+  const sm = useAppSelector((state) => state.sm.instances[instanceId]);
 
   // 1. Move helper functions outside or wrap them to prevent re-creation
   const getConnectorPoints = (from: StateData, to: StateData) => {
@@ -30,15 +34,15 @@ export function DrawArrows() {
 
     function collect(state: StateData) {
       state.connectedTo.forEach(it => {
-        const to = findState(stateMachine.states, it);
+        const to = findState(sm.states, it);
         if (to) cooState.push([state, to]);
       });
       state.childStates.forEach(collect);
     }
 
-    stateMachine.states.forEach(collect);
+    sm.states.forEach(collect);
     return cooState;
-  }, [stateMachine]); // Re-run whenever stateMachine reference changes
+  }, [sm]); // Re-run whenever stateMachine reference changes
 
   return (
     <>

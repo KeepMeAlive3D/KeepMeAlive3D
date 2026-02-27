@@ -28,13 +28,16 @@ export function ReplayStateMachineComponent({ info, refresh, setRefresh, trace }
   }
 
   return (
-    <div className="min-h-80 rounded-2xl border flex justify-end align-middle mb-2 flex-row">
+    <div className="min-h-100 rounded-2xl border flex justify-end align-middle mb-2 flex-row">
       {loading ? <Spinner className="ml-2 my-auto size-5" /> :
         <StateMachineCanvas pDtId={info.dt + ""}
                             pParticipantId={info.participantId + ""}
                             pScId={Number(info.additionalIdentifier)}
-                            activeStates={trace?.activeStates ?? []} />}
+                            activeStates={trace?.activeStates ?? []}
+                            key={`canvas-${info.id}`} />
+      }
       <div className="absolute z-20">
+        <div>{info.participantId}</div>
         <Button
           type="button"
           className="col-span-1 my-auto mr-3 mt-3 ml-auto cursor-pointer"

@@ -16,7 +16,7 @@ import org.ktorm.entity.map
 import org.ktorm.entity.sequenceOf
 
 interface IReplayComponentRepository {
-    fun getAllComponents(dt: Int, eventLog: Int, logId: Int, trace: String): List<ReplayLogComponent>
+    fun getAllComponents(dt: Int, logId: Int, trace: String): List<ReplayLogComponent>
     fun add(dt: Int, owner: Int, logId: Int, trace: String, participantId: Int, type: String, additionalIdentifier: String)
     fun delete(id: Int)
     fun get(id: Int): ReplayLogComponent?
@@ -27,7 +27,6 @@ class ReplayComponentRepository : KoinComponent, IReplayComponentRepository {
 
     override fun getAllComponents(
         dt: Int,
-        eventLog: Int,
         logId: Int,
         trace: String
     ): List<ReplayLogComponent> {

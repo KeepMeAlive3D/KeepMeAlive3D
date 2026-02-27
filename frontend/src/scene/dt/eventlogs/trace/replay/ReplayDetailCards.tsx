@@ -44,10 +44,11 @@ export function ReplayDetailCards({ traces }: { traces: ReplayInfo[] }) {
         switch (it.type) {
           case "statemachine":
             return <ReplayStateMachineComponent
+              key={`canvas-${it.participantId}-${it.id}`}
               refresh={refresh}
               setRefresh={setRefresh}
               info={it}
-              trace={traces.find(t => t.type == EventLogType.PROCESS && t.typeId == it.participantId.toString())}
+              trace={traces.find(t => t.type == EventLogType.PARTICIPANT && t.typeId == it.participantId.toString())}
             />;
           case "bpm":
             return <ReplayBpmComponent info={it} setRefresh={setRefresh} refresh={refresh} />;

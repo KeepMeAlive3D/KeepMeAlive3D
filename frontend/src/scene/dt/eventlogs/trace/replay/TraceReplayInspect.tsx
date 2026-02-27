@@ -13,7 +13,7 @@ export function TraceReplayInspect() {
   const { dtId, traceName, refId } = useParams();
   const [loading, setLoading] = useState(true);
   const [processTraces, setProcessTraces] = useState<ReplayInfo[]>([]);
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState(false);
   const { socket } = useWebSocket();
 
   useEffect(() => {
@@ -42,13 +42,11 @@ export function TraceReplayInspect() {
           ? {
             ...trace,
             state: { ...trace.state, events: msg.message.allEvents },
-            activeStates: msg.message.activeStates ?? []
+            activeStates: msg.message.activeStates ?? [],
           }
           : trace,
       ),
     );
-    if(msg.message.type === EventLogType.PROCESS)
-      console.debug(`rcv events: `, msg.message.allEvents.map(it => `${it.name} - ${it.replayState}`));
   }, []);
 
   const onReplayEnd = useCallback(() => {
@@ -65,13 +63,12 @@ export function TraceReplayInspect() {
                 };
               }),
             },
-            activeStates: []
+            activeStates: [],
           };
         },
       ),
     );
-    console.debug("End replay")
-    setRefresh(!refresh)
+    setRefresh(!refresh);
   }, [refresh]);
 
 

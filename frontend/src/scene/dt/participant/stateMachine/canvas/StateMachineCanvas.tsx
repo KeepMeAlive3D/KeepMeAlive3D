@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Layer, Stage } from "react-konva";
-import { type StateData, type StateMachine } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
+import { type StateData } from "@/scene/dt/participant/stateMachine/canvas/stateData.ts";
 import { RenderState } from "@/scene/dt/participant/stateMachine/canvas/RenderState.tsx";
 import { DrawArrows } from "@/scene/dt/participant/stateMachine/canvas/DrawArrows.tsx";
 import { useParams } from "react-router";
@@ -24,28 +24,35 @@ export function StateMachineCanvas({ pDtId, pParticipantId, pScId, activeStates 
     width: 0,
     height: 0,
   });
-  const sm: StateMachine = useAppSelector((state) => state.sm);
-  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined);
 
   const { dtId, participantId, scId } = useParams();
+
+  const sDtId = Number(pDtId ?? dtId)
+  const sParticipantId = Number(pParticipantId ?? participantId)
+  const sScId = Number(pScId ?? scId)
+
+  const instanceId = `${sDtId}-${sParticipantId}-${sScId}`;
+  const sm = useAppSelector((state) => state.sm.instances[instanceId]);
+  const [inspectState, setInspectState] = useState<StateData | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await getStateMachineForDT(pDtId ?? dtId!, pParticipantId ?? participantId!, pScId ?? Number(scId));
-        const sm: StateMachine = response.data
-        sm.id = Number(scId)
-        sm.pId = Number(participantId)
-        sm.dtId = Number(dtId)
-        dispatch(updateStateMachine(sm));
+        const response = await getStateMachineForDT(sDtId.toString(), sParticipantId.toString(), sScId);
+        dispatch(updateStateMachine({
+          ...response.data,
+          dtId: Number(sDtId),
+          pId: Number(sParticipantId),
+          id: Number(sScId)
+        }));
       } finally {
         setLoading(false);
       }
     };
 
     fetchData().then();
-  }, [dtId, participantId, setLoading, scId, dispatch, pDtId, pParticipantId, pScId]);
+  }, [dtId, setLoading, scId, dispatch, sScId, sParticipantId, sDtId]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,15 +70,21 @@ export function StateMachineCanvas({ pDtId, pParticipantId, pScId, activeStates 
   }, []);
 
   return (
-    <div ref={divRef}
+    <div ref={divRef} key={`ref-${sParticipantId}-${pScId}`}
          className="relative flex-1 h-full overflow-hidden bg-[image:radial-gradient(var(--pattern-fg)_1px,_transparent_0)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-gray-950)]/5 dark:[--pattern-fg:var(--color-white)]/10">
       {
-        loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full">
-          <Layer>
+        loading ? <Spinner /> : <Stage width={dimensions.width} height={dimensions.height} className="w-full"
+                                       key={`stage-${sParticipantId}-${pScId}`}>
+          <Layer key={`layer-${sParticipantId}-${pScId}`}>
             {
-              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState} activeStates={activeStates} />)
+              sm.states.map(it => <RenderState renderStateId={it.id} setInspectState={setInspectState}
+                                               activeStates={activeStates}
+                                               participantId={sParticipantId}
+                                               dtId={sDtId}
+                                               scId={sScId}
+                                               key={`render-state-${sParticipantId}-${sScId}-${it.id}`} />)
             }
-            <DrawArrows />
+            <DrawArrows participantId={sParticipantId} dtId={sDtId} scId={sScId}/>
           </Layer>
         </Stage>
       }

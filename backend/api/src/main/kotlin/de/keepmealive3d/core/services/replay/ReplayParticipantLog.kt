@@ -110,6 +110,7 @@ class ReplayParticipantLog(
         )
 
         executors.forEach { executor ->
+            executor.first.start()
             scope.launch {
                 executor.first.registerTransitionEventListener { from, to ->
                     launch {
@@ -155,7 +156,11 @@ class ReplayParticipantLog(
                     participantReplayInfo.allEvents.filter { it.name == event.name }.forEach { event ->
                         participantReplayInfo.currentEvent.set(event)
                     }
-                    sendCurrentEventToClient()
+                    sendCurrentEventToClient(
+                        "",
+                        "",
+                        executors.flatMap { it.second.activeStates.map { s -> s.id ?: "unknown" } }
+                    )
                 }
             }
     }
@@ -202,9 +207,9 @@ class ReplayParticipantLog(
                 source = event.source,
                 value = event.value,
                 replayState =
-                    if (index == currentIndex) EventLog.EventReplayState.ACTIVE
-                    else if (index < currentIndex) EventLog.EventReplayState.EXECUTED
-                    else EventLog.EventReplayState.NOT_EXECUTED,
+                    if (index == currentIndex) EventReplayState.ACTIVE
+                    else if (index < currentIndex) EventReplayState.EXECUTED
+                    else EventReplayState.NOT_EXECUTED,
             )
         }
 
