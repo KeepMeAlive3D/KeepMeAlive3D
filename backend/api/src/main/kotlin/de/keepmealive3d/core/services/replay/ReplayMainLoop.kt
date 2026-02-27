@@ -26,14 +26,25 @@ class ReplayMainLoop(owner: Int, dt: Int, logRef: Int, trace: String) : KoinComp
     private var offsetMillis = AtomicLong(0L)
     private var isPaused = AtomicBoolean(false)
 
-    val participants = eventLogService
-        .getAll(owner, dt, logRef)
-        .filter { it.type == EventLogTableType.PARTICIPANT }
-        .map { ReplayParticipantLog(owner, dt, logRef, trace, it.typeId.toInt(), it, topic) }
+    val allParticipants = eventLogService.getAll(owner, dt, logRef)
+    val startOffset = allParticipants.mapNotNull {
+        it
+            .eventLog
+            .traces
+            .firstOrNull { t -> t.name == trace }   // only look at own traces
+            ?.events
+            ?.filter { e -> e.datetime != null }
+            ?.minOf { e -> e.datetime!!.toEpochMilli() }    //first timestamp of each event log trace
+    }.min() //first timestamp of all event logs
 
-    val processLog = eventLogService.getAll(owner, dt, logRef).firstOrNull { it.type == EventLogTableType.PROCESS }?.let {
-        ReplayProcessLog(owner, dt, logRef, trace, it, topic)
-    }
+    val participants = allParticipants
+        .filter { it.type == EventLogTableType.PARTICIPANT }
+        .map { ReplayParticipantLog(owner, dt, logRef, trace, it.typeId.toInt(), it, topic, startOffset) }
+
+    val processLog =
+        eventLogService.getAll(owner, dt, logRef).firstOrNull { it.type == EventLogTableType.PROCESS }?.let {
+            ReplayProcessLog(owner, dt, logRef, trace, it, topic, startOffset)
+        }
 
     suspend fun start() {
         // if all participants are finished and process log is finished, when exist -> stop the loop
@@ -72,7 +83,7 @@ class ReplayMainLoop(owner: Int, dt: Int, logRef: Int, trace: String) : KoinComp
     fun destroy() {
         sessionData.map { it.value }.forEach { session ->
             session.channels.forEach { channel ->
-                if(channel.topic == topic) {
+                if (channel.topic == topic) {
                     channel.channel.close()
                 }
             }

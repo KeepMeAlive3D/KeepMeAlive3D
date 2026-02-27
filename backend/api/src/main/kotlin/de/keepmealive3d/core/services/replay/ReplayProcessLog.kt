@@ -10,8 +10,6 @@ import de.keepmealive3d.core.model.messages.StateTransitionInfo
 import de.keepmealive3d.core.model.messages.StateTransitionInfoData
 import de.keepmealive3d.core.model.session.WsSessionData
 import io.ktor.util.collections.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -28,6 +26,7 @@ class ReplayProcessLog(
     private val trace: String,
     val logInfo: EventLogRefInfo,
     private val topic: String,
+    private val startOffset: Long
 ): KoinComponent {
     /**
      * @param id the id of the event log
@@ -106,7 +105,6 @@ class ReplayProcessLog(
         return EventLog.ReplayState.RUNNING
     }
 
-
     suspend fun updateObservers(replayOffset: Long) {
         if (replayComplete) {
             return
@@ -119,7 +117,7 @@ class ReplayProcessLog(
             replayComplete = true
             return
         }
-        if (start.toEpochMilli() + replayOffset >= end.toEpochMilli()) {
+        if (startOffset + replayOffset >= end.toEpochMilli()) {
             replayComplete = true
             return
         }
@@ -131,7 +129,7 @@ class ReplayProcessLog(
 
         traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.name) }
             .forEach { event ->
-                val offset = event.datetime!!.toEpochMilli() - start.toEpochMilli()
+                val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
                     alreadySend.add(event.name!!)
                     processReplay.allEvents.filter { it.name == event.name }.forEach { event ->
@@ -151,7 +149,6 @@ class ReplayProcessLog(
             .map { it.value }
             .flatMap { sessionData -> sessionData.channels.filter { it.topic == topic }.map { it.channel } }
 
-        logger.info("Sending current event: ${processReplay.currentEvent.get()} to ${listeners.size} channels")
         val allEvents = processReplay.allEvents.mapIndexed { index, event ->
             val currentIndex = processReplay.allEvents.indexOf(processReplay.currentEvent.get())
             EventLog.Event(

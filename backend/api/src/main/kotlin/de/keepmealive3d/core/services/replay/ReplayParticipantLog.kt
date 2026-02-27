@@ -34,6 +34,7 @@ class ReplayParticipantLog(
     val participantId: Int,
     private val logInfo: EventLogRefInfo,
     private val topic: String,
+    private val startOffset: Long
 ) : KoinComponent {
 
     /**
@@ -136,7 +137,7 @@ class ReplayParticipantLog(
             replayComplete = true
             return
         }
-        if (start.toEpochMilli() + replayOffset >= end.toEpochMilli()) {
+        if (startOffset + replayOffset >= end.toEpochMilli()) {
             replayComplete = true
             return
         }
@@ -147,7 +148,7 @@ class ReplayParticipantLog(
 
         traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.name) }
             .forEach { event ->
-                val offset = event.datetime!!.toEpochMilli() - start.toEpochMilli()
+                val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
                     executors.forEach { executor ->
                         executor.first.onEvent(event.name!!)
@@ -198,7 +199,6 @@ class ReplayParticipantLog(
             sessionData.map { it.value }
                 .flatMap { sessionData -> sessionData.channels.filter { it.topic == topic }.map { it.channel } }
 
-        logger.info("Sending current event: ${participantReplayInfo.currentEvent.get()} to ${listeners.size} channels")
         val allEvents = participantReplayInfo.allEvents.mapIndexed { index, event ->
             val currentIndex = participantReplayInfo.allEvents.indexOf(participantReplayInfo.currentEvent.get())
             EventLog.Event(

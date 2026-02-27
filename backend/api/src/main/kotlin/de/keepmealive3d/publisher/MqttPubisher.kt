@@ -57,7 +57,6 @@ fun main() {
         while (true) {
             for (i in 1..100) {
                 val msg = "${i / 100.0}"
-                println("Sending $msg on $rotationTopic")
                 client.publish(
                     rotationTopic,
                     MqttMessage(msg.toByteArray())
