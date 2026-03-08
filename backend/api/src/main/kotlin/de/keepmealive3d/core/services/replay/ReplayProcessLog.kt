@@ -92,6 +92,7 @@ class ReplayProcessLog(
             t.name,
             processReplay.allEvents,
             getReplayState(),
+            t.isHappyPath
         )
     }
 

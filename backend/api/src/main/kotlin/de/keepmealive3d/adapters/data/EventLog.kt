@@ -48,7 +48,8 @@ data class EventLog(
     data class Trace(
         val name: String?,
         val events: List<Event>,
-        val replayState: ReplayState
+        val replayState: ReplayState,
+        var isHappyPath: Boolean = false,
     )
 
     enum class ReplayState {
@@ -73,3 +74,9 @@ data class EventLog(
         NOT_EXECUTED
     }
 }
+
+@Serializable
+data class SetHappyPathRequest(
+    val traceId: String,
+    val isHappyPath: Boolean,
+)

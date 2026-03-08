@@ -9,6 +9,7 @@ import de.keepmealive3d.core.model.messages.MessageType
 import de.keepmealive3d.core.model.messages.StateTransitionInfo
 import de.keepmealive3d.core.model.messages.StateTransitionInfoData
 import de.keepmealive3d.core.model.session.WsSessionData
+import de.keepmealive3d.core.repositories.IStateMachineTraceRepository
 import de.keepmealive3d.core.services.IStateMachineService
 import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.execution.KScxmlExecutor
@@ -22,8 +23,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
 import org.slf4j.LoggerFactory
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
 class ReplayParticipantLog(
@@ -57,10 +60,18 @@ class ReplayParticipantLog(
         val secondsUntilNextEventOnPause: AtomicReference<Long>,
         val waitUntil: AtomicReference<Instant>,
         val isPaused: AtomicReference<Boolean>,
+        val activeStatesRef: ConcurrentHashMap<String, Instant>
+    )
+
+    data class StateMachineData(
+        val id: Int,
+        val executor: KScxmlExecutor,
+        val internalState: InternalScxmlState,
     )
 
     private val stateMachineService: IStateMachineService by inject()
     private val sessionData: ConcurrentMap<UUID, WsSessionData> by inject(qualifier("wsSessionData"))
+    private val stateMachineTraceRepository: IStateMachineTraceRepository by inject()
 
     private val logger = LoggerFactory.getLogger("ReplayParticipantLog_$trace")
 
@@ -83,21 +94,25 @@ class ReplayParticipantLog(
     private val alreadySend = mutableListOf<String>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val executors: List<Pair<KScxmlExecutor, InternalScxmlState>> =
+    private val executors: List<StateMachineData> =
         stateMachineService.getAllStateMachineFiles(owner, dt, participantId).map { stateMachine ->
             val node = KScxml.load(stateMachine.readText()).rootNode ?: run {
                 logger.warn("Could not load state machine ${stateMachine.name}")
                 return@map null
             }
             val internalScxmlState = InternalScxmlState()
-            KScxmlExecutor(node, internalScxmlState) to internalScxmlState
+            val d = stateMachineService.getStateMachines(owner, dt, participantId).first()
+            StateMachineData(
+                d.id,
+                KScxmlExecutor(node, internalScxmlState),
+                internalScxmlState
+            )
         }.filterNotNull()
 
     private val participantReplayInfo: ParticipantReplayInfo
 
     init {
         val sorted = traceObj?.events?.filter { it.datetime != null }?.sortedBy { it.datetime } ?: emptyList()
-        //sorted.firstOrNull()?.let { it.replayState = EventReplayState.ACTIVE }
         participantReplayInfo = ParticipantReplayInfo(
             id = refId,
             owner = owner,
@@ -108,20 +123,50 @@ class ReplayParticipantLog(
             secondsUntilNextEventOnPause = AtomicReference(0L),
             waitUntil = AtomicReference(Instant.now()),
             isPaused = AtomicReference(false),
+            activeStatesRef = ConcurrentHashMap(),
         )
 
         executors.forEach { executor ->
-            executor.first.start()
+            executor.executor.start()
             scope.launch {
-                executor.first.registerTransitionEventListener { from, to ->
+                executor.executor.registerTransitionEventListener { from, to ->
+                    val curr = Instant.now()
+                    val fromStart = participantReplayInfo.activeStatesRef.remove(from.id)
+                    participantReplayInfo.activeStatesRef[to.id!!] = curr
+
+                    val duration = Duration.between(fromStart, curr).toMillis()
+
                     launch {
                         sendCurrentEventToClient(
                             from.id ?: "",
                             to.id ?: "",
-                            executor.second.activeStates.map { it.id ?: "unknown" })
+                            executor.internalState.activeStates.map { it.id ?: "unknown" })
                     }
+
+                    stateMachineTraceRepository.addTraceEntry(
+                        refId,
+                        trace,
+                        executor.id,
+                        from.id!!,
+                        duration
+                    )
                 }
             }
+        }
+    }
+
+    fun onEnd() {
+        val curr = Instant.now()
+        val d = stateMachineService.getStateMachines(owner, dt, participantId).first()
+        participantReplayInfo.activeStatesRef.forEach { (stateId, start) ->
+            val duration = Duration.between(start, curr).toMillis()
+            stateMachineTraceRepository.addTraceEntry(
+                refId,
+                trace,
+                d.id,
+                stateId,
+                duration
+            )
         }
     }
 
@@ -151,7 +196,7 @@ class ReplayParticipantLog(
                 val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
                     executors.forEach { executor ->
-                        executor.first.onEvent(event.name!!)
+                        executor.executor.onEvent(event.name!!)
                     }
                     alreadySend.add(event.name!!)
                     participantReplayInfo.allEvents.filter { it.name == event.name }.forEach { event ->
@@ -160,14 +205,14 @@ class ReplayParticipantLog(
                     sendCurrentEventToClient(
                         "",
                         "",
-                        executors.flatMap { it.second.activeStates.map { s -> s.id ?: "unknown" } }
+                        executors.flatMap { it.internalState.activeStates.map { s -> s.id ?: "unknown" } }
                     )
                 }
             }
     }
 
     fun getActiveStates(): List<String> =
-        executors.flatMap { it.second.activeStates.mapNotNull { s -> s.id } }
+        executors.flatMap { it.internalState.activeStates.mapNotNull { s -> s.id } }
 
 
     fun getCurrentState(): EventLog.Trace? {
@@ -177,6 +222,7 @@ class ReplayParticipantLog(
             t.name,
             participantReplayInfo.allEvents,
             getReplayState(),
+            isHappyPath = t.isHappyPath,
         )
     }
 

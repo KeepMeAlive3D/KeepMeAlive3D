@@ -81,6 +81,7 @@ class ReplayMainLoop(owner: Int, dt: Int, logRef: Int, trace: String) : KoinComp
     }
 
     fun destroy() {
+        participants.forEach { participant -> participant.onEnd() }
         sessionData.map { it.value }.forEach { session ->
             session.channels.forEach { channel ->
                 if (channel.topic == topic) {
