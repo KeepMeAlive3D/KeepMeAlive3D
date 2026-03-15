@@ -34,7 +34,7 @@ interface IEventLogService {
     fun getAll(owner: Int, dt: Int): List<EventLogInfoAll>
     fun delete(owner: Int, dt: Int, refId: Int)
     fun delete(owner: Int, dt: Int, refId: Int, logId: Int)
-    fun setHappyPath(owner: Int, logId: Int, trace: String, isHappyPath: Boolean)
+    fun setHappyPath(owner: Int, refId: Int, trace: String, isHappyPath: Boolean)
 }
 
 class EventLogService : KoinComponent, IEventLogService {
@@ -86,8 +86,8 @@ class EventLogService : KoinComponent, IEventLogService {
         repository.deleteEventLog(logId) //todo check if owner matches
     }
 
-    override fun setHappyPath(owner: Int, logId: Int, trace: String, isHappyPath: Boolean) {
-        repository.setHappyPath(logId, trace, isHappyPath)
+    override fun setHappyPath(owner: Int, refId: Int, trace: String, isHappyPath: Boolean) {
+        repository.setHappyPath(refId, trace, isHappyPath)
     }
 
     private fun convert(fileBytes: ByteArray, name: String): EventLog? {

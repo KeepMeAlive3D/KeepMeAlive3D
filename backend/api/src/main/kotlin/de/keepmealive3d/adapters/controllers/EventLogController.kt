@@ -171,19 +171,18 @@ class EventLogController(application: Application) : KoinComponent {
                     eventLogService.delete(owner.userId, dtId, refId, logId)
                     call.respond(HttpStatusCode.OK)
                 }
-                put("/api/dt/{dtId}/log/{refId}id/{logId}/setHappyPath") {
+                put("/api/dt/{dtId}/log/{refId}/setHappyPath") {
                     val owner = call.principal<KmaUserPrincipal>()
                         ?: throw InvalidAuthTokenException("Could not authenticate")
                     val dtId = call.parameters["dtId"]?.toIntOrNull()
                         ?: throw BadRequestDataException("Request parameter 'dtId' is required!")
                     val refId = call.parameters["refId"]?.toIntOrNull()
                         ?: throw BadRequestDataException("Request parameter 'refId' is required!")
-                    val logId = call.parameters["logId"]?.toIntOrNull()
-                        ?: throw BadRequestDataException("Request parameter 'logId' is required!")
 
                     val body = call.receive<SetHappyPathRequest>()
 
-                    eventLogService.setHappyPath(owner.userId, logId, body.traceId, body.isHappyPath)
+                    eventLogService.setHappyPath(owner.userId, refId, body.traceId, body.isHappyPath)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
         }

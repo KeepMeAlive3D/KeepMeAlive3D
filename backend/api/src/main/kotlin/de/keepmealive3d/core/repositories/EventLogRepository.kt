@@ -16,6 +16,7 @@ import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.dsl.insertAndGenerateKey
 import org.ktorm.dsl.update
+import org.ktorm.entity.associate
 import org.ktorm.entity.filter
 import org.ktorm.entity.firstOrNull
 import org.ktorm.entity.map
@@ -38,7 +39,7 @@ interface IEventLogRepository {
     fun getAllEventLogs(dt: Int): List<EventLogInfoAll>
     fun deleteEventLog(id: Int)
     fun deleteEventLogRef(refId: Int)
-    fun setHappyPath(logId: Int, trace: String, isHappyPath: Boolean)
+    fun setHappyPath(refId: Int, trace: String, isHappyPath: Boolean)
 }
 
 class EventLogRepository : KoinComponent, IEventLogRepository {
@@ -156,15 +157,14 @@ class EventLogRepository : KoinComponent, IEventLogRepository {
         }
     }
 
-    override fun setHappyPath(logId: Int, trace: String, isHappyPath: Boolean) {
-        val data = database.database.sequenceOf(DBEventLogTable).firstOrNull { it.id eq logId }?.data?.let { Json.decodeFromString<EventLog>(it) }
-        if(data == null) {
-            return
-        }
-        data.traces.filter { it.name == trace }.forEach { it.isHappyPath = isHappyPath }
-        database.database.update(DBEventLogTable) {
-            set(it.data, Json.encodeToString(data))
-            where { it.id eq logId }
+    override fun setHappyPath(refId: Int, trace: String, isHappyPath: Boolean) {
+        val data = database.database.sequenceOf(DBEventLogTable).filter { it.ref eq refId }.associate { it.id to Json.decodeFromString<EventLog>(it.data) }
+        data.forEach { (id, eventLog) ->
+            eventLog.traces.filter { it.name == trace }.forEach { eventLog -> eventLog.isHappyPath = isHappyPath }
+            database.database.update(DBEventLogTable) {
+                set(it.data, Json.encodeToString(eventLog))
+                where { it.id eq id }
+            }
         }
     }
 }

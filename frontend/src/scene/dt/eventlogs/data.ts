@@ -39,6 +39,7 @@ export interface EventLogTrace {
   name: string;
   events: EventLogEvent[];
   replayState: ReplayState;
+  isHappyPath: boolean;
 }
 
 export enum ReplayState {
@@ -99,4 +100,11 @@ export function deleteEventLog(dtId: number, refId: number) {
 
 export function deleteEventLogComp(dtId: number, refId: number, logId: number) {
   return service.delete(`/api/dt/${dtId}/log/${refId}/id/${logId}`);
+}
+
+export function setHappyPath(dt: number, refId: number, trace: string, happyPath: boolean) {
+  return service.put(`/api/dt/${dt}/log/${refId}/setHappyPath`, {
+    traceId: trace,
+    isHappyPath: happyPath
+  });
 }
