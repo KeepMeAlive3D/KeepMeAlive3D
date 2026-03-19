@@ -48,7 +48,8 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IBpmFilesRepository> { BpmFilesRepository() }
                 single<IBpmService> { BpmService() }
                 single<ConcurrentMap<UUID, WsSessionData>>(qualifier = qualifier("wsSessionData")) { ConcurrentMap() }
-                single<IStateMachineTraceRepository> { StateMachineTraceRepository()  }
+                single<IProcessAnalyzerService> { ProcessAnalyzerService() }
+                single<IAnalyzeTraceRepository> { AnalyzeTraceRepository() }
             })
     }
 }

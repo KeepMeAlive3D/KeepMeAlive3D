@@ -6,14 +6,16 @@ class Migration009: Migration {
     override fun up(database: Database) {
         database.useConnection { connection ->
             val create = """
-                CREATE TABLE IF NOT EXISTS kma.event_logs
+                CREATE TABLE IF NOT EXISTS kma.analyze_trace
                 (
-                    id             INT PRIMARY KEY auto_increment,
-                    refId          INT     NOT NULL,
-                    trace          TEXT    NOT NULL,
-                    stateMachineId INT     NOT NULL,
-                    stateId        TEXT    NOT NULL,
-                    execDuration   BIGINT  NOT NULL
+                    id                  INT PRIMARY KEY auto_increment,
+                    ref_id              INT     NOT NULL,
+                    trace               TEXT    NOT NULL,
+                    state_machine_id    INT     NOT NULL,
+                    previous_state      TEXT    NULL,
+                    state_id            TEXT    NOT NULL,
+                    exec_duration       BIGINT  NOT NULL,
+                    correlation_event   TEXT    NOT NULL
                 );
             """.trimIndent()
 

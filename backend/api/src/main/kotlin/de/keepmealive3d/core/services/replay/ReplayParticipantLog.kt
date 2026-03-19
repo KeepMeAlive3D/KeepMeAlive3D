@@ -9,12 +9,12 @@ import de.keepmealive3d.core.model.messages.MessageType
 import de.keepmealive3d.core.model.messages.StateTransitionInfo
 import de.keepmealive3d.core.model.messages.StateTransitionInfoData
 import de.keepmealive3d.core.model.session.WsSessionData
-import de.keepmealive3d.core.repositories.IStateMachineTraceRepository
+import de.keepmealive3d.core.repositories.IAnalyzeTraceRepository
 import de.keepmealive3d.core.services.IStateMachineService
 import dev.klenz.matthias.kscxml.KScxml
 import dev.klenz.matthias.kscxml.execution.KScxmlExecutor
 import dev.klenz.matthias.kscxml.execution.state.InternalScxmlState
-import io.ktor.util.collections.ConcurrentMap
+import io.ktor.util.collections.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedSendChannelException
@@ -25,7 +25,7 @@ import org.koin.core.qualifier.qualifier
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
@@ -71,7 +71,7 @@ class ReplayParticipantLog(
 
     private val stateMachineService: IStateMachineService by inject()
     private val sessionData: ConcurrentMap<UUID, WsSessionData> by inject(qualifier("wsSessionData"))
-    private val stateMachineTraceRepository: IStateMachineTraceRepository by inject()
+    private val stateMachineTraceRepository: IAnalyzeTraceRepository by inject()
 
     private val logger = LoggerFactory.getLogger("ReplayParticipantLog_$trace")
 
@@ -129,12 +129,16 @@ class ReplayParticipantLog(
         executors.forEach { executor ->
             executor.executor.start()
             scope.launch {
-                executor.executor.registerTransitionEventListener { from, to ->
+                executor.executor.registerTransitionEventListener { from, to, correlationEvent ->
                     val curr = Instant.now()
                     val fromStart = participantReplayInfo.activeStatesRef.remove(from.id)
                     participantReplayInfo.activeStatesRef[to.id!!] = curr
 
-                    val duration = Duration.between(fromStart, curr).toMillis()
+                    val duration = if(fromStart == null) {
+                        0L
+                    } else {
+                        Duration.between(fromStart, curr).toMillis()
+                    }
 
                     launch {
                         sendCurrentEventToClient(
@@ -143,12 +147,14 @@ class ReplayParticipantLog(
                             executor.internalState.activeStates.map { it.id ?: "unknown" })
                     }
 
-                    stateMachineTraceRepository.addTraceEntry(
+                    stateMachineTraceRepository.saveTransition(
                         refId,
                         trace,
                         executor.id,
                         from.id!!,
-                        duration
+                        to.id!!,
+                        duration,
+                        correlationEvent
                     )
                 }
             }
@@ -160,12 +166,14 @@ class ReplayParticipantLog(
         val d = stateMachineService.getStateMachines(owner, dt, participantId).first()
         participantReplayInfo.activeStatesRef.forEach { (stateId, start) ->
             val duration = Duration.between(start, curr).toMillis()
-            stateMachineTraceRepository.addTraceEntry(
+            stateMachineTraceRepository.saveTransition(
                 refId,
                 trace,
                 d.id,
+                "",
                 stateId,
-                duration
+                duration,
+                ""
             )
         }
     }

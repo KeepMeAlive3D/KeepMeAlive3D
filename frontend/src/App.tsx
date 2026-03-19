@@ -18,6 +18,9 @@ import { TraceReplayInspect } from "@/scene/dt/eventlogs/trace/replay/TraceRepla
 import { TraceReplayInspectHeader } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspectHeader.tsx";
 import { LogComponentsOverview } from "@/scene/dt/eventlogs/components/LogComponentsOverview.tsx";
 import { LogComponentHeader } from "@/scene/dt/eventlogs/components/LogComponentHeader.tsx";
+import { TraceStateMachineAnalyze } from "@/scene/dt/eventlogs/trace/analyze/TraceStateMachineAnalyze.tsx";
+import { TraceAnalyzeHeader } from "@/scene/dt/eventlogs/trace/analyze/TraceAnalyzeHeader.tsx";
+import { AnalyzeStateMachinesOverview } from "@/scene/dt/eventlogs/trace/analyze/AnalyzeStateMachinesOverview.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -83,6 +86,16 @@ function App() {
           path: "dt/:dtId/log/:refId/trace/:traceName",
           element: <TraceReplayInspect />,
           handle: { header: <TraceReplayInspectHeader /> } as RouteHandle,
+        },
+        {
+          path: "/dt/:dtId/log/:refId/trace/:traceName/analyze",
+          element: <AnalyzeStateMachinesOverview/>,
+          handle: { header: <TraceAnalyzeHeader/> } as RouteHandle,
+        },
+        {
+          path: "/dt/:dtId/log/:refId/trace/:traceName/analyze/:scId",
+          element: <TraceStateMachineAnalyze/>,
+          handle: { header: <TraceAnalyzeHeader/> } as RouteHandle,
         },
         {
           path: "model/:modelId",

@@ -5,7 +5,7 @@ import { type EventLogInfo, getSpecificEventLog, setHappyPath } from "@/scene/dt
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Search } from "lucide-react";
+import { RotateCcw, SearchCheck } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 
 export function TraceOverview() {
@@ -53,13 +53,23 @@ export function TraceOverview() {
           <TableRow key={it.name}>
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.events.length}</TableCell>
-            <TableCell><Badge variant="secondary">Active Replay</Badge></TableCell>
+            <TableCell>
+              <Badge variant="secondary">Active Replay</Badge>
+              {it.isHappyPath ? <Badge variant="default" className="ml-1">HappyPath</Badge> : null}
+              <Badge variant="destructive" className="ml-1">Latency</Badge>
+              <Badge variant="destructive" className="ml-1">Cycles</Badge>
+            </TableCell>
             <TableCell><div className="flex flex-row"><Checkbox checked={it.isHappyPath} onClick={() => updateHappyPath(it.name, !it.isHappyPath)}/><p className="ml-3">Is happy Path</p></div></TableCell>
             <TableCell className="flex flex-row">
               <div className="grow"></div>
+              <Link to={`/dt/${dtId}/log/${refId}/trace/${it.name}/analyze`} className="cursor-pointer">
+                <Button variant="outline" className="ml-2 cursor-pointer">
+                  <SearchCheck/>
+                </Button>
+              </Link>
               <Link to={`/dt/${dtId}/log/${refId}/trace/${it.name}`} className="cursor-pointer">
                 <Button variant="outline" className="ml-2 cursor-pointer">
-                  <Search/>
+                  <RotateCcw/>
                 </Button>
               </Link>
             </TableCell>
