@@ -59,7 +59,12 @@ export function TraceOverview() {
               <Badge variant="destructive" className="ml-1">Latency</Badge>
               <Badge variant="destructive" className="ml-1">Cycles</Badge>
             </TableCell>
-            <TableCell><div className="flex flex-row"><Checkbox checked={it.isHappyPath} onClick={() => updateHappyPath(it.name, !it.isHappyPath)}/><p className="ml-3">Is happy Path</p></div></TableCell>
+            <TableCell>
+              <div className="flex flex-row">
+                <Checkbox checked={it.isHappyPath} onClick={() => updateHappyPath(it.name, !it.isHappyPath)}/>
+                <p className="ml-3">Is happy Path</p>
+              </div>
+            </TableCell>
             <TableCell className="flex flex-row">
               <div className="grow"></div>
               <Link to={`/dt/${dtId}/log/${refId}/trace/${it.name}/analyze`} className="cursor-pointer">

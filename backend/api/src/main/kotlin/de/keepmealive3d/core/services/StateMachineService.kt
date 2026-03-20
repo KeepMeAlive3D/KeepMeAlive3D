@@ -21,6 +21,7 @@ interface IStateMachineService {
     suspend fun startStateMachine(owner: Int, dt: Int, participant: Int, fileName: String)
     fun getAllStateMachineFiles(owner: Int, dt: Int, participant: Int): List<File>
     fun updateStateMachine(owner: Int, dt: Int, participant: Int, id: Int, stateMachine: StateMachine)
+    fun getStateMachine(id: Int): StateMachine
 }
 
 class StateMachineService : KoinComponent, IStateMachineService {
@@ -100,6 +101,10 @@ class StateMachineService : KoinComponent, IStateMachineService {
 
     override fun updateStateMachine(owner: Int, dt: Int, participant: Int, id: Int, stateMachine: StateMachine) {
         repo.updateStateMachine(id, stateMachine)
+    }
+
+    override fun getStateMachine(id: Int): StateMachine {
+        return repo.getStateMachine(id)
     }
 
     internal fun initializeStateMachine(kScxml: KScxmlRootNode, fileName: String): StateMachine {

@@ -21,6 +21,7 @@ interface IProcessAnalyzerService {
 
 class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
     private val eventLogService: IEventLogService by inject()
+    private val stateMachineService: IStateMachineService by inject()
     private val analyzeTraceRepository: IAnalyzeTraceRepository by inject()
     private val logger = LoggerFactory.getLogger("ProcessAnalyzerService")
 
@@ -32,7 +33,8 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
         trace: String
     ): List<TraceTransitionAnalyzeData> {
         val refs = eventLogService.getAll(owner, dtId, refId)
-        val log = refs.firstOrNull { it.type == EventLogTableType.PARTICIPANT && it.typeId == stateMachine.toString() }
+        val sm = stateMachineService.getStateMachine(stateMachine)
+        val log = refs.firstOrNull { it.type == EventLogTableType.PARTICIPANT && it.typeId == sm.pId.toString() }
 
         val transitions = analyzeTraceRepository.getTransition(refId, stateMachine, trace)
         if (transitions.isEmpty()) {
@@ -64,7 +66,7 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
             logger.warn("No happy path for trace $trace")
             return analyzeFailedMap
         }
-        if (happyPaths.firstOrNull { it.name == trace } == null) {
+        if (happyPaths.firstOrNull { it.name == trace } != null) {
             logger.warn("Trace $trace is happy path, skipping analysis")
             return analyzeFailedMap// happy path doesn't need analyzing
         }

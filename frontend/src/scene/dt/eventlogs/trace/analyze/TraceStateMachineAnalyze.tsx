@@ -2,13 +2,18 @@ import { useParams } from "react-router";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { useEffect, useState } from "react";
-import { getTraceAnalytics, type TraceTransitionAnalyzeData } from "@/scene/dt/eventlogs/trace/analyze/data.ts";
+import {
+  getTraceAnalytics,
+  type TraceTransitionAnalyzeData,
+  TraceTransitionLatencyInfo,
+} from "@/scene/dt/eventlogs/trace/analyze/data.ts";
+import { Badge } from "@/components/ui/badge.tsx";
 
 export function TraceStateMachineAnalyze() {
   const { dtId, refId, traceName, scId } = useParams();
 
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<TraceTransitionAnalyzeData[]>([])
+  const [data, setData] = useState<TraceTransitionAnalyzeData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,10 +29,21 @@ export function TraceStateMachineAnalyze() {
     fetchData();
   }, [dtId, refId, scId, traceName]);
 
-  return(
+  function latencyColor(info: TraceTransitionLatencyInfo) {
+    switch (info) {
+      case TraceTransitionLatencyInfo.LARGE_DEVIATION:
+        return "accent-red-800";
+      case TraceTransitionLatencyInfo.SMALL_DEVIATION:
+        return "accent-yellow-600";
+      default: return ""
+    }
+  }
+
+  return (
     <div className="m-3">
       <Table>
-        <TableCaption>A list of traces found in the event log. {loading ? <Spinner className="ml-2 my-auto size-5" /> : null}</TableCaption>
+        <TableCaption>A list of traces found in the event log. {loading ?
+          <Spinner className="ml-2 my-auto size-5" /> : null}</TableCaption>
         <TableHeader className="bg-muted sticky top-0 z-10">
           <TableRow>
             <TableHead className="w-[250px]">State Name</TableHead>
@@ -44,13 +60,25 @@ export function TraceStateMachineAnalyze() {
                 <TableCell>{it.state}</TableCell>
                 <TableCell>{it.previousState}</TableCell>
                 <TableCell>{it.correlationEvent}</TableCell>
-                <TableCell></TableCell>
-                <TableCell>{it.executionDuration}</TableCell>
-              </TableRow>
+                <TableCell>
+                  {
+                    it.isErrorState ? <Badge variant="destructive" className="ml-1">State Deviation</Badge> : null
+                  }
+                  {
+                    it.isTransitionError ? <Badge variant="destructive" className="ml-1">Transition Deviation</Badge> : null
+                  }
+                  {
+                    it.errorDetectedCycle ? <Badge variant="destructive" className="ml-1">Cycle</Badge> : null
+                  }
+                </TableCell>
+                <TableCell className={
+                  latencyColor(it.latencyInfo)
+                }>{it.executionDuration}</TableCell>
+                  </TableRow>
+                  )
+                }
+              </TableBody>
+            </Table>
+            </div>
             )
           }
-        </TableBody>
-      </Table>
-    </div>
-  )
-}
