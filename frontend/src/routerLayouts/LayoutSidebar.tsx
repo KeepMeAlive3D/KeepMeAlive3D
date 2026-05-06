@@ -3,11 +3,17 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Outlet, type UIMatch, useMatches } from "react-router";
 import { Separator } from "@/components/ui/separator.tsx";
 import type { RouteHandle } from "@/App.tsx";
+import { useTheme } from "@/components/theme-provider.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Lightbulb } from "lucide-react";
 
 /**
  * Layout that includes the Sidebar
  */
 function Layout() {
+  const { setTheme } = useTheme();
+  const { theme = "system" } = useTheme();
+
   return (
     <SidebarProvider key="sidebar">
       <AppSidebar />
@@ -18,7 +24,18 @@ function Layout() {
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
           />
-          <GetTitle />
+          <div className="w-full">
+            <GetTitle />
+          </div>
+          <Button variant="outline" onClick={() => {
+            if (theme === "system" || theme === "light") {
+              setTheme("dark");
+            } else {
+              setTheme("light");
+            }
+          }}>
+            <Lightbulb />
+          </Button>
         </header>
         <main className="w-full h-full">
           <div className={"main-body"}>
@@ -48,4 +65,5 @@ function GetTitle() {
 
   return matchWithHeader ? matchWithHeader.handle.header : null;
 }
+
 export default Layout;
