@@ -12,6 +12,7 @@ import de.keepmealive3d.adapters.controllers.ModelDeleteController
 import de.keepmealive3d.adapters.controllers.ModelDownloadController
 import de.keepmealive3d.adapters.controllers.ModelInfoController
 import de.keepmealive3d.adapters.controllers.ProcessParticipantController
+import de.keepmealive3d.adapters.controllers.ReplayController
 import de.keepmealive3d.adapters.controllers.ReplayLogComponentsController
 import de.keepmealive3d.adapters.controllers.StateMachineController
 import de.keepmealive3d.adapters.controllers.UploadController
@@ -85,4 +86,5 @@ fun Application.appModule(config: Config = Config.load(File("config.yml")).getOr
     ReplayLogComponentsController(this)
     BpmController(this)
     AnalyzeProcessController(this)
+    ReplayController(this)
 }

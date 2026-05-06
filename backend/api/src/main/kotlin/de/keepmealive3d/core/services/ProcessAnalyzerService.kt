@@ -1,5 +1,6 @@
 package de.keepmealive3d.core.services
 
+import de.keepmealive3d.adapters.data.EventLog
 import de.keepmealive3d.adapters.data.TraceTransitionAnalyzeData
 import de.keepmealive3d.adapters.data.TraceTransitionLatencyInfo
 import de.keepmealive3d.adapters.sql.tables.DBAnalyzeTraceEntity
@@ -17,6 +18,12 @@ interface IProcessAnalyzerService {
         stateMachine: Int,
         trace: String
     ): List<TraceTransitionAnalyzeData>
+
+    fun processEventLog(
+        owner: Int,
+        dtId: Int,
+        refId: Int
+    ): Map<String, Map<EventLog.Trace, List<TraceTransitionAnalyzeData>>>
 }
 
 class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
@@ -121,5 +128,19 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
                 analysisFailed = false
             )
         }
+    }
+
+    override fun processEventLog(
+        owner: Int,
+        dtId: Int,
+        refId: Int
+    ): Map<String, Map<EventLog.Trace, List<TraceTransitionAnalyzeData>>> {
+        val refs = eventLogService.getAll(owner, dtId, refId)
+        val eval = refs.filter { it.type == EventLogTableType.PARTICIPANT }.associate { sm ->
+            sm.typeId to sm.eventLog.traces.filter { it.name != null }
+                .associateWith { trace -> processTrace(owner, dtId, refId, sm.typeId.toInt(), trace.name!!) }
+        }
+
+        return eval
     }
 }

@@ -102,7 +102,11 @@ class WsSessionService : IWsSessionService, KoinComponent {
                 return Result.failure(err)
             }
         } ?: return Result.failure(InvalidAuthTokenException("Invalid bearer token"))
-        replayService.startReplay(info.dtId, info.logId, info.trace, userid)
+        if(info.trace.isEmpty()) {
+            replayService.startAllReplays(info.dtId, info.logId, userid)
+        } else {
+            replayService.startReplay(info.dtId, info.logId, info.trace, userid)
+        }
         return Result.success(Unit)
     }
 

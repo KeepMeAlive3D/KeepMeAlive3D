@@ -1,5 +1,6 @@
 package de.keepmealive3d.adapters.controllers
 
+import de.keepmealive3d.adapters.data.mapToEventLogAnalyzedDto
 import de.keepmealive3d.core.auth.KmaUserPrincipal
 import de.keepmealive3d.core.exceptions.BadRequestDataException
 import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
@@ -30,6 +31,21 @@ class AnalyzeProcessController(application: Application) : KoinComponent {
                         ?: throw BadRequestDataException("Request parameter 'trace' is required!")
 
                     call.respond(processAnalyzerService.processTrace(owner.userId, dtId, refId, stateMachine, trace))
+                }
+
+                get("/api/dt/{dtId}/log/{refId}/analyze") {
+                    val owner = call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val dtId = call.parameters["dtId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'dtId' is required!")
+                    val refId = call.parameters["refId"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'refId' is required!")
+
+                    call.respond(
+                        mapToEventLogAnalyzedDto(
+                            processAnalyzerService.processEventLog(owner.userId, dtId, refId)
+                        )
+                    )
                 }
             }
         }

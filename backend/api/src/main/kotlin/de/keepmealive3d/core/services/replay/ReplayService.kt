@@ -8,8 +8,10 @@ import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
+import kotlin.time.Duration.Companion.milliseconds
 
 interface IReplayService {
+    fun startAllReplays(dt: Int, refId: Int, owner: Int)
     fun startReplay(dt: Int, refId: Int, trace: String, owner: Int)
     fun stopReplay(dt: Int, refId: Int, trace: String, owner: Int)
     fun pauseReplay(dt: Int, refId: Int, trace: String, owner: Int)
@@ -18,7 +20,7 @@ interface IReplayService {
     fun getReplay(dt: Int, refId: Int, trace: String, owner: Int): List<ReplayInfo>
 }
 
-class ReplayService: IReplayService, KoinComponent {
+class ReplayService : IReplayService, KoinComponent {
     data class Replay(
         val topic: String,
         val mainLoop: ReplayMainLoop,
@@ -29,24 +31,37 @@ class ReplayService: IReplayService, KoinComponent {
 
     private val logger = LoggerFactory.getLogger("ReplaysService")
     private val replays = ConcurrentSet<Replay>()
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val replayDispatcher = Dispatchers.IO.limitedParallelism(5)
+    private val scope = CoroutineScope(replayDispatcher)
 
     private fun getTopic(refId: Int, trace: String) = "replay-${refId}-${trace}"
+
+    override fun startAllReplays(dt: Int, refId: Int, owner: Int) {
+        val participantLogs = eventLogService.getAll(owner, dt, refId)
+        participantLogs.firstOrNull()?.let { participant ->
+            participant
+                .eventLog
+                .traces
+                .filterNot { it.name.isNullOrEmpty() }
+                .forEach { trace -> startReplay(dt, refId, trace.name!!, owner) }
+        }
+    }
 
     override fun startReplay(dt: Int, refId: Int, trace: String, owner: Int) {
         logger.info("Starting Replay for refId: $refId and trace: $trace")
 
         val topic = getTopic(refId, trace)
-        if(replays.find { it.topic == topic }?.job?.isActive == true) {
+        if (replays.find { it.topic == topic }?.job?.isActive == true) {
             return
         }
         val replay = ReplayMainLoop(owner, dt, refId, trace)
 
         val job = scope.launch {
-            delay(1_000)
+            delay(1_000.milliseconds)
+            logger.info("Replay started for trace: $trace")
             replay.start()
 
-            delay(1_000)
+            delay(1_000.milliseconds)
 
             replays.removeAll { it.topic == topic }
         }
@@ -97,22 +112,31 @@ class ReplayService: IReplayService, KoinComponent {
             val replayComponents = it.mainLoop.participants.map { participantLog ->
                 val state = participantLog.getCurrentState()
                 val activeStates = participantLog.getActiveStates()
-                if(state == null)
+                if (state == null)
                     return@map null
                 else
-                    return@map ReplayInfo(dt, refId, EventLogTableType.PARTICIPANT, participantLog.participantId.toString(), state, activeStates)
+                    return@map ReplayInfo(
+                        dt,
+                        refId,
+                        EventLogTableType.PARTICIPANT,
+                        participantLog.participantId.toString(),
+                        state,
+                        activeStates
+                    )
             }.filterNotNull().toMutableList()
 
             it.mainLoop.processLog?.let { processLog ->
                 processLog.getCurrentState()?.let { state ->
-                    replayComponents.add(ReplayInfo(
-                        dt = dt,
-                        refId = refId,
-                        EventLogTableType.PROCESS,
-                        "",
-                        state,
-                        emptyList()
-                    ))
+                    replayComponents.add(
+                        ReplayInfo(
+                            dt = dt,
+                            refId = refId,
+                            EventLogTableType.PROCESS,
+                            "",
+                            state,
+                            emptyList()
+                        )
+                    )
                 }
             }
 
