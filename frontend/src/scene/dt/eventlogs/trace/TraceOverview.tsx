@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
 import { useEffect, useState } from "react";
-import { type EventLogInfo, getSpecificEventLog, setHappyPath } from "@/scene/dt/eventlogs/data.ts";
+import { type EventLogInfo, getSpecificEventLog, ReplayState, setHappyPath } from "@/scene/dt/eventlogs/data.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -54,7 +54,7 @@ export function TraceOverview() {
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.events.length}</TableCell>
             <TableCell>
-              <Badge variant="secondary">Active Replay</Badge>
+              {it.replayState !== ReplayState.END ? <Badge variant="secondary">Active Replay</Badge> : null}
               {it.isHappyPath ? <Badge variant="default" className="ml-1">HappyPath</Badge> : null}
               <Badge variant="destructive" className="ml-1">Latency</Badge>
               <Badge variant="destructive" className="ml-1">Cycles</Badge>

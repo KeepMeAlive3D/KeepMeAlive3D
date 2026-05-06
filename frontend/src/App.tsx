@@ -21,6 +21,7 @@ import { LogComponentHeader } from "@/scene/dt/eventlogs/components/LogComponent
 import { TraceStateMachineAnalyze } from "@/scene/dt/eventlogs/trace/analyze/TraceStateMachineAnalyze.tsx";
 import { TraceAnalyzeHeader } from "@/scene/dt/eventlogs/trace/analyze/TraceAnalyzeHeader.tsx";
 import { AnalyzeStateMachinesOverview } from "@/scene/dt/eventlogs/trace/analyze/AnalyzeStateMachinesOverview.tsx";
+import { ThemeProvider } from "@/components/theme-provider.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -125,7 +126,9 @@ function App() {
 
   return (
     <WebSocketProvider url={websocketUrl}>
-      <RouterProvider router={router} />
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </WebSocketProvider>
   );
 }

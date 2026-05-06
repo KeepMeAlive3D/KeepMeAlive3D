@@ -1,7 +1,13 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { type EventLogRefInfo, EventLogType, getEventLog } from "@/scene/dt/eventlogs/data.ts";
-import { Bolt, GitGraph, Plus } from "lucide-react";
+import {
+  analyzeEventLog,
+  type EventLogRefInfo,
+  EventLogType,
+  getEventLog,
+  replayEventLog,
+} from "@/scene/dt/eventlogs/data.ts";
+import { Bolt, Download, GitGraph, Plus, RotateCcw } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { Card } from "@/components/ui/card.tsx";
@@ -39,8 +45,35 @@ export function LogComponentsOverview() {
     return logs.find(it => it.type === EventLogType.PROCESS);
   }
 
+  function replay() {
+    replayEventLog(Number(dtId!), Number(refId!)).then()
+  }
+
+  function analyze() {
+    analyzeEventLog(Number(dtId!), Number(refId!)).then((it) => {
+      console.debug(it.data); //todo create files
+    })
+  }
+
   return (
     <div className="m-2" key="log">
+      <div className="max-width flex flex-row m-4 mb-0" key="general-h">
+        <h2 className="text-lg font-semibold flex flex-row">
+          <span className="ml-2">General</span>
+        </h2>
+      </div>
+      <div className="flex flex-wrap" key="general-actions-render">
+        <div className="mr-2" key="process-format-log"></div>
+        <Card className="w-full max-w-sm mx-2 my-4 hover:bg-accent cursor-pointer min-h-25 flex flex-row" onClick={() => replay()}>
+          <RotateCcw className="my-auto ml-5"/>
+          <h2 className="m-auto font-medium">Replay event log</h2>
+        </Card>
+        <Card className="w-full max-w-sm mx-2 my-4 hover:bg-accent cursor-pointer min-h-25 flex flex-row" onClick={() => analyze()}>
+          <Download className="my-auto ml-5"/>
+          <h2 className="m-auto font-medium">Analyze & download</h2>
+        </Card>
+      </div>
+      <Separator className="mt-2 mb-2" />
       <div className="max-width flex flex-row m-4 mb-0" key="process-h">
         <h2 className="text-lg font-semibold flex flex-row">
           <GitGraph />
