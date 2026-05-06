@@ -1,4 +1,5 @@
 import service from "@/service/service.ts";
+import type { TraceTransitionAnalyzeData } from "@/scene/dt/eventlogs/trace/analyze/data.ts";
 
 export interface EventLogInfoAll {
   id: number;
@@ -63,6 +64,16 @@ export enum EventReplayState {
   NOT_EXECUTED = "NOT_EXECUTED"
 }
 
+export interface EventLogAnalyzed {
+  participantId: string
+  data: EventLogAnalyzedParticipant[]
+}
+
+export interface EventLogAnalyzedParticipant {
+  trace: EventLogTrace,
+  data: TraceTransitionAnalyzeData[]
+}
+
 export function getEventLog(dt: number, refId: number) {
   return service.get<EventLogRefInfo[]>(`/api/dt/${dt}/log/${refId}`);
 }
@@ -105,6 +116,14 @@ export function deleteEventLogComp(dtId: number, refId: number, logId: number) {
 export function setHappyPath(dt: number, refId: number, trace: string, happyPath: boolean) {
   return service.put(`/api/dt/${dt}/log/${refId}/setHappyPath`, {
     traceId: trace,
-    isHappyPath: happyPath
+    isHappyPath: happyPath,
   });
+}
+
+export function replayEventLog(dt: number, refId: number) {
+  return service.put(`/api/dt/${dt}/log/${refId}/replay`);
+}
+
+export function analyzeEventLog(dt: number, refId: number) {
+  return service.get<EventLogAnalyzed[]>(`/api/dt/${dt}/log/${refId}/analyze`);
 }

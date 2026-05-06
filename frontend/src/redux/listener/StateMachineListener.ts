@@ -9,10 +9,15 @@ updateBackendMiddleware.startListening({
   actionCreator: updateNodePosition,
   effect: async (action, listenerApi) => {
     // 1. Get the updated state after the reducer has run
+    const { instanceId } = action.payload;
     const state = listenerApi.getState() as RootState;
-    const updatedData = state.sm;
+    const updatedData = state.sm.instances[instanceId];
+
+    if(!updatedData) {
+      return;
+    }
 
     if (updatedData.dtId && updatedData.pId && updatedData.id && updatedData.dtId !== 0 && updatedData.pId !== 0 && updatedData.id !== 0)
-      sendUpdateStateMachine(updatedData.dtId, updatedData.pId, updatedData.id, updatedData).then();
+      await sendUpdateStateMachine(updatedData.dtId, updatedData.pId, updatedData.id, updatedData);
   },
 });
