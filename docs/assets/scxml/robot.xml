@@ -1,0 +1,36 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+       version="1.0"
+       datamodel="ecmascript"
+       initial="idle">
+
+    <state id="idle">
+        <transition event="pick" target="pick"/>
+    </state>
+
+    <state id="pick">
+        <transition event="fail_pick" target="fail_pick"/>
+        <transition event="exec_task" target="exec_task"/>
+    </state>
+    <state id="fail_pick">
+        <transition event="pick" target="pick"/>
+    </state>
+
+    <state id="exec_task">
+        <transition event="fail_task" target="fail_task"/>
+        <transition event="place" target="place"/>
+        <transition event="error" target="error"/>
+    </state>
+    <state id="fail_task">
+        <transition event="exec_task" target="exec_task"/>
+    </state>
+
+    <state id="place">
+        <transition event="idle" target="idle"/>
+        <transition event="error" target="error"/>
+    </state>
+
+    <state id="error">
+        <transition event="exec_task" target="exec_task"/>
+        <transition event="place" target="place"/>
+    </state>
+</scxml>
