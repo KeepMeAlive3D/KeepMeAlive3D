@@ -6,6 +6,7 @@ import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts"
 import { useDispatch } from "react-redux";
 import { updateNodePosition } from "@/redux/slices/StateMachineSlice.ts";
 import { useAppSelector } from "@/hooks/hooks.ts";
+import { useTheme } from "@/components/theme-provider.tsx";
 
 export function RenderState({ renderStateId, setInspectState, activeStates, participantId, scId, dtId  }: {
   renderStateId: string,
@@ -15,6 +16,8 @@ export function RenderState({ renderStateId, setInspectState, activeStates, part
   dtId: number,
   scId: number
 }) {
+  const { theme } = useTheme();
+
   const instanceId = `${dtId}-${participantId}-${scId}`;
   const sm = useAppSelector((state) => state.sm.instances[instanceId]);
 
@@ -142,7 +145,7 @@ export function RenderState({ renderStateId, setInspectState, activeStates, part
                   y={currentState.posY}
                   radius={30}
                   stroke={(activeStates.includes(renderStateId)) ? "green" : "grey"}
-                  fill="#333333dd"
+                  fill={theme === 'light' ? '#dddddddd' : '#333333dd'}
                   ref={circleRef}
           />
         );

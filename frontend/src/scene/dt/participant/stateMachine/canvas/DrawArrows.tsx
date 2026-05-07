@@ -4,12 +4,15 @@ import { findState } from "@/scene/dt/participant/stateMachine/canvas/scUtil.ts"
 import { useMemo } from 'react';
 import { Arrow } from 'react-konva';
 import { useAppSelector } from "@/hooks/hooks.ts";
+import { useTheme } from "@/components/theme-provider.tsx";
 
 export function DrawArrows({participantId, dtId, scId}: {
   participantId: number,
   dtId: number,
   scId: number
 }) {
+  const { theme } = useTheme();
+
   const instanceId = `${dtId}-${participantId}-${scId}`;
   const sm = useAppSelector((state) => state.sm.instances[instanceId]);
 
@@ -50,8 +53,8 @@ export function DrawArrows({participantId, dtId, scId}: {
         <Arrow
           key={`arrow-${from.id}-${to.id}`}
           points={getConnectorPoints(from, to)}
-          fill="white"
-          stroke="white"
+          fill={theme === 'light' ? '#000' : '#fff'}
+          stroke={theme === 'light' ? '#000' : '#fff'}
           strokeWidth={2}
         />
       ))}

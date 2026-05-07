@@ -1,7 +1,8 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import {
-  analyzeEventLog,
+  analyzeDataToCsv,
+  analyzeEventLog, downloadCSV,
   type EventLogRefInfo,
   EventLogType,
   getEventLog,
@@ -16,6 +17,7 @@ import { EventLogComponentCard } from "@/scene/dt/eventlogs/components/EventLogC
 import { Separator } from "@/components/ui/separator.tsx";
 import { CreateProcessEventLogDialog } from "@/scene/dt/eventlogs/components/CreateProcessEventLogDialog.tsx";
 import { LogComponentsParticipantCardRow } from "@/scene/dt/eventlogs/components/LogComponentsParticipantCardRow.tsx";
+import { toast } from "sonner";
 
 export function LogComponentsOverview() {
   const { dtId, refId } = useParams();
@@ -46,12 +48,18 @@ export function LogComponentsOverview() {
   }
 
   function replay() {
-    replayEventLog(Number(dtId!), Number(refId!)).then()
+    replayEventLog(Number(dtId!), Number(refId!)).then(() => {
+      toast.info("Starting replay, this might take a few minutes.");
+    })
   }
 
   function analyze() {
     analyzeEventLog(Number(dtId!), Number(refId!)).then((it) => {
-      console.debug(it.data); //todo create files
+      it.data.forEach((eventLogAnalyzed) => {
+        const content = analyzeDataToCsv(eventLogAnalyzed)
+        downloadCSV(content, eventLogAnalyzed.participantId)
+      })
+      console.debug(it.data);
     })
   }
 

@@ -65,8 +65,8 @@ export enum EventReplayState {
 }
 
 export interface EventLogAnalyzed {
-  participantId: string
-  data: EventLogAnalyzedParticipant[]
+  participantId: string;
+  data: EventLogAnalyzedParticipant[];
 }
 
 export interface EventLogAnalyzedParticipant {
@@ -126,4 +126,31 @@ export function replayEventLog(dt: number, refId: number) {
 
 export function analyzeEventLog(dt: number, refId: number) {
   return service.get<EventLogAnalyzed[]>(`/api/dt/${dt}/log/${refId}/analyze`);
+}
+
+export function analyzeDataToCsv(data: EventLogAnalyzed) {
+  const entries = data.data.flatMap(part =>
+    part.data.map(log =>
+      part.trace.name + "," + log.correlationEvent + "," + log.executionDuration + ",0," + log.isErrorState + "," + log.errorDetectedCycle + ",0\n"
+    )
+  )
+
+  let csv = "trace,eventName,date,value,isError,isCycle,cycleIteration\n"
+  entries.forEach(entry => {
+    csv += entry;
+  })
+
+  return csv;
+}
+
+export function downloadCSV(data: string, filename: string) {
+  const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
