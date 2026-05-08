@@ -21,8 +21,8 @@ export function LogComponentsParticipantCardRow({ participantData, refresh, setR
     <div key={"row-p-" + participantData.id}>
       <Separator className="mt-2 mb-2" />
       <h3 className="text-lg font-semibold flex flex-row text-center"><GetParticipantIcon
-        iconId={participantData.icon} className="ml-5"
-        size={45} />{participantData.name}{participantData.id}</h3>
+        iconId={participantData.icon} className="mx-5"
+        size={25} />{participantData.name}</h3>
       <div className="flex flex-wrap" key={"part-row-" + participantData.id}>
         <div className="mr-2" key={"part-row-f" + participantData.id}></div>
         {
