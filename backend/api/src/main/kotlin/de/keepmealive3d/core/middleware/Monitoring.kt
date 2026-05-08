@@ -13,12 +13,12 @@ fun Application.configureMonitoring() {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
     }
-    install(DropwizardMetrics) {
-        Slf4jReporter.forRegistry(registry)
-            .outputTo(this@configureMonitoring.log)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build()
-            .start(120, TimeUnit.SECONDS)
-    }
+    //install(DropwizardMetrics) {
+    //    Slf4jReporter.forRegistry(registry)
+    //        .outputTo(this@configureMonitoring.log)
+    //        .convertRatesTo(TimeUnit.SECONDS)
+    //        .convertDurationsTo(TimeUnit.MILLISECONDS)
+    //        .build()
+    //        .start(120, TimeUnit.SECONDS)
+    //}
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
@@ -73,7 +74,7 @@ class ReplayParticipantLog(
     private val sessionData: ConcurrentMap<UUID, WsSessionData> by inject(qualifier("wsSessionData"))
     private val stateMachineTraceRepository: IAnalyzeTraceRepository by inject()
 
-    private val logger = LoggerFactory.getLogger("ReplayParticipantLog_$trace")
+    private val logger = LoggerFactory.getLogger("ReplayParticipantLog_$trace ($participantId)")
 
     var replayComplete: Boolean = false
         private set
@@ -91,7 +92,7 @@ class ReplayParticipantLog(
         null
     }
 
-    private val alreadySend = mutableListOf<String>()
+    private val alreadySend = mutableListOf<Long>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val executors: List<StateMachineData> =
@@ -140,22 +141,22 @@ class ReplayParticipantLog(
                         Duration.between(fromStart, curr).toMillis()
                     }
 
-                    launch {
+                    scope.launch {
                         sendCurrentEventToClient(
                             from.id ?: "",
                             to.id ?: "",
                             executor.internalState.activeStates.map { it.id ?: "unknown" })
-                    }
 
-                    stateMachineTraceRepository.saveTransition(
-                        refId,
-                        trace,
-                        executor.id,
-                        from.id!!,
-                        to.id!!,
-                        duration,
-                        correlationEvent
-                    )
+                        stateMachineTraceRepository.saveTransition(
+                            refId,
+                            trace,
+                            executor.id,
+                            from.id!!,
+                            to.id!!,
+                            duration,
+                            correlationEvent
+                        )
+                    }
                 }
             }
         }
@@ -190,7 +191,7 @@ class ReplayParticipantLog(
             replayComplete = true
             return
         }
-        if (startOffset + replayOffset >= end.toEpochMilli()) {
+        if (startOffset + replayOffset >= end.toEpochMilli() + 5_000) {
             replayComplete = true
             return
         }
@@ -199,14 +200,15 @@ class ReplayParticipantLog(
             return
         }
 
-        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.name) }
+        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.datetime.toEpochMilli()) }
             .forEach { event ->
                 val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
+                    logger.info("Execute event ${event.name}")
                     executors.forEach { executor ->
                         executor.executor.onEvent(event.name!!)
                     }
-                    alreadySend.add(event.name!!)
+                    alreadySend.add(event.datetime.toEpochMilli())
                     participantReplayInfo.allEvents.filter { it.name == event.name }.forEach { event ->
                         participantReplayInfo.currentEvent.set(event)
                     }
@@ -265,6 +267,12 @@ class ReplayParticipantLog(
                     else if (index < currentIndex) EventReplayState.EXECUTED
                     else EventReplayState.NOT_EXECUTED,
             )
+        }
+
+        if(from != to) {
+            logger.info("Sending transition: $from to $to")
+        } else {
+            logger.info("Sending update active states")
         }
 
         listeners.forEach {

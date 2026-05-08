@@ -66,7 +66,7 @@ class ReplayProcessLog(
         logger.warn("No end time for processLog $refId and trace $trace")
         null
     }
-    private val alreadySend = mutableListOf<String>()
+    private val alreadySend = mutableListOf<Long>()
 
     private val processReplay: ProcessReplayInfo
     init {
@@ -118,7 +118,7 @@ class ReplayProcessLog(
             replayComplete = true
             return
         }
-        if (startOffset + replayOffset >= end.toEpochMilli()) {
+        if (startOffset + replayOffset >= end.toEpochMilli() + 5_000) {
             replayComplete = true
             return
         }
@@ -128,11 +128,11 @@ class ReplayProcessLog(
         }
 
 
-        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.name) }
+        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.datetime.toEpochMilli()) }
             .forEach { event ->
                 val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
-                    alreadySend.add(event.name!!)
+                    alreadySend.add(event.datetime.toEpochMilli())
                     processReplay.allEvents.filter { it.name == event.name }.forEach { event ->
                         processReplay.currentEvent.set(event)
                     }

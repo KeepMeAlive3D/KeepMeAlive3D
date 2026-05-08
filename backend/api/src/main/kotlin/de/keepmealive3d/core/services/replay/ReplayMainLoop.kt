@@ -14,6 +14,8 @@ import org.koin.core.qualifier.qualifier
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
@@ -50,7 +52,7 @@ class ReplayMainLoop(owner: Int, dt: Int, logRef: Int, trace: String) : KoinComp
         // if all participants are finished and process log is finished, when exist -> stop the loop
         while (!(participants.all { it.replayComplete } && ((processLog != null && processLog.replayComplete) || processLog == null))) {
             val currOffset = measureTime {
-                delay(100)  //delay 100 ms is minimum, we can't say for sure that its exactly 100mx
+                delay(100.milliseconds)  //delay 100 ms is minimum, we can't say for sure that its exactly 100mx
             }
             val time = if (isPaused.get()) {
                 offsetMillis.get()
@@ -65,6 +67,7 @@ class ReplayMainLoop(owner: Int, dt: Int, logRef: Int, trace: String) : KoinComp
         }
 
         //replay end
+        delay(1.seconds)
         destroy()
     }
 

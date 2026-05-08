@@ -7,6 +7,7 @@
         <transition event="pick" target="pick"/>
         <transition event="error" target="error"/>
         <transition event="place" target="place"/>
+        <transition event="drive" target="drive"/>
     </state>
 
     <state id="drive">
