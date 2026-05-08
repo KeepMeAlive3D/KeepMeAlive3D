@@ -11,6 +11,7 @@ import org.ktorm.dsl.insert
 import org.ktorm.entity.filter
 import org.ktorm.entity.sequenceOf
 import org.ktorm.entity.toList
+import java.time.Instant
 
 interface IAnalyzeTraceRepository {
     fun saveTransition(
@@ -20,7 +21,9 @@ interface IAnalyzeTraceRepository {
         previousState: String,
         stateId: String,
         execDuration: Long,
-        correlationEvent: String
+        correlationEvent: String,
+        execTime: Instant,
+        correlationEventId: String,
     )
 
     fun getTransition(refId: Int, stateMachineId: Int, trace: String): List<DBAnalyzeTraceEntity>
@@ -36,7 +39,9 @@ class AnalyzeTraceRepository : KoinComponent, IAnalyzeTraceRepository {
         previousState: String,
         stateId: String,
         execDuration: Long,
-        correlationEvent: String
+        correlationEvent: String,
+        execTime: Instant,
+        correlationEventId: String,
     ) {
         kmaSqlDatabase.database.insert(DBAnalyzeTraceTable) {
             set(it.refId, refId)
@@ -46,6 +51,8 @@ class AnalyzeTraceRepository : KoinComponent, IAnalyzeTraceRepository {
             set(it.stateId, stateId)
             set(it.execDuration, execDuration)
             set(it.correlationEvent, correlationEvent)
+            set(it.executionTime, execTime)
+            set(it.correlationEventId, correlationEventId)
         }
     }
 

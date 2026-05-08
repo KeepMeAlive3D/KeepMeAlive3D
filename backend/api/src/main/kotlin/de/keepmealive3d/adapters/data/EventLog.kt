@@ -1,9 +1,11 @@
 package de.keepmealive3d.adapters.data
 
+import de.keepmealive3d.adapters.serializer.UUIDSerializer
 import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import de.keepmealive3d.adapters.sql.tables.EventLogTableType
 import kotlinx.serialization.Serializable
 import java.time.Instant
+import java.util.UUID
 
 @Serializable
 data class EventLogInfoAll(
@@ -65,7 +67,9 @@ data class EventLog(
         val datetime: Instant?,
         val source: String?,
         val value: String?,
-        var replayState: EventReplayState = EventReplayState.NOT_EXECUTED
+        var replayState: EventReplayState = EventReplayState.NOT_EXECUTED,
+        @Serializable(UUIDSerializer::class)
+        var traceEventId: UUID = UUID.randomUUID()
     )
 
     enum class EventReplayState {

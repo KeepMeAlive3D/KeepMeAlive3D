@@ -1,11 +1,8 @@
 package de.keepmealive3d.adapters.sql.tables
 
 import org.ktorm.entity.Entity
-import org.ktorm.schema.Table
-import org.ktorm.schema.int
-import org.ktorm.schema.long
-import org.ktorm.schema.text
-import org.ktorm.schema.varchar
+import org.ktorm.schema.*
+import java.time.Instant
 
 interface DBAnalyzeTraceEntity : Entity<DBAnalyzeTraceEntity> {
     companion object : Entity.Factory<DBAnalyzeTraceEntity>()
@@ -18,6 +15,8 @@ interface DBAnalyzeTraceEntity : Entity<DBAnalyzeTraceEntity> {
     val stateId: String
     val execDuration: Long
     val correlationEvent: String
+    val executionTime: Instant
+    val correlationEventId: String
 }
 
 object DBAnalyzeTraceTable : Table<DBAnalyzeTraceEntity>("analyze_trace") {
@@ -29,4 +28,6 @@ object DBAnalyzeTraceTable : Table<DBAnalyzeTraceEntity>("analyze_trace") {
     val stateId = text("state_id").bindTo { it.stateId }
     val execDuration = long("exec_duration").bindTo { it.execDuration }
     val correlationEvent = text("correlation_event").bindTo { it.correlationEvent }
+    val executionTime = timestamp("execution_time").bindTo { it.executionTime }
+    val correlationEventId = text("correlation_event_id").bindTo { it.correlationEventId }
 }

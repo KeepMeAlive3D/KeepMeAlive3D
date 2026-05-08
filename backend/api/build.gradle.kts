@@ -102,5 +102,5 @@ dependencies {
 
     implementation("com.influxdb:influxdb-client-kotlin:7.2.0")
 
-    implementation(group = "dev.klenz.matthias", name = "KScxmlParser", version = "0.2.0")
+    implementation("dev.klenz.matthias:KScxmlParser:0.3.0")
 }

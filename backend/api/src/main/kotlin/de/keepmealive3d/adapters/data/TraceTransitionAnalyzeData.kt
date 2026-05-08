@@ -12,7 +12,10 @@ data class TraceTransitionAnalyzeData(
     val errorDetectedCycle: Boolean,
     val executionDuration: Long,
     val latencyInfo: TraceTransitionLatencyInfo,
-    val analysisFailed: Boolean
+    val analysisFailed: Boolean,
+    val executionTime: String,
+    val correlationId: String,
+    val cycleCount: Int,
 )
 
 enum class TraceTransitionLatencyInfo {

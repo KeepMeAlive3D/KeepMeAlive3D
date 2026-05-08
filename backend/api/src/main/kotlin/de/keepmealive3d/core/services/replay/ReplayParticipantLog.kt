@@ -3,6 +3,7 @@ package de.keepmealive3d.core.services.replay
 import de.keepmealive3d.adapters.data.EventLog
 import de.keepmealive3d.adapters.data.EventLog.EventReplayState
 import de.keepmealive3d.adapters.data.EventLogRefInfo
+import de.keepmealive3d.adapters.sql.tables.DBAnalyzeTraceTable.correlationEventId
 import de.keepmealive3d.adapters.sql.tables.EventLogTableType
 import de.keepmealive3d.core.model.messages.Manifest
 import de.keepmealive3d.core.model.messages.MessageType
@@ -19,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
@@ -92,7 +92,7 @@ class ReplayParticipantLog(
         null
     }
 
-    private val alreadySend = mutableListOf<Long>()
+    private val alreadySend = mutableListOf<UUID>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val executors: List<StateMachineData> =
@@ -130,7 +130,7 @@ class ReplayParticipantLog(
         executors.forEach { executor ->
             executor.executor.start()
             scope.launch {
-                executor.executor.registerTransitionEventListener { from, to, correlationEvent ->
+                executor.executor.registerTransitionEventListener { from, to, correlationEvent, correlationEventId ->
                     val curr = Instant.now()
                     val fromStart = participantReplayInfo.activeStatesRef.remove(from.id)
                     participantReplayInfo.activeStatesRef[to.id!!] = curr
@@ -140,6 +140,8 @@ class ReplayParticipantLog(
                     } else {
                         Duration.between(fromStart, curr).toMillis()
                     }
+
+                    val execTime = sorted.first { it.traceEventId.toString() == correlationEventId }.datetime ?: curr
 
                     scope.launch {
                         sendCurrentEventToClient(
@@ -154,7 +156,9 @@ class ReplayParticipantLog(
                             from.id!!,
                             to.id!!,
                             duration,
-                            correlationEvent
+                            correlationEvent,
+                            execTime,
+                            correlationEventId
                         )
                     }
                 }
@@ -174,7 +178,9 @@ class ReplayParticipantLog(
                 "",
                 stateId,
                 duration,
-                ""
+                "",
+                curr,
+                "",
             )
         }
     }
@@ -200,15 +206,14 @@ class ReplayParticipantLog(
             return
         }
 
-        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.datetime.toEpochMilli()) }
+        traceObj.events.filter { it.datetime != null && it.name != null && !alreadySend.contains(it.traceEventId) }
             .forEach { event ->
                 val offset = event.datetime!!.toEpochMilli() - startOffset
                 if (offset < replayOffset) {
-                    logger.info("Execute event ${event.name}")
                     executors.forEach { executor ->
-                        executor.executor.onEvent(event.name!!)
+                        executor.executor.onEvent(event.name!!, event.traceEventId.toString())
                     }
-                    alreadySend.add(event.datetime.toEpochMilli())
+                    alreadySend.add(event.traceEventId)
                     participantReplayInfo.allEvents.filter { it.name == event.name }.forEach { event ->
                         participantReplayInfo.currentEvent.set(event)
                     }
@@ -267,12 +272,6 @@ class ReplayParticipantLog(
                     else if (index < currentIndex) EventReplayState.EXECUTED
                     else EventReplayState.NOT_EXECUTED,
             )
-        }
-
-        if(from != to) {
-            logger.info("Sending transition: $from to $to")
-        } else {
-            logger.info("Sending update active states")
         }
 
         listeners.forEach {

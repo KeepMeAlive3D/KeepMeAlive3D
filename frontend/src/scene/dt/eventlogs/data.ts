@@ -131,24 +131,33 @@ export function analyzeEventLog(dt: number, refId: number) {
 export function analyzeDataToCsv(data: EventLogAnalyzed) {
   const entries = data.data.flatMap(part =>
     part.data.map(log =>
-      part.trace.name + "," + log.correlationEvent + "," + log.executionDuration + ",0," + log.isErrorState + "," + log.errorDetectedCycle + ",0\n"
-    )
-  )
+      part.trace.name + ","
+      + log.correlationEvent + ","
+      + log.executionTime + ","
+      + 0 + "," //value of the event
+      + log.isErrorState + ","
+      + log.errorDetectedCycle + ","
+      + log.cycleCount + ","
+      + log.previousState + ","
+      + log.state + ","
+      + "\n",
+    ),
+  );
 
-  let csv = "trace,eventName,date,value,isError,isCycle,cycleIteration\n"
+  let csv = "trace,eventName,date,value,isError,isCycle,cycleIteration,from,to\n";
   entries.forEach(entry => {
     csv += entry;
-  })
+  });
 
   return csv;
 }
 
 export function downloadCSV(data: string, filename: string) {
-  const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.setAttribute('download', `${filename}.csv`);
+  link.setAttribute("download", `${filename}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

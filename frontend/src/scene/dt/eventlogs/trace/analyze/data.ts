@@ -9,7 +9,10 @@ export interface TraceTransitionAnalyzeData {
   errorDetectedCycle: boolean,
   executionDuration: number,
   latencyInfo: TraceTransitionLatencyInfo,
-  analysisFailed: boolean
+  analysisFailed: boolean,
+  executionTime: string,
+  correlationId: string,
+  cycleCount: number,
 }
 
 export enum TraceTransitionLatencyInfo {

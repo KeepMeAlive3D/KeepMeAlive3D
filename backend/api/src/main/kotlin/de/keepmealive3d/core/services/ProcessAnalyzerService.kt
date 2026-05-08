@@ -60,7 +60,10 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
                 errorDetectedCycle = false,
                 executionDuration = it.execDuration,
                 latencyInfo = TraceTransitionLatencyInfo.NORMAL,
-                analysisFailed = true
+                analysisFailed = true,
+                executionTime = "",
+                correlationId = "",
+                cycleCount = 0,
             )
         }
 
@@ -113,7 +116,8 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
                 isErrorState = false
             }
 
-            val isCycle = seenStates.contains(anTransaction.stateId)
+            val cycle = seenStates.count { it == anTransaction.stateId }
+            val isCycle = cycle > 0
             seenStates.add(anTransaction.stateId)
 
             TraceTransitionAnalyzeData(
@@ -125,7 +129,10 @@ class ProcessAnalyzerService : KoinComponent, IProcessAnalyzerService {
                 errorDetectedCycle = isCycle && (isErrorState || isTransitionError),
                 executionDuration = anTransaction.execDuration,
                 latencyInfo = TraceTransitionLatencyInfo.NORMAL,
-                analysisFailed = false
+                analysisFailed = false,
+                executionTime = anTransaction.executionTime.toString(),
+                correlationId = anTransaction.correlationEventId,
+                cycleCount = cycle,
             )
         }
     }
