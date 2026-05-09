@@ -5,6 +5,7 @@ import de.keepmealive3d.adapters.data.EventLogInfo
 import de.keepmealive3d.adapters.data.EventLogInfoAll
 import de.keepmealive3d.adapters.data.EventLogRefInfo
 import de.keepmealive3d.adapters.sql.tables.EventLogTableType
+import de.keepmealive3d.core.repositories.IAnalyzeTraceRepository
 import de.keepmealive3d.core.repositories.IEventLogRepository
 import de.keepmealive3d.core.services.replay.IReplayService
 import dev.klenz.matthias.kscxml.parser.toList
@@ -40,6 +41,7 @@ interface IEventLogService {
 class EventLogService : KoinComponent, IEventLogService {
     private val repository: IEventLogRepository by inject()
     private val eventLogReplayService: IReplayService by inject()
+    private val analyzerService: IAnalyzeTraceRepository by inject()
 
     override fun create(owner: Int, dt: Int, name: String): EventLogInfo {
         return repository.createNewEventLog(owner, dt, name)
@@ -79,6 +81,10 @@ class EventLogService : KoinComponent, IEventLogService {
     }
 
     override fun delete(owner: Int, dt: Int, refId: Int) {
+        repository.getEventLogsByRef(refId).forEach {
+            delete(owner, dt, refId, it.id)
+        }
+        analyzerService.removeByRefId(refId)
         repository.deleteEventLogRef(refId) //todo check if owner matches
     }
 

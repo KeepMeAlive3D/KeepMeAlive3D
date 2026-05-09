@@ -20,6 +20,7 @@ interface IReplayComponentRepository {
     fun add(dt: Int, owner: Int, logId: Int, trace: String, participantId: Int, type: String, additionalIdentifier: String)
     fun delete(id: Int)
     fun get(id: Int): ReplayLogComponent?
+    fun deleteByParticipant(id: Int)
 }
 
 class ReplayComponentRepository : KoinComponent, IReplayComponentRepository {
@@ -71,6 +72,10 @@ class ReplayComponentRepository : KoinComponent, IReplayComponentRepository {
         val records = kmaSqlDatabase.database.delete(DBReplayComponentTable) { it.id eq id }
         if (records == 0)
             throw NotFoundException("Component with id $id not found")
+    }
+
+    override fun deleteByParticipant(id: Int) {
+        kmaSqlDatabase.database.delete(DBReplayComponentTable) { it.participant eq id }
     }
 
     override operator fun get(id: Int): ReplayLogComponent? {

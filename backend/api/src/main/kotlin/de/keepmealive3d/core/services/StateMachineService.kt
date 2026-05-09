@@ -2,6 +2,7 @@ package de.keepmealive3d.core.services
 
 import de.keepmealive3d.adapters.data.*
 import de.keepmealive3d.core.exceptions.BadRequestDataException
+import de.keepmealive3d.core.repositories.IAnalyzeTraceRepository
 import de.keepmealive3d.core.repositories.IStateChartRepository
 import de.keepmealive3d.scriptingapi.Plugin
 import dev.klenz.matthias.kscxml.KScxml
@@ -27,6 +28,7 @@ interface IStateMachineService {
 class StateMachineService : KoinComponent, IStateMachineService {
     private val plugins: MutableList<Plugin> by inject()
     private val repo: IStateChartRepository by inject()
+    private val analyzerService: IAnalyzeTraceRepository by inject()
 
     override suspend fun createStateMachine(
         owner: Int,
@@ -77,6 +79,7 @@ class StateMachineService : KoinComponent, IStateMachineService {
         participant: Int,
         id: Int
     ) {
+        analyzerService.removeByStateMachineId(id)
         repo.deleteStateMachine(id)
     }
 

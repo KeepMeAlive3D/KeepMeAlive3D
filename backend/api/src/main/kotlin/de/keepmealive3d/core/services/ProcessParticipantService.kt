@@ -6,6 +6,8 @@ import de.keepmealive3d.core.exceptions.EntityNotFoundException
 import de.keepmealive3d.core.model.dt.ProcessParticipantCreateDocument
 import de.keepmealive3d.core.model.dt.ProcessParticipantDocument
 import de.keepmealive3d.core.repositories.IProcessParticipantRepository
+import de.keepmealive3d.core.repositories.IReplayComponentRepository
+import de.keepmealive3d.core.repositories.IStateChartRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -19,6 +21,8 @@ interface IProcessParticipantService {
 
 class ProcessParticipantService : KoinComponent, IProcessParticipantService {
     private val repository: IProcessParticipantRepository by inject()
+    private val stateMachineRepository: IStateChartRepository by inject()
+    private val replayComponentRepository: IReplayComponentRepository by inject()
 
     override fun create(data: ProcessParticipantCreate, dtId: Int, owner: Int): ProcessParticipantInfo {
         val doc = repository.create(ProcessParticipantCreateDocument(owner, dtId, data.name, data.icon))
@@ -60,6 +64,13 @@ class ProcessParticipantService : KoinComponent, IProcessParticipantService {
         val doc = repository.get(id)
         if(doc.owner == owner && doc.dt == dtId) {
             repository.delete(id)
+            val sms = stateMachineRepository.getStateMachines(id)
+            sms.forEach {
+                stateMachineRepository.deleteStateMachine(it.id)
+                replayComponentRepository.deleteByParticipant(it.id)
+
+            }
+            replayComponentRepository.deleteByParticipant(id)
             return
         }
         throw EntityNotFoundException("Process Participant not found!")

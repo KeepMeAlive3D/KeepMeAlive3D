@@ -6,6 +6,7 @@ import de.keepmealive3d.adapters.sql.tables.DBAnalyzeTraceTable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.dsl.and
+import org.ktorm.dsl.delete
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.entity.filter
@@ -27,6 +28,10 @@ interface IAnalyzeTraceRepository {
     )
 
     fun getTransition(refId: Int, stateMachineId: Int, trace: String): List<DBAnalyzeTraceEntity>
+
+    fun removeByStateMachineId(stateMachineId: Int)
+
+    fun removeByRefId(refId: Int)
 }
 
 class AnalyzeTraceRepository : KoinComponent, IAnalyzeTraceRepository {
@@ -66,5 +71,17 @@ class AnalyzeTraceRepository : KoinComponent, IAnalyzeTraceRepository {
             .sequenceOf(DBAnalyzeTraceTable)
             .filter { (it.trace eq trace) and (it.refId eq refId) and (it.stateMachineId eq stateMachineId) }
             .toList()
+    }
+
+    override fun removeByStateMachineId(stateMachineId: Int) {
+        kmaSqlDatabase.database.delete(DBAnalyzeTraceTable) {
+            it.stateMachineId eq stateMachineId
+        }
+    }
+
+    override fun removeByRefId(refId: Int) {
+        kmaSqlDatabase.database.delete(DBAnalyzeTraceTable) {
+            it.refId eq refId
+        }
     }
 }
