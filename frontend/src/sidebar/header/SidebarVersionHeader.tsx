@@ -16,7 +16,7 @@ export function SidebarVersionHeader() {
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <a href="#" className="text-primary bg-muted/80">
+          <a className="bg-muted/80">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
               <SquareActivity className="size-6" />
             </div>

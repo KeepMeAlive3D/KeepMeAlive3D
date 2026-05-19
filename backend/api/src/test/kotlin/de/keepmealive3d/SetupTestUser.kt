@@ -1,7 +1,7 @@
 package de.keepmealive3d
 
-import de.keepmealive3d.adapters.auth.AuthController
-import de.keepmealive3d.adapters.auth.RegisterController
+import de.keepmealive3d.adapters.controllers.AuthController
+import de.keepmealive3d.adapters.controllers.RegisterController
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*

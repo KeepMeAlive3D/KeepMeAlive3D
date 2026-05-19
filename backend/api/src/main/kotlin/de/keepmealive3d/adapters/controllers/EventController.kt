@@ -1,0 +1,36 @@
+package de.keepmealive3d.adapters.controllers
+
+import de.keepmealive3d.adapters.sql.EventDao
+import de.keepmealive3d.core.auth.KmaUserPrincipal
+import de.keepmealive3d.core.exceptions.BadRequestDataException
+import de.keepmealive3d.core.exceptions.InvalidAuthTokenException
+import io.ktor.server.application.Application
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.principal
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+class EventController(application: Application) : KoinComponent {
+    private val eventDao: EventDao by inject()
+
+    init {
+        application.routing {
+            authenticate("jwt") {
+                get("/api/event/{source}/dataPoints/{topic}/limit/{limit}") {
+                    call.principal<KmaUserPrincipal>()
+                        ?: throw InvalidAuthTokenException("Could not authenticate")
+                    val source = call.parameters["source"]
+                        ?: throw BadRequestDataException("Request parameter 'source' is required!")
+                    val topic = call.parameters["topic"]
+                        ?: throw BadRequestDataException("Request parameter 'topic' is required!")
+                    val limit = call.parameters["limit"]?.toIntOrNull()
+                        ?: throw BadRequestDataException("Request parameter 'limit' is required and has to be an integer!")
+                    call.respond(eventDao.loadEvents(source, topic, limit))
+                }
+            }
+        }
+    }
+}

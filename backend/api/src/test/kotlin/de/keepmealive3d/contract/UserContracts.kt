@@ -1,7 +1,7 @@
 package de.keepmealive3d.contract
 
-import de.keepmealive3d.adapters.auth.AuthController
-import de.keepmealive3d.adapters.auth.RegisterController
+import de.keepmealive3d.adapters.controllers.AuthController
+import de.keepmealive3d.adapters.controllers.RegisterController
 import de.keepmealive3d.appModule
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.*
@@ -9,8 +9,6 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.jupiter.api.Timeout

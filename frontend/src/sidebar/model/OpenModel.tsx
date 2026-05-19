@@ -25,7 +25,7 @@ import {
 import {
   deleteModel,
   getRemoteModelNames,
-  ModelInfo,
+  type ModelInfo,
 } from "@/service/upload.ts";
 import { useAppDispatch } from "@/hooks/hooks.ts";
 import { clearPartsList } from "@/redux/slices/ModelPartSlice.ts";

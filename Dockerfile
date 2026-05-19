@@ -11,11 +11,12 @@ ENV GITHUB_REF=$GITHUB_REF
 WORKDIR /app
 COPY ./backend .
 COPY --from=frontend /app/dist ./api/src/main/resources/static
-RUN ./gradlew :api:build -x test
+RUN ./gradlew :api:installDist -x test
 
 
-FROM openjdk:23-slim-bullseye
+FROM ghcr.io/graalvm/native-image-community:23
+RUN microdnf install findutils && microdnf clean all
 WORKDIR /app
-COPY --from=api /app/api/build/libs/api-all.jar .
+COPY --from=api /app/api/build/install/api ./api-dist
 EXPOSE 8080
-CMD ["java", "-jar", "api-all.jar"]
+ENTRYPOINT ["./api-dist/bin/api"]

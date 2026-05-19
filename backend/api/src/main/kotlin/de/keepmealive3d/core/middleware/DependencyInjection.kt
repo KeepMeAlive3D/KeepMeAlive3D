@@ -5,20 +5,20 @@ import de.keepmealive3d.adapters.sql.EventDao
 import de.keepmealive3d.adapters.sql.KmaSqlDatabase
 import de.keepmealive3d.adapters.sql.ModelDao
 import de.keepmealive3d.core.encryption.EncryptionService
-import de.keepmealive3d.core.repositories.IModelRepository
-import de.keepmealive3d.core.services.IModelService
-import de.keepmealive3d.core.repositories.ModelRepository
-import de.keepmealive3d.core.services.ModelService
-import de.keepmealive3d.core.repositories.IModelDao
-import de.keepmealive3d.core.services.IReplayService
-import de.keepmealive3d.core.services.IWsSessionService
-import de.keepmealive3d.core.services.ReplayService
-import de.keepmealive3d.core.services.WsSessionService
+import de.keepmealive3d.core.model.session.WsSessionData
+import de.keepmealive3d.core.repositories.*
+import de.keepmealive3d.core.services.*
+import de.keepmealive3d.core.services.replay.IReplayService
+import de.keepmealive3d.core.services.replay.ReplayService
 import io.ktor.server.application.*
+import io.ktor.util.collections.ConcurrentMap
 import org.koin.core.module.Module
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import java.util.UUID
+import kotlin.math.sin
 
 fun Application.configureDependencyInjection(initModule: Module) {
     install(Koin) {
@@ -33,8 +33,23 @@ fun Application.configureDependencyInjection(initModule: Module) {
                 single<IModelRepository> { ModelRepository() }
                 single<IModelDao> { ModelDao() }
                 single<IModelService> { ModelService() }
-                single<IReplayService> { ReplayService() }
                 single<IWsSessionService> { WsSessionService() }
+                single<IDigitalTwinRepository> { DigitalTwinRepository() }
+                single<IDigitalTwinService> { DigitalTwinService() }
+                single<IProcessParticipantRepository> { ProcessParticipantRepository() }
+                single<IProcessParticipantService> { ProcessParticipantService() }
+                single<IStateMachineService> { StateMachineService() }
+                single<IStateChartRepository> { StateChartRepository() }
+                single<IEventLogRepository> { EventLogRepository() }
+                single<IEventLogService> { EventLogService() }
+                single<IReplayService> { ReplayService() }
+                single<IReplayComponentRepository> { ReplayComponentRepository() }
+                single<IReplayComponentService> { ReplayComponentService()  }
+                single<IBpmFilesRepository> { BpmFilesRepository() }
+                single<IBpmService> { BpmService() }
+                single<ConcurrentMap<UUID, WsSessionData>>(qualifier = qualifier("wsSessionData")) { ConcurrentMap() }
+                single<IProcessAnalyzerService> { ProcessAnalyzerService() }
+                single<IAnalyzeTraceRepository> { AnalyzeTraceRepository() }
             })
     }
 }

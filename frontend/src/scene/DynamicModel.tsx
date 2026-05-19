@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { RefObject, Suspense, useRef, useState } from "react";
+import { type RefObject, Suspense, useRef, useState } from "react";
 import { Bounds, Grid, OrbitControls, useGLTF } from "@react-three/drei";
 import OutlineObjects from "@/scene/OutlineObjects.tsx";
 import { Light, Object3D, Scene, Vector3 } from "three";
@@ -17,7 +17,7 @@ function DynamicModel({ objectUrl }: { objectUrl: string }) {
 
   const initialised = useRef(false);
 
-  const containerRef: RefObject<HTMLDivElement> = useRef(null);
+  const containerRef: RefObject<HTMLDivElement | null> = useRef(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   // This fixes the bug with the canvas not shrinking on window shrinking

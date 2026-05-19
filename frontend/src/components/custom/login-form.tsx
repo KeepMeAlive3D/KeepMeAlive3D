@@ -8,16 +8,16 @@ import {
 } from "@/components/ui/card.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { loginBasic, registerBasic } from "@/service/login.ts";
 import { Form } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useToast } from "@/hooks/use-toast.ts";
+import { toast } from "sonner"
 import { setDefaultRequestToken } from "@/service/service.ts";
 import useLocalStorage from "@/hooks/localstorage.ts";
-import { RestErrorInfo } from "@/service/error.ts";
+import type { RestErrorInfo } from "@/service/error.ts";
 
 export function LoginForm({
   setAuth,
@@ -26,7 +26,6 @@ export function LoginForm({
 }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { toast } = useToast();
 
   const [, updateToken] = useLocalStorage("token", "");
   const [, updateRefreshToken] = useLocalStorage("refresh", "");
@@ -50,11 +49,9 @@ export function LoginForm({
 
   function register() {
     registerBasic(username, password).then(() => {
-      toast({
-        variant: "default",
-        title: "Successfully Registered!",
-        description: "The account has been registered and logged in directly.",
-      });
+      toast("Successfully Registered!", {
+        description: "The account has been registered and logged in directly."
+      })
       //If successfully, then login directly
       login();
     });
@@ -71,11 +68,9 @@ export function LoginForm({
       })
       .catch((error) => {
         const parsed = error.data as RestErrorInfo;
-        toast({
-          variant: "destructive",
-          title: parsed.name,
-          description: parsed.message,
-        });
+        toast.error(parsed.name, {
+          description: parsed.message
+        })
       });
   }
 

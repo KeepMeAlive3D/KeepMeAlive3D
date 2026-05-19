@@ -1,0 +1,26 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+       version="1.0"
+       datamodel="ecmascript"
+       initial="idle">
+
+    <state id="idle">
+        <transition event="pick" target="pick"/>
+        <transition event="loading" target="loading"/>
+        <transition event="error" target="error"/>
+        <transition event="drive" target="drive"/>
+    </state>
+
+    <state id="drive">
+        <transition event="idle" target="idle"/>=
+        <transition event="error" target="error"/>
+    </state>
+
+    <state id="loading">
+        <transition event="drive" target="drive"/>
+        <transition event="error" target="error"/>
+    </state>
+
+    <state id="error">
+        <transition event="idle" target="idle"/>
+    </state>
+</scxml>

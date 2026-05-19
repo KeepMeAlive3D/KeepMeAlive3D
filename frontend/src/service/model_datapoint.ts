@@ -1,5 +1,5 @@
 import service from "@/service/service.ts";
-import { DataPointEventMessage } from "@/service/wsTypes.ts";
+import type { DataPointEventMessage } from "@/service/wsTypes.ts";
 
 export function getEventDataPointsOfTopic(topic: string) {
   return service.get<DataPointEventMessage[]>(

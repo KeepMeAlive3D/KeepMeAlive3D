@@ -15,9 +15,16 @@ class MigrationRunner : KoinComponent {
     private val kmaDb: KmaSqlDatabase by inject()
     private val config: Config by inject()
 
-    private val allMigrations = mapOf<Int, Migration>(
+    private val allMigrations = mapOf(
         1 to Migration001(),
         2 to Migration002(),
+        3 to Migration003(),
+        4 to Migration004(),
+        5 to Migration005(),
+        6 to Migration006(),
+        7 to Migration007(),
+        8 to Migration008(),
+        9 to Migration009()
     )
 
     fun executeUp() {

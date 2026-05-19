@@ -1,25 +1,19 @@
 package de.keepmealive3d.adapters.ws
 
-import de.keepmealive3d.core.model.messages.SubscribeEvent
-import de.keepmealive3d.core.model.messages.GenericMessageEvent
-import de.keepmealive3d.core.model.messages.MessageType
-import de.keepmealive3d.core.model.messages.ReplayEndEvent
-import de.keepmealive3d.core.model.messages.ReplayStartEvent
-import de.keepmealive3d.core.model.messages.ReplayStopEvent
-import de.keepmealive3d.core.model.messages.UnknownTypeEvent
-import de.keepmealive3d.core.model.messages.wsCreateErrorEventMessage
+import de.keepmealive3d.core.model.messages.*
 import de.keepmealive3d.core.services.IWsSessionService
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.Instant
 
 class WebsocketConnectionController(application: Application) : KoinComponent {
     private val sessionService: IWsSessionService by inject()
@@ -44,7 +38,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                                     topics.add(event.message.topic)
                                     sessionService.topicSubscribe(event)
                                         .fold({
-                                            async(Dispatchers.IO) {
+                                            launch(Dispatchers.IO) {
                                                 handleSend(it, outgoing)
                                             }
                                         }) {
@@ -56,16 +50,23 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                                         }
                                 }
 
-                                MessageType.REPLAY_START -> sessionService.startReplay(
-                                    jsonParser.decodeFromString<ReplayStartEvent>(text)
-                                )
+                                MessageType.REPLAY_START ->
+                                    sessionService.startReplay(
+                                        jsonParser.decodeFromString<ReplayStartEvent>(text)
+                                    )
 
-                                MessageType.REPLAY_END -> sessionService.endReplay(
-                                    jsonParser.decodeFromString<ReplayEndEvent>(text).manifest
-                                )
+                                MessageType.REPLAY_END ->
+                                    sessionService.endReplay(
+                                        jsonParser.decodeFromString<ReplayEndEvent>(text)
+                                    )
 
-                                MessageType.REPLAY_STOP -> sessionService.stopReplay(
-                                    jsonParser.decodeFromString<ReplayStopEvent>(text)
+                                MessageType.REPLAY_PAUSE ->
+                                    sessionService.pauseReplay(
+                                        jsonParser.decodeFromString<ReplayPauseEvent>(text)
+                                    )
+
+                                MessageType.REPLAY_FORWARD -> sessionService.forwardReplay(
+                                    jsonParser.decodeFromString<ReplayForwardEvent>(text)
                                 )
 
                                 else -> {
@@ -82,7 +83,7 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
                         }
                     }
                 }
-                topics.forEach {  topic ->
+                topics.forEach { topic ->
                     sessionService.closeSession(session, topic)
                 }
             }
@@ -93,5 +94,14 @@ class WebsocketConnectionController(application: Application) : KoinComponent {
         for (event in channel) {
             sendChannel.send(Frame.Text(Json.encodeToString(event)))
         }
+        sendChannel.send(
+            Frame.Text(
+                Json.encodeToString(
+                    EndOfMessageEvent(
+                        Manifest(1, MessageType.END_MESSAGE, Instant.now()),
+                    )
+                )
+            )
+        )
     }
 }

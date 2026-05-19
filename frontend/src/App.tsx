@@ -1,11 +1,27 @@
 import "./App.css";
 import ModelLoader from "@/scene/ModelLoader.tsx";
 import GraphView from "@/scene/graphs/GraphView.tsx";
-import { Route, Routes } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import LayoutSidebar from "@/routerLayouts/LayoutSidebar.tsx";
 import LayoutVanilla from "@/routerLayouts/LayoutVanilla.tsx";
-import Help from "@/scene/Help.tsx";
 import { WebSocketProvider } from "@/service/webSocketProvider.tsx";
+import { DigitalTwinsOverview } from "@/scene/home/DigitalTwinsOverview.tsx";
+import { DigitalTwinOverview } from "@/scene/dt/DigitalTwinOverview.tsx";
+import { DigitalTwinParticipant } from "@/scene/dt/participant/DigitalTwinParticipant.tsx";
+import { StateMachineCanvas } from "@/scene/dt/participant/stateMachine/canvas/StateMachineCanvas.tsx";
+import { DigitalTwinsOverviewHeader } from "@/scene/home/DigitalTwinsOverviewHeader.tsx";
+import * as React from "react";
+import { DigitalTwinOverviewHeader } from "@/scene/dt/DigitalTwinOverviewHeader.tsx";
+import { TraceOverview } from "@/scene/dt/eventlogs/trace/TraceOverview.tsx";
+import { TracesOverviewHeader } from "@/scene/dt/eventlogs/trace/TracesOverviewHeader.tsx";
+import { TraceReplayInspect } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspect.tsx";
+import { TraceReplayInspectHeader } from "@/scene/dt/eventlogs/trace/replay/TraceReplayInspectHeader.tsx";
+import { LogComponentsOverview } from "@/scene/dt/eventlogs/components/LogComponentsOverview.tsx";
+import { LogComponentHeader } from "@/scene/dt/eventlogs/components/LogComponentHeader.tsx";
+import { TraceStateMachineAnalyze } from "@/scene/dt/eventlogs/trace/analyze/TraceStateMachineAnalyze.tsx";
+import { TraceAnalyzeHeader } from "@/scene/dt/eventlogs/trace/analyze/TraceAnalyzeHeader.tsx";
+import { AnalyzeStateMachinesOverview } from "@/scene/dt/eventlogs/trace/analyze/AnalyzeStateMachinesOverview.tsx";
+import { ThemeProvider } from "@/components/theme-provider.tsx";
 
 /**
  * The `App` component serves as the main entry point for the application.
@@ -25,19 +41,100 @@ function App() {
   const origin = window.origin.replace("http://", "ws://").replace("https://", "wss://");  //use ws protocol instead of http
   const websocketUrl = (import.meta.env.VITE_APP_BASE_URL ?? origin) + "/ws";              //for dev use the url devined in the .env file, in production use the origin as the url
 
+  const router = createBrowserRouter([
+    // LayoutSidebar Group
+    {
+      path: "/",
+      element: <LayoutSidebar />,
+      children: [
+        {
+          index: true,
+          element: <DigitalTwinsOverview />,
+          handle: { header: <DigitalTwinsOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId",
+          element: <DigitalTwinOverview />,
+          handle: { header: <DigitalTwinOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId",
+          element: <DigitalTwinParticipant />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId/state-machine/:scId",
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined}
+                                       activeStates={[]} />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/participant/:participantId/model/:modelId",
+          element: <ModelLoader />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/log/:refId",
+          element: <LogComponentsOverview />,
+          handle: { header: <LogComponentHeader /> } as RouteHandle,
+        },
+        {
+          path: `dt/:dtId/log/:refId/logId/:logId/trace`,
+          element: <TraceOverview />,
+          handle: { header: <TracesOverviewHeader /> } as RouteHandle,
+        },
+        {
+          path: "dt/:dtId/log/:refId/trace/:traceName",
+          element: <TraceReplayInspect />,
+          handle: { header: <TraceReplayInspectHeader /> } as RouteHandle,
+        },
+        {
+          path: "/dt/:dtId/log/:refId/trace/:traceName/analyze",
+          element: <AnalyzeStateMachinesOverview/>,
+          handle: { header: <TraceAnalyzeHeader/> } as RouteHandle,
+        },
+        {
+          path: "/dt/:dtId/log/:refId/trace/:traceName/analyze/:scId",
+          element: <TraceStateMachineAnalyze/>,
+          handle: { header: <TraceAnalyzeHeader/> } as RouteHandle,
+        },
+        {
+          path: "model/:modelId",
+          element: <ModelLoader />,
+          handle: { header: null } as RouteHandle,
+        },
+        {
+          path: "state-machine",
+          element: <StateMachineCanvas pDtId={undefined} pParticipantId={undefined} pScId={undefined}
+                                       activeStates={[]} />,
+          handle: { header: null } as RouteHandle,
+        },
+      ],
+    },
+    {
+      path: "/graphs",
+      element: <LayoutVanilla />,
+      children: [
+        {
+          index: true,
+          element: <GraphView />,
+          handle: { header: null } as RouteHandle,
+        },
+      ],
+    },
+  ]);
+
   return (
     <WebSocketProvider url={websocketUrl}>
-      <Routes>
-        <Route path="/" element={<LayoutSidebar />}>
-          <Route path="/" element={<Help />} />
-          <Route path="/model/:modelId" element={<ModelLoader />} />
-        </Route>
-        <Route path="/graphs" element={<LayoutVanilla />}>
-          <Route path="/graphs" element={<GraphView></GraphView>} />
-        </Route>
-      </Routes>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </WebSocketProvider>
   );
 }
 
 export default App;
+
+export interface RouteHandle {
+  header: React.ReactNode;
+}

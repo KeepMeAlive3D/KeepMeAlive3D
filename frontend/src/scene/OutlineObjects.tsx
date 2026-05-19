@@ -1,4 +1,4 @@
-import { RootState, useFrame, useThree } from "@react-three/fiber";
+import { type RootState, useFrame, useThree } from "@react-three/fiber";
 // @ts-expect-error Source is javascript
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 // @ts-expect-error Source is javascript
@@ -9,20 +9,20 @@ import { useEffect, useRef } from "react";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import {
-  OutlineState,
+  type OutlineState,
   selectOutline,
   setOutlinedObject,
 } from "@/redux/slices/OutlineSlice.ts";
-import { ModelPartState } from "@/redux/slices/ModelPartSlice";
-import { ReplayState } from "@/redux/slices/ReplaySlice";
-import { SettingsState } from "@/redux/slices/SettingsSlice";
-import { ThunkDispatch, UnknownAction, Dispatch } from "@reduxjs/toolkit";
+import type { ModelPartState } from "@/redux/slices/ModelPartSlice";
+import type { ReplayState } from "@/redux/slices/ReplaySlice";
+import type { SettingsState } from "@/redux/slices/SettingsSlice";
+import type { ThunkDispatch, UnknownAction, Dispatch } from "@reduxjs/toolkit";
 
 function OutlineObjects() {
   const state = useThree();
   const canvas = state.gl.domElement;
-  const composerRef = useRef<EffectComposer>();
-  const outlinePassRef = useRef<OutlinePass>();
+  const composerRef = useRef<EffectComposer>(null);
+  const outlinePassRef = useRef<OutlinePass>(null);
   const outlinedObjectId = useAppSelector(selectOutline);
   const dispatch = useAppDispatch();
 

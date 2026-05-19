@@ -19,7 +19,6 @@ function ModelLoader() {
   // Fetch model and model settings
   useEffect(() => {
     if (modelId !== undefined) {
-      setLoading(true);
       downloadModel(Number(modelId)).then((response) => {
         setModelUrl(URL.createObjectURL(response.data));
         setTimeout(() => {
@@ -35,7 +34,7 @@ function ModelLoader() {
     return (
       <div className="flex flex-row items-center justify-center">
         <div className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-          <LoadingSpinner loading={true} className="mr-2" /> Loading...
+          <LoadingSpinner loading={true} /> Loading...
         </div>
       </div>
     );

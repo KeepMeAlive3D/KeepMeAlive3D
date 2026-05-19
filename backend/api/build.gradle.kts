@@ -3,7 +3,7 @@ val logback_version: String by project
 val flaxoos_extra_plugins_version: String by project
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.20"
     id("io.ktor.plugin") version "3.1.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
 }
@@ -16,6 +16,12 @@ application {
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes("Multi-Release" to "true")
+    }
 }
 
 java {
@@ -58,7 +64,6 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    //implementation("io.github.flaxoos:ktor-server-kafka-jvm:$flaxoos_extra_plugins_version")
     implementation("io.ktor:ktor-server-websockets-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -75,7 +80,7 @@ dependencies {
 
     //db
     implementation(group="org.ktorm", name = "ktorm-support-mysql", version = "4.1.1")
-    implementation("com.mysql:mysql-connector-j:9.2.0")
+    implementation("com.mysql:mysql-connector-j:9.4.0")
 
     // Koin for Ktor
     implementation("io.insert-koin:koin-ktor:4.0.4")
@@ -96,4 +101,6 @@ dependencies {
     implementation("at.favre.lib:bcrypt:0.10.2")
 
     implementation("com.influxdb:influxdb-client-kotlin:7.2.0")
+
+    implementation("dev.klenz.matthias:KScxmlParser:0.3.0")
 }

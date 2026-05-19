@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import {
+import type {
   RelativePositionEventMessage,
   RelativePositionMessageData,
 } from "@/service/wsTypes.ts";

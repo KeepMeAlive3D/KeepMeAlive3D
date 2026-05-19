@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useRef, useState } from "react";
 import { uploadFile } from "@/service/upload.ts";
-import { useToast } from "@/hooks/use-toast.ts";
+import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/custom/loading-spinner.tsx";
 import { useNavigate } from "react-router";
 
@@ -27,7 +27,6 @@ export function UploadModel() {
   const [fileName, setFileName] = useState("");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const navigate = useNavigate();
 
@@ -48,20 +47,17 @@ export function UploadModel() {
       file
     ).then(
       (response) => {
-        toast({
-          title: "File uploaded",
-          description: `File ${modelName?.current?.value} was uploaded`,
-        });
+        toast.success("File uploaded", {
+          description: `File ${modelName?.current?.value} was uploaded`
+        })
         setLoading(false);
         setOpen(false);
         return Number(response.data);
       },
       () => {
-        toast({
-          variant: "destructive",
-          title: "File upload failed",
-          description: `File ${modelName?.current?.value} could not be uploaded!`,
-        });
+        toast.error("File upload failed", {
+          description: `File ${modelName?.current?.value} could not be uploaded!`
+        })
         setLoading(false);
         return -1;
       }
@@ -137,7 +133,7 @@ export function UploadModel() {
               onClick={() => handleFileUpload()}
             >
               Upload
-              <LoadingSpinner className={"static"} loading={loading} />
+              <LoadingSpinner loading={loading} />
             </Button>
           </DialogFooter>
         </DialogContent>

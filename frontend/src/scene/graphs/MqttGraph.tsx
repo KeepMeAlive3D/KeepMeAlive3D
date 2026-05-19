@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { DataPointEventMessage, MessageType } from "@/service/wsTypes.ts";
+import { type DataPointEventMessage, MessageType } from "@/service/wsTypes.ts";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 import { getEventDataPointsOfTopic } from "@/service/model_datapoint.ts";
 import { format } from "date-fns";
@@ -40,7 +40,7 @@ function MqttGraph({ topic }: { topic: string }) {
       // Last two minutes messages are shown on start
       const twoMinAgo = currTime.getTime() - 2 * 60 * 1000;
       return current.filter(
-        (it) => (it.manifest.timestamp ?? 0) * 1000 > twoMinAgo
+        (it) => (it.manifest.timestamp ?? 0) > twoMinAgo
       );
     });
   }, []);
@@ -66,7 +66,7 @@ function MqttGraph({ topic }: { topic: string }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             tickFormatter={(v) =>
-              format(new Date(v * 1000), "dd/MM/yyyy HH:mm")
+              format(new Date(v), "dd/MM/yyyy HH:mm")
             }
             dataKey={(v) => v.manifest.timestamp}
           />

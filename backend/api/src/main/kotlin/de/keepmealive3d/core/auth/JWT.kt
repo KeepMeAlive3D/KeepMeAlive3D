@@ -54,6 +54,15 @@ class JWT(val config: Config) {
         return Result.success(decoded.expiresAtAsInstant)
     }
 
+    fun getUserId(token: String): Result<Int> {
+        try {
+            val decoded = jwtVerifier.verify(token)
+            return Result.success(decoded.getClaim(CLAIM_USERID).asInt())
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
     fun configureJwt(authConf: AuthenticationConfig) {
         authConf.apply {
             jwt("jwt") {

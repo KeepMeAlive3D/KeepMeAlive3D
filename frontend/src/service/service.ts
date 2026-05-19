@@ -1,6 +1,6 @@
 import axios from "axios";
-import { toast } from "@/hooks/use-toast.ts";
-import { RestErrorInfo } from "@/service/error.ts";
+import { toast } from "sonner";
+import type { RestErrorInfo } from "@/service/error.ts";
 
 const service = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL ?? window.origin,
@@ -22,17 +22,13 @@ service.interceptors.response.use(
     }
     if (error.response !== undefined) {
       const errInfo = error.response.data as RestErrorInfo;
-      toast({
-        variant: "destructive",
-        title: errInfo.name,
-        description: errInfo.message,
-      });
+      toast.error(errInfo.name, {
+        description: errInfo.message
+      })
     } else {
-      toast({
-        variant: "destructive",
-        title: "Request Failed",
-        description: error.message,
-      });
+      toast.error("Request Failed", {
+        description: error.message
+      })
     }
     console.error(`Middleware error detail for: ${error.message}`);
     console.error(error);

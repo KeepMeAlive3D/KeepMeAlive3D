@@ -1,7 +1,7 @@
 package de.keepmealive3d.contract
 
-import de.keepmealive3d.adapters.auth.AuthController
-import de.keepmealive3d.adapters.auth.RegisterController
+import de.keepmealive3d.adapters.controllers.AuthController
+import de.keepmealive3d.adapters.controllers.RegisterController
 import de.keepmealive3d.adapters.data.RestErrorInfo
 import de.keepmealive3d.appModule
 import io.ktor.client.call.*

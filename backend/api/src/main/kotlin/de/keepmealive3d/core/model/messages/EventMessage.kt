@@ -1,6 +1,5 @@
 package de.keepmealive3d.core.model.messages
 
-import de.keepmealive3d.adapters.serializer.UnixTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -42,6 +41,11 @@ data class SubscribeEvent(
 )
 
 @Serializable
+data class EndOfMessageEvent(
+    val manifest: Manifest
+)
+
+@Serializable
 data class UnknownTypeEvent(
     val manifest: Manifest
 )
@@ -54,24 +58,35 @@ data class MessageSubscribeEventData(
 @Serializable
 data class ReplayStartEvent(
     val manifest: Manifest,
-    @Serializable(with = UnixTimeSerializer::class)
-    val start: Instant,
-    @Serializable(with = UnixTimeSerializer::class)
-    val end: Instant
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
 @Serializable
-data class ReplayStopEvent(
+data class ReplayPauseEvent(
     val manifest: Manifest,
-    @Serializable(with = UnixTimeSerializer::class)
-    val stop: Instant
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
 @Serializable
 data class ReplayEndEvent(
-    val manifest: Manifest
+    val manifest: Manifest,
+    val dtId: Int,
+    val logId: Int,
+    val trace: String
 )
 
+@Serializable
+data class ReplayForwardEvent(
+    val manifest: Manifest,
+    val dtId: Int,
+    val logId: Int,
+    val trace: String,
+    val offset: Long
+)
 
 @Serializable
 data class ErrorEvent(

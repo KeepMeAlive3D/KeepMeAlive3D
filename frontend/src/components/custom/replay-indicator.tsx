@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks.ts";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useWebSocket } from "@/service/webSocketProvider.tsx";
-import { Manifest, MessageType, ReplayEnd } from "@/service/wsTypes.ts";
+import { type Manifest, MessageType, type ReplayEnd } from "@/service/wsTypes.ts";
 
 export default function ReplayIndicator() {
   const replay = useAppSelector(selectReplay);

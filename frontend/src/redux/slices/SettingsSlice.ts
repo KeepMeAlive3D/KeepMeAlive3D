@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/redux/store.ts";
-import { getModelSettings, ModelSetting } from "@/service/upload.ts";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "@/redux/store.ts";
+import { getModelSettings, type ModelSetting } from "@/service/upload.ts";
 
 export const fetchAndSetModelSettings = createAsyncThunk(
   "model/fetchAndSetSettings",

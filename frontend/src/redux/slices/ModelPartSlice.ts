@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/redux/store.ts";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "@/redux/store.ts";
 
 /**
  * Contains all additional meta information about a component that is processed

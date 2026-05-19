@@ -10,10 +10,7 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 
 fun Application.configureRouting() {
-    fun getResourceAsStream(filePath: String): InputStream {
-        return this::class.java.classLoader.getResourceAsStream(filePath)
-            ?: throw FileNotFoundException("could not find $filePath")
-    }
+
 
     install(Resources)
     routing {
@@ -21,12 +18,19 @@ fun Application.configureRouting() {
             call.respondText("Up!")
         }
         get("/api/version") {
-            call.respondText(getResourceAsStream("kma_version").readAllBytes().decodeToString())
+            call.respondText(ResourceLoader.getResourceAsStream("kma_version").readAllBytes().decodeToString())
         }
         swaggerUI("/swagger", "openapi/documentation.yaml") {}
         singlePageApplication {
             useResources = true
             react("static")
         }
+    }
+}
+
+object ResourceLoader {
+    fun getResourceAsStream(filePath: String): InputStream {
+        return this::class.java.classLoader.getResourceAsStream(filePath)
+            ?: throw FileNotFoundException("could not find $filePath")
     }
 }

@@ -2,7 +2,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import useFilteredWebsocket from "@/hooks/use-filtered-websocket.tsx";
 import {
   MessageType,
-  RelativePositionEventMessage,
+  type RelativePositionEventMessage,
 } from "@/service/wsTypes.ts";
 import { useCallback, useMemo, useRef } from "react";
 import { useAppSelector } from "@/hooks/hooks.ts";

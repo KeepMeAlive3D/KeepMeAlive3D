@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/redux/store.ts";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "@/redux/store.ts";
 
 /**
  * The objectId of the currently outline object. Undefined if no object is
